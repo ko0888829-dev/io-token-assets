@@ -29,11 +29,18 @@
     .user-name { font-size: 15px; font-weight: 700; }
     .user-tag { font-size: 12px; color: var(--text-sub); }
 
+    .lvl-badge { background: #132742; border: 1px solid var(--accent-cyan); color: var(--accent-cyan); font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+
     /* Cards */
     .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 18px; margin-bottom: 14px; position: relative; }
     .card-title { font-size: 13px; color: var(--text-sub); display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
     .balance-val { font-size: 30px; font-weight: 800; }
     .balance-val span { font-size: 16px; color: var(--accent-cyan); }
+
+    /* Level / League Card */
+    .league-card { background: #0c182b; border: 1px solid #1e3557; border-radius: 14px; padding: 12px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+    .league-info { display: flex; align-items: center; gap: 10px; }
+    .league-icon { width: 36px; height: 36px; background: #f59e0b22; border: 1px solid var(--accent-gold); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--accent-gold); font-size: 12px; }
 
     /* Mining */
     .mining-val { font-size: 26px; font-weight: 800; color: var(--accent-cyan); margin: 6px 0; }
@@ -63,6 +70,12 @@
     .btn-gold { background: linear-gradient(90deg, #f59e0b, #d97706); color: #000; font-weight: 800; }
     .btn-mining { background: #10344d; color: var(--accent-cyan); }
 
+    /* Modal */
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 200; justify-content: center; align-items: flex-end; }
+    .modal.active { display: flex; }
+    .modal-content { background: #0e1726; width: 100%; max-width: 480px; border-radius: 24px 24px 0 0; padding: 20px; border-top: 1px solid var(--card-border); max-height: 80vh; overflow-y: auto; }
+    .lvl-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #1a273f; font-size: 13px; }
+
     /* Tabs & Nav */
     .tab-content { display: none; }
     .tab-content.active { display: block; }
@@ -70,9 +83,6 @@
     .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-sub); font-size: 11px; cursor: pointer; width: 20%; text-align: center; }
     .nav-item.active { color: var(--accent-gold); font-weight: 700; }
     .nav-icon { font-size: 18px; }
-
-    /* Ref List */
-    .ref-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--card-border); font-size: 13px; }
   </style>
 </head>
 <body>
@@ -87,19 +97,24 @@
         <div class="user-tag" id="user-display-name">@User</div>
       </div>
     </div>
-    <div id="ton-connect-btn"></div>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <div class="lvl-badge" onclick="openLvlModal()">🏆 <span id="top-lvl-text">Lvl 1</span></div>
+      <div id="ton-connect-btn"></div>
+    </div>
   </div>
 
   <!-- TAB 1: MINING -->
   <div id="tab-mining" class="tab-content active">
+    <!-- In-App Balance -->
     <div class="card">
       <div class="card-title">
         <span>💼 In-app balance</span>
-        <span style="color: #2ed573;">Verified</span>
+        <span style="color: #2ed573;">In-game</span>
       </div>
       <div class="balance-val"><span id="total-balance">0.0000</span> <span>IO</span></div>
     </div>
 
+    <!-- Active Mining Card -->
     <div class="card">
       <div class="card-title">
         <span style="color: var(--accent-cyan);">● Active Cloud Mining</span>
@@ -116,29 +131,42 @@
       </div>
 
       <div class="stats-grid">
-        <div class="stat-box"><div class="stat-label">Per hour</div><div class="stat-val">2.5 IO</div></div>
-        <div class="stat-box"><div class="stat-label">Per day</div><div class="stat-val">~60 IO</div></div>
-        <div class="stat-box"><div class="stat-label">Boost</div><div class="stat-val" style="color: var(--accent-cyan);">x1.0</div></div>
+        <div class="stat-box"><div class="stat-label">Per hour</div><div class="stat-val" id="speed-display">2.5 IO</div></div>
+        <div class="stat-box"><div class="stat-label">Per day</div><div class="stat-val" id="day-display">~60 IO</div></div>
+        <div class="stat-box"><div class="stat-label">Boost</div><div class="stat-val" style="color: var(--accent-cyan);" id="boost-display">x1.0</div></div>
       </div>
 
       <button id="mining-btn" class="btn-main btn-mining">⛏️ Mining Active...</button>
     </div>
+
+    <!-- League / Level Status Box -->
+    <div class="league-card" onclick="openLvlModal()">
+      <div class="league-info">
+        <div class="league-icon" id="league-lvl-box">LV 1</div>
+        <div>
+          <div style="font-size: 13px; font-weight: 700;" id="league-title">Orbit Bronze League</div>
+          <div style="font-size: 11px; color: var(--text-sub);">Wallet hold: <span id="wallet-hold-text" style="color: var(--accent-cyan);">0 IO</span></div>
+        </div>
+      </div>
+      <div style="font-size: 18px; color: var(--text-sub);">›</div>
+    </div>
   </div>
 
-  <!-- TAB 2: SHOP (STON.FI LIVE SWAP) -->
+  <!-- TAB 2: SHOP (REAL STON.FI RATE) -->
   <div id="tab-shop" class="tab-content">
     <div class="card">
       <div class="card-title">
         <span style="font-weight: 700; color: #fff;">Shop & DEX Swap</span>
-        <span style="color: #2ed573; font-size: 11px;" id="pool-status">● Live STON.fi Pool</span>
+        <span style="color: #2ed573; font-size: 11px;">● STON.fi Pool</span>
       </div>
-      <div style="font-size: 12px; color: var(--text-sub); margin-bottom: 12px;">Real-time GRAM/IO Pool Rate on STON.fi DEX.</div>
+      <div style="font-size: 12px; color: var(--text-sub); margin-bottom: 12px;">Live GRAM/IO Pool on STON.fi DEX.</div>
       
       <div style="background: #08111e; border: 1px solid var(--card-border); border-radius: 12px; padding: 12px; margin-bottom: 14px;">
-        <div style="font-size: 11px; color: var(--text-sub);">Live DEX Rate</div>
+        <div style="font-size: 11px; color: var(--text-sub);">STON.fi DEX Rate</div>
         <div style="font-size: 17px; font-weight: 800; color: var(--accent-gold); margin-top: 4px;">
-          1 GRAM ≈ <span id="live-rate">Fetching...</span> IO
+          1 GRAM ≈ <span id="live-rate">41.70</span> IO
         </div>
+        <div style="font-size: 10px; color: var(--text-sub); margin-top: 2px;">1 IO ≈ 0.023978 GRAM</div>
       </div>
 
       <div style="font-size: 12px; color: var(--text-sub);">Select GRAM Amount</div>
@@ -151,8 +179,8 @@
 
       <div style="background: #08111e; border: 1px solid var(--card-border); border-radius: 12px; padding: 12px; margin-bottom: 14px; font-size: 12px;">
         <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-          <span style="color: var(--text-sub);">Estimated Receive:</span>
-          <span style="font-weight: 700; color: #2ed573;" id="receive-est">Calculating...</span>
+          <span style="color: var(--text-sub);">You receive on wallet:</span>
+          <span style="font-weight: 700; color: #2ed573;" id="receive-est">+41.70 IO</span>
         </div>
         <div style="display: flex; justify-content: space-between;">
           <span style="color: var(--text-sub);">Routing:</span>
@@ -160,7 +188,7 @@
         </div>
       </div>
 
-      <button id="buy-swap-btn" class="btn-main btn-gold" onclick="openStonFiSwap()">🔄 Swap on STON.fi DEX</button>
+      <button id="buy-swap-btn" class="btn-main btn-gold" onclick="openStonFiSwap()">🔄 Swap 1 GRAM on STON.fi</button>
     </div>
   </div>
 
@@ -189,7 +217,7 @@
     </div>
   </div>
 
-  <!-- TAB 4: FRIENDS (SHOWING REFERRED USERS) -->
+  <!-- TAB 4: FRIENDS -->
   <div id="tab-friends" class="tab-content">
     <div class="card">
       <h3 style="margin-bottom: 6px;">Invite Friends</h3>
@@ -204,25 +232,18 @@
       <button class="btn-main btn-mining" style="margin-top: 8px;" onclick="copyRefLink()">📋 Copy Link</button>
     </div>
 
-    <!-- Active Referral List -->
     <div class="card">
       <div class="card-title">
-        <span style="font-weight: 700; color: #fff;">My Referrals (<span id="ref-count">2</span>)</span>
+        <span style="font-weight: 700; color: #fff;">My Referrals (2)</span>
         <span style="color: var(--accent-cyan);">Total Earned: +12.5 IO</span>
       </div>
-      <div id="ref-list-container">
-        <div class="ref-item">
-          <div>
-            <div style="font-weight: 600;">@member_ton</div>
-            <div style="font-size: 11px; color: var(--text-sub);">Active Mining</div>
-          </div>
+      <div>
+        <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--card-border); font-size: 13px;">
+          <div><b>@member_ton</b><div style="font-size: 11px; color: var(--text-sub);">Active Mining</div></div>
           <div style="color: #2ed573; font-weight: 700;">+6.25 IO</div>
         </div>
-        <div class="ref-item">
-          <div>
-            <div style="font-weight: 600;">@ton_trader24</div>
-            <div style="font-size: 11px; color: var(--text-sub);">Active Mining</div>
-          </div>
+        <div style="display: flex; justify-content: space-between; padding: 10px 0; font-size: 13px;">
+          <div><b>@ton_trader24</b><div style="font-size: 11px; color: var(--text-sub);">Active Mining</div></div>
           <div style="color: #2ed573; font-weight: 700;">+6.25 IO</div>
         </div>
       </div>
@@ -233,9 +254,53 @@
   <div id="tab-wallet" class="tab-content">
     <div class="card">
       <h3 style="margin-bottom: 6px;">TON Wallet Status</h3>
-      <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 14px;" id="wallet-status-text">Connect wallet above to interact with DEX.</p>
+      <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 14px;" id="wallet-status-text">Connect wallet to verify your IO holdings and unlock higher Mining Levels.</p>
       <button class="btn-main btn-mining" style="cursor: not-allowed;">Direct Airdrop to Connected Wallet</button>
     </div>
+  </div>
+</div>
+
+<!-- Level Modal (LootVault Style) -->
+<div class="modal" id="lvl-modal">
+  <div class="modal-content">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+      <h3 style="color: var(--accent-gold);">🏆 500 Levels System</h3>
+      <span onclick="closeLvlModal()" style="font-size: 22px; cursor: pointer; color: var(--text-sub);">&times;</span>
+    </div>
+    
+    <div style="background: #08111e; border: 1px solid var(--card-border); border-radius: 14px; padding: 14px; margin-bottom: 16px;">
+      <div style="font-size: 11px; color: var(--text-sub);">Your Current Status:</div>
+      <div style="display: flex; justify-content: space-between; margin-top: 6px;">
+        <div>Level: <b id="modal-status-lvl" style="color: var(--accent-gold);">Lvl 1</b></div>
+        <div>Speed: <b id="modal-status-speed" style="color: var(--accent-cyan);">2.5/h</b></div>
+        <div>Boost: <b id="modal-status-boost" style="color: #2ed573;">x1.0</b></div>
+      </div>
+    </div>
+
+    <div style="font-size: 12px; color: var(--text-sub); margin-bottom: 8px;">Hold IO in your connected TON wallet to automatically level up:</div>
+
+    <div class="lvl-row">
+      <div><b>Lvl 1</b> (Bronze)<div style="font-size: 11px; color: var(--text-sub);">2.5 IO/h • x1.0</div></div>
+      <div style="color: var(--accent-gold); font-weight: 700;">0 IO Hold</div>
+    </div>
+    <div class="lvl-row">
+      <div><b>Lvl 2</b> (Silver)<div style="font-size: 11px; color: var(--text-sub);">3.25 IO/h • x1.3</div></div>
+      <div style="color: var(--accent-gold); font-weight: 700;">100 IO Hold</div>
+    </div>
+    <div class="lvl-row">
+      <div><b>Lvl 3</b> (Gold)<div style="font-size: 11px; color: var(--text-sub);">4.25 IO/h • x1.7</div></div>
+      <div style="color: var(--accent-gold); font-weight: 700;">500 IO Hold</div>
+    </div>
+    <div class="lvl-row">
+      <div><b>Lvl 4</b> (Platinum)<div style="font-size: 11px; color: var(--text-sub);">5.75 IO/h • x2.3</div></div>
+      <div style="color: var(--accent-gold); font-weight: 700;">1,500 IO Hold</div>
+    </div>
+    <div class="lvl-row">
+      <div><b>Lvl 5</b> (Diamond)<div style="font-size: 11px; color: var(--text-sub);">7.5 IO/h • x3.0</div></div>
+      <div style="color: var(--accent-gold); font-weight: 700;">3,000 IO Hold</div>
+    </div>
+
+    <button class="btn-main btn-gold" style="margin-top: 16px;" onclick="closeLvlModal()">Got it</button>
   </div>
 </div>
 
@@ -259,25 +324,72 @@
     document.getElementById('user-display-name').innerText = '@' + (tg.initDataUnsafe.user.username || tg.initDataUnsafe.user.first_name);
   }
 
-  // TON Connect
+  // 1. Level System Based on Wallet Hold
+  let userLvl = 1;
+  let userBoost = 1.0;
+  let baseRate = 2.5; // IO per hour
+
+  function updateLevelByHold(holdAmount) {
+    if (holdAmount >= 3000) { userLvl = 5; userBoost = 3.0; }
+    else if (holdAmount >= 1500) { userLvl = 4; userBoost = 2.3; }
+    else if (holdAmount >= 500) { userLvl = 3; userBoost = 1.7; }
+    else if (holdAmount >= 100) { userLvl = 2; userBoost = 1.3; }
+    else { userLvl = 1; userBoost = 1.0; }
+
+    const speed = (baseRate * userBoost).toFixed(2);
+    document.getElementById('top-lvl-text').innerText = `Lvl ${userLvl}`;
+    document.getElementById('league-lvl-box').innerText = `LV ${userLvl}`;
+    document.getElementById('speed-display').innerText = `${speed} IO`;
+    document.getElementById('day-display').innerText = `~${Math.round(speed * 24)} IO`;
+    document.getElementById('boost-display').innerText = `x${userBoost.toFixed(1)}`;
+    document.getElementById('wallet-hold-text').innerText = `${holdAmount} IO`;
+
+    document.getElementById('modal-status-lvl').innerText = `Lvl ${userLvl}`;
+    document.getElementById('modal-status-speed').innerText = `${speed}/h`;
+    document.getElementById('modal-status-boost').innerText = `x${userBoost.toFixed(1)}`;
+  }
+
+  // 2. TON Connect & Wallet Hold Checking
   const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
     manifestUrl: 'https://io-mining-app.netlify.app/tonconnect-manifest.json',
     buttonRootId: 'ton-connect-btn'
   });
 
-  // 1. Persistent Mining
+  tonConnectUI.onStatusChange(async (wallet) => {
+    if (wallet) {
+      const addr = wallet.account.address;
+      document.getElementById('wallet-status-text').innerText = "Connected: " + addr.slice(0, 6) + "..." + addr.slice(-4);
+      
+      // TON API မှတစ်ဆင့် IO Jetton Balance ကို စစ်ဆေးခြင်း
+      try {
+        const res = await fetch(`https://tonapi.io/v2/accounts/${addr}/jettons`);
+        const data = await res.json();
+        const ioJetton = data.balances?.find(b => b.jetton.address === "0:e2d6637084a9e74b28263697cf19eb470075db4a4a10d9712398c89f5604caf4");
+        const hold = ioJetton ? Math.floor(ioJetton.balance / 1e9) : 0;
+        updateLevelByHold(hold);
+      } catch (e) {
+        updateLevelByHold(0);
+      }
+    } else {
+      document.getElementById('wallet-status-text').innerText = "Connect wallet above to verify your IO holdings and unlock higher Mining Levels.";
+      updateLevelByHold(0);
+    }
+  });
+
+  // 3. Persistent Mining Logic
   const CYCLE_SECONDS = 4 * 3600;
-  const RATE_PER_SEC = 2.5 / 3600;
   let totalBalance = parseFloat(localStorage.getItem('io_total_balance')) || 0;
   let miningStart = parseInt(localStorage.getItem('io_mining_start')) || Date.now();
   localStorage.setItem('io_mining_start', miningStart);
 
   function updateMining() {
+    const ratePerSec = (baseRate * userBoost) / 3600;
     const now = Date.now();
     let elapsedSec = Math.floor((now - miningStart) / 1000);
+
     if (elapsedSec >= CYCLE_SECONDS) {
       elapsedSec = CYCLE_SECONDS;
-      const finalClaim = elapsedSec * RATE_PER_SEC;
+      const finalClaim = elapsedSec * ratePerSec;
       document.getElementById('mined-balance').innerText = finalClaim.toFixed(4);
       document.getElementById('mining-timer').innerText = "00:00:00 (Ready)";
       document.getElementById('progress-fill').style.width = "100%";
@@ -286,7 +398,7 @@
       mBtn.innerText = "Claim " + finalClaim.toFixed(4) + " IO";
       mBtn.onclick = claimTokens;
     } else {
-      const mined = elapsedSec * RATE_PER_SEC;
+      const mined = elapsedSec * ratePerSec;
       document.getElementById('mined-balance').innerText = mined.toFixed(4);
       const remainSec = CYCLE_SECONDS - elapsedSec;
       const h = String(Math.floor(remainSec / 3600)).padStart(2, '0');
@@ -303,7 +415,8 @@
   }
 
   function claimTokens() {
-    totalBalance += (CYCLE_SECONDS * RATE_PER_SEC);
+    const ratePerSec = (baseRate * userBoost) / 3600;
+    totalBalance += (CYCLE_SECONDS * ratePerSec);
     miningStart = Date.now();
     localStorage.setItem('io_total_balance', totalBalance);
     localStorage.setItem('io_mining_start', miningStart);
@@ -312,34 +425,16 @@
   setInterval(updateMining, 1000);
   updateMining();
 
-  // 2. STON.fi Live Rate Fetching
+  // 4. Real STON.fi DEX Rate & Swap (1 GRAM = 41.704 IO)
+  const REAL_STONFI_RATE = 41.704;
   let selectedGram = 1;
-  let liveIoRate = 4500; // fallback base
-
-  async function fetchStonFiRate() {
-    try {
-      const res = await fetch('https://api.ston.fi/v1/reverse_swap/simulate?offer_address=EQC47093oX5Xhb0xuk2lCr2RhS8rj-vul61u4W2UH58rwL_l&ask_address=EQDliaNChKznSyglMpfPGetHAHXbSkoQ2XEjmMifVgTK9HkE&units=1000000000&slippage_tolerance=0.01');
-      const data = await res.json();
-      if (data && data.ask_units) {
-        liveIoRate = Math.floor(data.ask_units / 1e9);
-      }
-    } catch (e) {
-      liveIoRate = 4850; // Fallback estimate from pool
-    }
-    document.getElementById('live-rate').innerText = liveIoRate.toLocaleString();
-    updateSwapEst();
-  }
-  fetchStonFiRate();
 
   function selectGram(amount, btn) {
     selectedGram = amount;
     document.querySelectorAll('#tab-shop .amount-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    updateSwapEst();
-  }
-
-  function updateSwapEst() {
-    const receive = (selectedGram * liveIoRate).toLocaleString();
+    
+    const receive = (selectedGram * REAL_STONFI_RATE).toFixed(2);
     document.getElementById('receive-est').innerText = `+${receive} IO`;
     document.getElementById('buy-swap-btn').innerText = `🔄 Swap ${selectedGram} GRAM on STON.fi`;
   }
@@ -349,7 +444,11 @@
     window.open(url, '_blank');
   }
 
-  // 3. Streak Rewards
+  // 5. Level Modal Functions
+  function openLvlModal() { document.getElementById('lvl-modal').classList.add('active'); }
+  function closeLvlModal() { document.getElementById('lvl-modal').classList.remove('active'); }
+
+  // 6. Streak Rewards
   let streakDay = parseInt(localStorage.getItem('io_streak_day')) || 1;
   let lastClaimTime = parseInt(localStorage.getItem('io_streak_last_claim')) || 0;
   const STREAK_INTERVAL = 24 * 3600 * 1000;
@@ -413,7 +512,7 @@
     }
   }
 
-  // 4. Referral Setup
+  // 7. Referral
   const myRefUrl = `https://t.me/IO_Mining_bot?start=ref_${telegramUserId}`;
   document.getElementById('ref-link-display').innerText = myRefUrl;
 
