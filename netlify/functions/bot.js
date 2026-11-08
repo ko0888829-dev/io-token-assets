@@ -9,7 +9,7 @@ export async function handler(event, context) {
     if (body.message && body.message.text) {
       const chatId = body.message.chat.id;
       const text = body.message.text;
-      const BOT_TOKEN = "9126577611:AAEZDAjuOzpZNOi6pUKe6m-2BbG3M6PargY";
+      const BOT_TOKEN = "9126577611:AAEZDAju0zpZNOi6pUkE6m-2BbG3M6PargY";
       const WEBAPP_URL = "https://io-mining-app.netlify.app";
 
       if (text.startsWith("/start")) {
