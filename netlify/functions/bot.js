@@ -1,4 +1,5 @@
 export async function handler(event, context) {
+  // Webhook check (GET request ဖြင့် စစ်ဆေးပါက 200 ပြန်ပေးရန်)
   if (event.httpMethod !== "POST") {
     return { statusCode: 200, body: "Telegram Bot Webhook is running!" };
   }
@@ -9,8 +10,12 @@ export async function handler(event, context) {
     if (body.message && body.message.text) {
       const chatId = body.message.chat.id;
       const text = body.message.text;
+
+      // Configuration
       const BOT_TOKEN = "9126577611:AAEZDAju0zpZNOi6pUkE6m-2BbG3M6PargY";
       const WEBAPP_URL = "https://io-mining-app.netlify.app";
+      
+      // STON.fi Direct Swap Link (GRAM -> IO)
       const STONFI_SWAP_URL = "https://app.ston.fi/swap?ft=EQC47093oX5Xhb0xuk2lCr2RhS8rj-vul61u4W2UH58rwL_l&tt=EQDliaNChKznSyglMpfPGetHAHXbSkoQ2XEjmMifVgTK9HkE";
 
       if (text.startsWith("/start")) {
@@ -24,19 +29,23 @@ export async function handler(event, context) {
 
         const replyMarkup = {
           inline_keyboard: [
+            // အပေါ်ဆုံး WebApp ခလုတ်ကြီး
             [
               { text: "⛏️ Open Infinite Orbit", web_app: { url: WEBAPP_URL } }
             ],
+            // အလယ်က STON.fi DEX တိုက်ရိုက် Swap ခလုတ် နှင့် Community
             [
               { text: "📦 Community", url: "https://t.me/IO_Mining_bot" },
-              { text: "💎 STON.fi DEX", url: STONFI_SWAP_URL }
+              { text: "💎 STON.fi (GRAM ⇄ IO)", url: STONFI_SWAP_URL }
             ],
+            // အောက်ဆုံး News Channel
             [
               { text: "📢 News Channel", url: "https://t.me/IO_Mining_bot" }
             ]
           ]
         };
 
+        // Telegram Bot API သို့ စာပြန်ပို့ခြင်း
         await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
