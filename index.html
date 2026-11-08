@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Infinite Orbit (IO) Mining</title>
+  <!-- Telegram WebApp SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 25px rgba(56, 189, 248, 0.4); }
+      50% { box-shadow: 0 0 45px rgba(56, 189, 248, 0.8); }
+    }
+    .mining-active {
+      animation: pulse-glow 3s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-white min-h-screen flex flex-col justify-between p-6 select-none font-sans">
+
+  <!-- Header Section -->
+  <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-full bg-cyan-500/20 flex items-center justify-center border border-cyan-500/40 text-cyan-400 font-bold">
+        IO
+      </div>
+      <div>
+        <h2 id="userName" class="font-bold text-sm text-slate-200">User</h2>
+        <span class="text-xs text-cyan-400">Infinite Orbit Miner</span>
+      </div>
+    </div>
+    <div class="text-right">
+      <span class="text-xs text-slate-400">Total Balance</span>
+      <div class="text-lg font-black text-white"><span id="totalBalance">0.00</span> <span class="text-xs text-cyan-400 font-normal">IO</span></div>
+    </div>
+  </div>
+
+  <!-- Center: Coin & Mining Visual -->
+  <div class="flex flex-col items-center justify-center my-auto py-8">
+    <div class="relative flex items-center justify-center mb-6">
+      <!-- Glow Ring -->
+      <div id="coinGlow" class="w-52 h-52 rounded-full border-2 border-cyan-500/30 flex items-center justify-center mining-active bg-gradient-to-b from-cyan-950/40 to-slate-900/60 backdrop-blur-sm">
+        <!-- Coin Logo -->
+        <img 
+          src="https://raw.githubusercontent.com/ko0888829-dev/io-token-assets/main/1794130857757.jpg" 
+          alt="IO Token" 
+          class="w-40 h-40 rounded-full object-cover shadow-2xl border border-cyan-400/40"
+        />
+      </div>
+    </div>
+
+    <!-- Live Counter -->
+    <span class="text-xs tracking-wider uppercase text-slate-400 mb-1">Mined in current cycle</span>
+    <div class="text-4xl font-black tracking-tight text-cyan-400 mb-2">
+      +<span id="unclaimedIO">0.0000</span> <span class="text-lg font-semibold text-white">IO</span>
+    </div>
+    <div id="statusBadge" class="text-xs px-3 py-1 rounded-full bg-cyan-900/40 text-cyan-300 border border-cyan-700/50">
+      ⚡ 1 နာရီလျှင် 2.5 IO နှုန်းဖြင့် တူးနေသည်
+    </div>
+  </div>
+
+  <!-- Bottom: Progress Bar & Claim Button -->
+  <div class="w-full space-y-4">
+    <!-- Storage Bar -->
+    <div class="space-y-1.5">
+      <div class="flex justify-between text-xs text-slate-400 font-medium">
+        <span>သိုလှောင်ကန် (Storage)</span>
+        <span id="timerText">04:00:00</span>
+      </div>
+      <div class="w-full bg-slate-900 h-3 rounded-full overflow-hidden border border-slate-800 p-0.5">
+        <div id="progressBar" class="bg-gradient-to-r from-cyan-500 to-blue-500 h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
+      </div>
+    </div>
+
+    <!-- Action Button -->
+    <button 
+      id="claimBtn" 
+      onclick="handleClaim()" 
+      class="w-full py-4 rounded-2xl font-bold text-base transition-all duration-200 bg-cyan-500 text-slate-950 shadow-lg shadow-cyan-500/20 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed">
+      📥 Claim IO Token
+    </button>
+  </div>
+
+  <script>
+    // Telegram WebApp Initialization
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      tg.ready();
+      tg.expand();
+      if (tg.initDataUnsafe?.user) {
+        document.getElementById('userName').innerText = tg.initDataUnsafe.user.first_name;
+      }
+    }
+
+    // သတ်မှတ်ချက်များ
+    const CYCLE_DURATION = 4 * 3600; // ၄ နာရီ (စက္ကန့်)
+    const HOURLY_RATE = 2.5;         // ၁ နာရီလျှင် ၂.၅ IO
+    const MAX_CAP = HOURLY_RATE * 4;  // အများဆုံး ၁၀ IO
+
+    // Local Storage မှ Data ဆွဲယူခြင်း (API Backend ချိတ်လျှင် Server ထံမှ ယူပါ)
+    let totalBalance = parseFloat(localStorage.getItem('io_total_balance')) || 0.00;
+    let lastClaimTime = parseInt(localStorage.getItem('io_last_claim')) || Date.now();
+
+    function updateMining() {
+      const now = Date.now();
+      const elapsedSeconds = Math.floor((now - lastClaimTime) / 1000);
+
+      let unclaimed = (elapsedSeconds / 3600) * HOURLY_RATE;
+      let percent = (elapsedSeconds / CYCLE_DURATION) * 100;
+      let remainingSeconds = CYCLE_DURATION - elapsedSeconds;
+
+      const claimBtn = document.getElementById('claimBtn');
+      const progressBar = document.getElementById('progressBar');
+      const timerText = document.getElementById('timerText');
+      const unclaimedIO = document.getElementById('unclaimedIO');
+      const statusBadge = document.getElementById('statusBadge');
+      const coinGlow = document.getElementById('coinGlow');
+
+      if (elapsedSeconds >= CYCLE_DURATION) {
+        // ၄ နာရီပြည့်ပြီး ရပ်တန့်သည့် အခြေအနေ
+        unclaimed = MAX_CAP;
+        percent = 100;
+        remainingSeconds = 0;
+
+        claimBtn.disabled = false;
+        claimBtn.innerText = "📥 Claim " + MAX_CAP.toFixed(2) + " IO";
+        claimBtn.classList.remove('bg-slate-800', 'text-slate-400');
+        claimBtn.classList.add('bg-cyan-400', 'text-slate-950');
+
+        timerText.innerText = "Storage Full (ပြည့်သွားပါပြီ)";
+        statusBadge.innerText = "⚠️ သိုလှောင်ကန် ပြည့်နေပါသည်! Claim ပြုလုပ်ပါ";
+        statusBadge.className = "text-xs px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40";
+        coinGlow.classList.remove('mining-active');
+      } else {
+        // ပုံမှန် တူးနေဆဲ အခြေအနေ
+        const hrs = String(Math.floor(remainingSeconds / 3600)).padStart(2, '0');
+        const mins = String(Math.floor((remainingSeconds % 3600) / 60)).padStart(2, '0');
+        const secs = String(remainingSeconds % 60).padStart(2, '0');
+        timerText.innerText = `${hrs}:${mins}:${secs}`;
+
+        // အနည်းဆုံး 0.1 IO မတူးရသေးပါက Claim ပိတ်ထားမည်
+        if (unclaimed < 0.1) {
+          claimBtn.disabled = true;
+          claimBtn.innerText = "⛏️ Mining Active...";
+        } else {
+          claimBtn.disabled = false;
+          claimBtn.innerText = `📥 Claim (${unclaimed.toFixed(2)} IO)`;
+        }
+
+        statusBadge.innerText = "⚡ 1 နာရီလျှင် 2.5 IO နှုန်းဖြင့် တူးနေသည်";
+        statusBadge.className = "text-xs px-3 py-1 rounded-full bg-cyan-900/40 text-cyan-300 border border-cyan-700/50";
+        coinGlow.classList.add('mining-active');
+      }
+
+      unclaimedIO.innerText = unclaimed.toFixed(4);
+      progressBar.style.width = Math.min(percent, 100) + '%';
+      document.getElementById('totalBalance').innerText = totalBalance.toFixed(2);
+    }
+
+    function handleClaim() {
+      const now = Date.now();
+      const elapsedSeconds = Math.floor((now - lastClaimTime) / 1000);
+      let minedAmount = Math.min((elapsedSeconds / 3600) * HOURLY_RATE, MAX_CAP);
+
+      if (minedAmount <= 0.05) return;
+
+      totalBalance += minedAmount;
+      lastClaimTime = Date.now();
+
+      // သိမ်းဆည်းခြင်း
+      localStorage.setItem('io_total_balance', totalBalance);
+      localStorage.setItem('io_last_claim', lastClaimTime);
+
+      // Telegram Haptic Feedback (ဖုန်းတုန်ခါမှု)
+      if (tg?.HapticFeedback) {
+        tg.HapticFeedback.notificationOccurred('success');
+      }
+
+      updateMining();
+    }
+
+    // ၁ စက္ကန့်တစ်ကြိမ် Timer ပုံမှန် Update လုပ်ခြင်း
+    setInterval(updateMining, 1000);
+    updateMining();
+  </script>
+</body>
+</html>
