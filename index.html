@@ -4,9 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Infinite Orbit (IO) Mining App</title>
-  <!-- Telegram WebApp SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <!-- TON Connect UI SDK -->
   <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -16,55 +14,64 @@
       --card-border: #1a273f;
       --accent-blue: #0098ea;
       --accent-cyan: #00d2ff;
+      --accent-gold: #f59e0b;
       --text-main: #ffffff;
       --text-sub: #7e8fa6;
-      --button-bg: #0b3452;
-      --button-active: #0098ea;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
-    body { background: var(--bg); color: var(--text-main); min-height: 100vh; padding-bottom: 90px; }
+    body { background: var(--bg); color: var(--text-main); min-height: 100vh; padding-bottom: 95px; }
     .container { max-width: 480px; margin: 0 auto; padding: 16px; }
 
     /* Header */
-    .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-    .user-info { display: flex; align-items: center; gap: 12px; }
-    .avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent-cyan); }
-    .user-name { font-size: 16px; font-weight: 700; }
-    .user-tag { font-size: 13px; color: var(--text-sub); }
+    .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .user-info { display: flex; align-items: center; gap: 10px; }
+    .avatar { width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--accent-cyan); }
+    .user-name { font-size: 15px; font-weight: 700; }
+    .user-tag { font-size: 12px; color: var(--text-sub); }
 
-    /* TON Connect Button Container */
-    #ton-connect-btn { display: flex; align-items: center; }
-
-    /* Card Styling */
-    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 20px; margin-bottom: 16px; position: relative; }
+    /* Cards */
+    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 18px; margin-bottom: 14px; position: relative; }
     .card-title { font-size: 13px; color: var(--text-sub); display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-    .balance-val { font-size: 32px; font-weight: 800; color: #fff; }
-    .balance-val span { font-size: 18px; color: var(--accent-cyan); font-weight: 600; }
+    .balance-val { font-size: 30px; font-weight: 800; }
+    .balance-val span { font-size: 16px; color: var(--accent-cyan); }
 
-    /* Mining Progress Section */
-    .mining-val { font-size: 28px; font-weight: 800; color: var(--accent-cyan); margin: 8px 0; }
-    .progress-bar-bg { width: 100%; height: 8px; background: #132238; border-radius: 10px; overflow: hidden; margin: 12px 0; }
-    .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan)); transition: width 0.3s; }
-    
-    .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: 16px 0; text-align: center; }
-    .stat-box { background: #08111e; border: 1px solid var(--card-border); border-radius: 12px; padding: 10px 4px; }
-    .stat-label { font-size: 11px; color: var(--text-sub); margin-bottom: 4px; }
-    .stat-val { font-size: 14px; font-weight: 700; }
+    /* Mining Progress */
+    .mining-val { font-size: 26px; font-weight: 800; color: var(--accent-cyan); margin: 6px 0; }
+    .progress-bar-bg { width: 100%; height: 7px; background: #132238; border-radius: 10px; overflow: hidden; margin: 10px 0; }
+    .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan)); }
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: 14px 0; text-align: center; }
+    .stat-box { background: #08111e; border: 1px solid var(--card-border); border-radius: 12px; padding: 8px 4px; }
+    .stat-label { font-size: 10px; color: var(--text-sub); }
+    .stat-val { font-size: 13px; font-weight: 700; }
+
+    /* Streak Grid */
+    .streak-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin: 12px 0; }
+    .streak-day { background: #08111e; border: 1px solid var(--card-border); border-radius: 10px; padding: 8px 2px; text-align: center; }
+    .streak-day.claimed { border-color: #2ed573; background: #08211a; }
+    .streak-day.current { border-color: var(--accent-gold); background: #261907; }
+    .day-num { font-size: 11px; font-weight: 700; color: var(--text-sub); }
+    .day-reward { font-size: 10px; color: var(--accent-cyan); margin-top: 2px; font-weight: 600; }
+
+    /* Amount Selector */
+    .amount-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 12px 0; }
+    .amount-btn { background: #08111e; border: 1px solid var(--card-border); border-radius: 10px; padding: 10px; color: #fff; font-weight: 700; cursor: pointer; text-align: center; font-size: 13px; }
+    .amount-btn.active { border-color: var(--accent-gold); background: #241a0b; color: var(--accent-gold); }
 
     /* Buttons */
-    .btn-main { width: 100%; padding: 15px; border-radius: 14px; border: none; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+    .btn-main { width: 100%; padding: 14px; border-radius: 12px; border: none; font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+    .btn-claim { background: linear-gradient(90deg, #0098ea, #00d2ff); color: #fff; }
+    .btn-gold { background: linear-gradient(90deg, #f59e0b, #d97706); color: #000; font-weight: 800; }
     .btn-mining { background: #10344d; color: var(--accent-cyan); }
-    .btn-claim { background: linear-gradient(90deg, #0098ea, #00d2ff); color: #fff; box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3); }
 
-    /* Pages */
+    /* Tabs */
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* Navigation Bar */
+    /* Navigation */
     .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #09121f; border-top: 1px solid var(--card-border); display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; }
-    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-sub); font-size: 11px; cursor: pointer; text-decoration: none; width: 20%; text-align: center; }
-    .nav-item.active { color: var(--accent-cyan); font-weight: 700; }
-    .nav-icon { font-size: 20px; }
+    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-sub); font-size: 11px; cursor: pointer; width: 20%; text-align: center; }
+    .nav-item.active { color: var(--accent-gold); font-weight: 700; }
+    .nav-icon { font-size: 18px; }
   </style>
 </head>
 <body>
@@ -79,30 +86,27 @@
         <div class="user-tag" id="user-display-name">@User</div>
       </div>
     </div>
-    <!-- Wallet Button -->
     <div id="ton-connect-btn"></div>
   </div>
 
-  <!-- 1. MINING TAB -->
+  <!-- TAB 1: MINING -->
   <div id="tab-mining" class="tab-content active">
-    <!-- Total Balance Card -->
     <div class="card">
       <div class="card-title">
         <span>💼 In-app balance</span>
-        <span style="color: #2ed573;">TON Jetton Verified</span>
+        <span style="color: #2ed573;">Verified</span>
       </div>
       <div class="balance-val"><span id="total-balance">0.0000</span> <span>IO</span></div>
     </div>
 
-    <!-- Active Mining Card -->
     <div class="card">
       <div class="card-title">
-        <span style="color: #00d2ff;">● Active Cloud Mining</span>
+        <span style="color: var(--accent-cyan);">● Active Cloud Mining</span>
         <span>Cycle: 4h</span>
       </div>
       <div class="mining-val">+<span id="mined-balance">0.0000</span> <span>IO</span></div>
       
-      <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-sub);">
+      <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-sub);">
         <span>Storage Progress</span>
         <span id="mining-timer">04:00:00</span>
       </div>
@@ -111,113 +115,149 @@
       </div>
 
       <div class="stats-grid">
-        <div class="stat-box">
-          <div class="stat-label">Per hour</div>
-          <div class="stat-val">2.5 IO</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">Per day</div>
-          <div class="stat-val">~60 IO</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">Boost</div>
-          <div class="stat-val" style="color: #00d2ff;">x1.0</div>
-        </div>
+        <div class="stat-box"><div class="stat-label">Per hour</div><div class="stat-val">2.5 IO</div></div>
+        <div class="stat-box"><div class="stat-label">Per day</div><div class="stat-val">~60 IO</div></div>
+        <div class="stat-box"><div class="stat-label">Boost</div><div class="stat-val" style="color: var(--accent-cyan);">x1.0</div></div>
       </div>
 
       <button id="mining-btn" class="btn-main btn-mining">⛏️ Mining Active...</button>
     </div>
   </div>
 
-  <!-- 2. EXCHANGE TAB -->
-  <div id="tab-exchange" class="tab-content">
+  <!-- TAB 2: SHOP & P2P (STON.FI LIVE SWAP) -->
+  <div id="tab-shop" class="tab-content">
     <div class="card">
-      <h3 style="margin-bottom: 12px;">STON.fi DEX Exchange</h3>
-      <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 16px;">Swap GRAM / TON for Infinite Orbit (IO) tokens instantly.</p>
-      <a href="https://app.ston.fi/swap?ft=EQC47093oX5Xhb0xuk2lCr2RhS8rj-vul61u4W2UH58rwL_l&tt=EQDliaNChKznSyglMpfPGetHAHXbSkoQ2XEjmMifVgTK9HkE" target="_blank" style="text-decoration: none;">
-        <button class="btn-main btn-claim">↗️ Open on STON.fi DEX</button>
-      </a>
-    </div>
-  </div>
-
-  <!-- 3. TASKS / QUESTS TAB -->
-  <div id="tab-tasks" class="tab-content">
-    <div class="card">
-      <h3 style="margin-bottom: 14px;">Quests & Daily Tasks</h3>
-      <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-top: 1px solid var(--card-border);">
-        <div>
-          <div style="font-size: 14px; font-weight: 600;">Join IO Official Channel</div>
-          <div style="font-size: 12px; color: #00d2ff;">+50 IO</div>
+      <div class="card-title">
+        <span style="font-weight: 700; color: #fff;">Shop & P2P</span>
+        <span style="color: #2ed573; font-size: 11px;">● STON.fi Pool</span>
+      </div>
+      <div style="font-size: 12px; color: var(--text-sub); margin-bottom: 12px;">Buy IO tokens with TON at dynamic market rate.</div>
+      
+      <div style="background: #08111e; border: 1px solid var(--card-border); border-radius: 12px; padding: 12px; margin-bottom: 14px;">
+        <div style="font-size: 11px; color: var(--text-sub);">Current Rate</div>
+        <div style="font-size: 18px; font-weight: 800; color: var(--accent-gold); margin-top: 4px;">
+          1 TON ≈ <span id="rate-display">5,000</span> IO
         </div>
-        <a href="https://t.me/IO_Mining_bot" target="_blank"><button class="btn-main btn-claim" style="padding: 6px 14px; font-size: 12px; width: auto;">Start</button></a>
+      </div>
+
+      <div style="font-size: 12px; color: var(--text-sub);">Select TON Amount</div>
+      <div class="amount-grid">
+        <div class="amount-btn" onclick="selectTon(0.5, this)">0.5</div>
+        <div class="amount-btn active" onclick="selectTon(1, this)">1 TON</div>
+        <div class="amount-btn" onclick="selectTon(5, this)">5</div>
+        <div class="amount-btn" onclick="selectTon(10, this)">10</div>
+      </div>
+
+      <div style="background: #08111e; border: 1px solid var(--card-border); border-radius: 12px; padding: 12px; margin-bottom: 14px; font-size: 12px;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+          <span style="color: var(--text-sub);">You receive on wallet:</span>
+          <span style="font-weight: 700; color: #2ed573;" id="receive-io">+5,000 IO</span>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: var(--text-sub);">Service Fee:</span>
+          <span>+0.05 TON</span>
+        </div>
+      </div>
+
+      <button id="buy-ton-btn" class="btn-main btn-gold" onclick="sendTonTx()">Buy via TON Connect (1.05 TON)</button>
+      <div style="text-align: center; margin-top: 10px;">
+        <a href="https://app.ston.fi/swap?ft=EQC47093oX5Xhb0xuk2lCr2RhS8rj-vul61u4W2UH58rwL_l&tt=EQDliaNChKznSyglMpfPGetHAHXbSkoQ2XEjmMifVgTK9HkE" target="_blank" style="color: var(--text-sub); font-size: 12px; text-decoration: none;">↗️ Open on STON.fi DEX</a>
       </div>
     </div>
   </div>
 
-  <!-- 4. FRIENDS / REFERRALS TAB -->
-  <div id="tab-friends" class="tab-content">
+  <!-- TAB 3: DAILY REWARDS & TASKS -->
+  <div id="tab-tasks" class="tab-content">
     <div class="card">
-      <h3 style="margin-bottom: 8px;">Invite Friends</h3>
-      <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 16px;">Get 5% from all your friends' mining claims!</p>
-      <button class="btn-main btn-claim" onclick="shareRef()">🔗 Share Invite Link</button>
+      <div class="card-title">
+        <span style="font-weight: 700; color: #fff;">30-Day Mining Streak</span>
+        <span style="color: var(--accent-gold);" id="streak-header">Day 1</span>
+      </div>
+
+      <div class="streak-grid" id="streak-days-container"></div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px;">
+        <div style="font-size: 12px; color: var(--text-sub);">Next reward in: <span id="streak-timer" style="color: #fff; font-weight: 700;">00:00:00</span></div>
+        <button id="claim-streak-btn" class="btn-main btn-gold" style="width: auto; padding: 8px 16px; font-size: 12px;" onclick="claimDailyReward()">Claim</button>
+      </div>
+    </div>
+
+    <!-- Social Task -->
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <div style="font-size: 14px; font-weight: 700;">Join IO Official Channel</div>
+          <div style="font-size: 12px; color: var(--accent-cyan);">+50 IO</div>
+        </div>
+        <button id="channel-task-btn" class="btn-main btn-claim" style="width: auto; padding: 8px 18px; font-size: 12px;" onclick="doChannelTask()">Start</button>
+      </div>
     </div>
   </div>
 
-  <!-- 5. WITHDRAW TAB -->
-  <div id="tab-withdraw" class="tab-content">
+  <!-- TAB 4: FRIENDS (WORKING REFERRALS) -->
+  <div id="tab-friends" class="tab-content">
     <div class="card">
-      <h3 style="margin-bottom: 8px;">Withdraw to TON Wallet</h3>
-      <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 16px;">Connect your TON wallet to withdraw your mined IO tokens.</p>
-      <button class="btn-main btn-mining" style="cursor: not-allowed;">Withdrawals open after listing</button>
+      <h3 style="margin-bottom: 6px;">Invite Friends</h3>
+      <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 14px;">Earn 5% from all your friends' mining claims!</p>
+      
+      <div style="background: #08111e; border: 1px solid var(--card-border); border-radius: 12px; padding: 12px; margin-bottom: 12px;">
+        <div style="font-size: 11px; color: var(--text-sub); margin-bottom: 4px;">Your Invite Link</div>
+        <div id="ref-link-display" style="font-size: 12px; color: var(--accent-cyan); word-break: break-all;">Generating link...</div>
+      </div>
+
+      <button class="btn-main btn-gold" onclick="shareRefTelegram()">🚀 Invite a Friend</button>
+      <button class="btn-main btn-mining" style="margin-top: 8px;" onclick="copyRefLink()">📋 Copy Link</button>
+    </div>
+  </div>
+
+  <!-- TAB 5: WALLET -->
+  <div id="tab-wallet" class="tab-content">
+    <div class="card">
+      <h3 style="margin-bottom: 6px;">TON Wallet Status</h3>
+      <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 14px;" id="wallet-status-text">Wallet not connected. Connect above to receive IO Jettons.</p>
+      <button class="btn-main btn-mining" style="cursor: not-allowed;">Withdrawals open after LP Launch</button>
     </div>
   </div>
 </div>
 
-<!-- Bottom Navigation Bar -->
+<!-- Bottom Navigation -->
 <div class="nav-bar">
-  <div class="nav-item active" onclick="switchTab('tab-mining', this)">
-    <div class="nav-icon">⛏️</div>
-    <div>Mining</div>
-  </div>
-  <div class="nav-item" onclick="switchTab('tab-exchange', this)">
-    <div class="nav-icon">🏪</div>
-    <div>Exchange</div>
-  </div>
-  <div class="nav-item" onclick="switchTab('tab-tasks', this)">
-    <div class="nav-icon">📜</div>
-    <div>Quests</div>
-  </div>
-  <div class="nav-item" onclick="switchTab('tab-friends', this)">
-    <div class="nav-icon">👥</div>
-    <div>Friends</div>
-  </div>
-  <div class="nav-item" onclick="switchTab('tab-withdraw', this)">
-    <div class="nav-icon">👛</div>
-    <div>Withdraw</div>
-  </div>
+  <div class="nav-item active" onclick="switchTab('tab-mining', this)"><div class="nav-icon">⛏️</div><div>Mining</div></div>
+  <div class="nav-item" onclick="switchTab('tab-shop', this)"><div class="nav-icon">🛍️</div><div>Shop</div></div>
+  <div class="nav-item" onclick="switchTab('tab-tasks', this)"><div class="nav-icon">🎁</div><div>Rewards</div></div>
+  <div class="nav-item" onclick="switchTab('tab-friends', this)"><div class="nav-icon">👥</div><div>Friends</div></div>
+  <div class="nav-item" onclick="switchTab('tab-wallet', this)"><div class="nav-icon">👛</div><div>Wallet</div></div>
 </div>
 
 <script>
-  // 1. Telegram WebApp Integration
+  // 1. Telegram WebApp Setup
   const tg = window.Telegram.WebApp;
   tg.ready();
   tg.expand();
+
+  let telegramUserId = "user";
   if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+    telegramUserId = tg.initDataUnsafe.user.id;
     document.getElementById('user-display-name').innerText = '@' + (tg.initDataUnsafe.user.username || tg.initDataUnsafe.user.first_name);
   }
 
-  // 2. TON Connect UI Initializer (Real TON Wallet Connection)
+  // 2. TON Connect UI
   const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
     manifestUrl: 'https://io-mining-app.netlify.app/tonconnect-manifest.json',
     buttonRootId: 'ton-connect-btn'
   });
 
-  // 3. Persistent Mining Logic (Cycle: 4 Hours = 14400 Seconds)
-  const CYCLE_HOURS = 4;
-  const CYCLE_SECONDS = CYCLE_HOURS * 3600;
-  const RATE_PER_SEC = 2.5 / 3600; // 2.5 IO per hour
+  tonConnectUI.onStatusChange(wallet => {
+    if (wallet) {
+      document.getElementById('wallet-status-text').innerText = "Connected: " + wallet.account.address.slice(0, 6) + "..." + wallet.account.address.slice(-4);
+    } else {
+      document.getElementById('wallet-status-text').innerText = "Wallet not connected. Connect above to receive IO Jettons.";
+    }
+  });
 
-  // LocalStorage မှ ဒေတာ အဟောင်း ပြန်ယူခြင်း (Reload လုပ်လည်း မပျောက်စေရန်)
+  // 3. Persistent Mining Logic
+  const CYCLE_SECONDS = 4 * 3600;
+  const RATE_PER_SEC = 2.5 / 3600;
   let totalBalance = parseFloat(localStorage.getItem('io_total_balance')) || 0;
   let miningStart = parseInt(localStorage.getItem('io_mining_start')) || Date.now();
   localStorage.setItem('io_mining_start', miningStart);
@@ -227,11 +267,10 @@
     let elapsedSec = Math.floor((now - miningStart) / 1000);
 
     if (elapsedSec >= CYCLE_SECONDS) {
-      // ၄ နာရီ ပြည့်သွားပါက Claim ခလုတ် ပေါ်မည်
       elapsedSec = CYCLE_SECONDS;
       const finalClaim = elapsedSec * RATE_PER_SEC;
       document.getElementById('mined-balance').innerText = finalClaim.toFixed(4);
-      document.getElementById('mining-timer').innerText = "00:00:00 (Storage Full)";
+      document.getElementById('mining-timer').innerText = "00:00:00 (Ready to claim)";
       document.getElementById('progress-fill').style.width = "100%";
 
       const mBtn = document.getElementById('mining-btn');
@@ -239,7 +278,6 @@
       mBtn.innerText = "Claim " + finalClaim.toFixed(4) + " IO";
       mBtn.onclick = claimTokens;
     } else {
-      // ဆက်လက် Mine နေဆဲ အခြေအနေ
       const mined = elapsedSec * RATE_PER_SEC;
       document.getElementById('mined-balance').innerText = mined.toFixed(4);
 
@@ -255,36 +293,149 @@
       mBtn.innerText = "⛏️ Mining Active...";
       mBtn.onclick = null;
     }
-
     document.getElementById('total-balance').innerText = totalBalance.toFixed(4);
   }
 
   function claimTokens() {
-    const claimAmount = CYCLE_SECONDS * RATE_PER_SEC;
-    totalBalance += claimAmount;
-    miningStart = Date.now(); // အသစ်ပြန်စရန်
+    totalBalance += (CYCLE_SECONDS * RATE_PER_SEC);
+    miningStart = Date.now();
     localStorage.setItem('io_total_balance', totalBalance);
     localStorage.setItem('io_mining_start', miningStart);
     updateMining();
   }
-
-  // 1 စက္ကန့်တစ်ခါ အမြဲ update လုပ်ခြင်း
   setInterval(updateMining, 1000);
   updateMining();
 
-  // 4. Tab Navigation (အောက်ခြေ Menu ခလုတ်များ အလုပ်လုပ်စေရန်)
-  function switchTab(tabId, el) {
-    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-    document.getElementById(tabId).classList.add('active');
-    el.classList.add('active');
+  // 4. Shop & TON Connect Swap Logic
+  let selectedTonAmount = 1;
+  const IO_PER_TON = 5000;
+
+  function selectTon(amount, btn) {
+    selectedTonAmount = amount;
+    document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    
+    const ioReceived = (amount * IO_PER_TON).toLocaleString();
+    document.getElementById('receive-io').innerText = `+${ioReceived} IO`;
+    document.getElementById('buy-ton-btn').innerText = `Buy via TON Connect (${(amount + 0.05).toFixed(2)} TON)`;
   }
 
-  // 5. Referral Sharing
-  function shareRef() {
-    const text = encodeURIComponent("Join Infinite Orbit (IO) and start cloud mining with me!");
-    const url = encodeURIComponent("https://t.me/IO_Mining_bot");
-    window.open(`https://t.me/share/url?url=${url}&text=${text}`);
+  async function sendTonTx() {
+    if (!tonConnectUI.connected) {
+      tonConnectUI.openModal();
+      return;
+    }
+    const totalTon = (selectedTonAmount + 0.05).toFixed(2);
+    const nanoTon = Math.floor(totalTon * 1e9).toString();
+    
+    const transaction = {
+      validUntil: Math.floor(Date.now() / 1000) + 300,
+      messages: [
+        {
+          address: "EQDliaNChKznSyglMpfPGetHAHXbSkoQ2XEjmMifVgTK9HkE", // IO LP / Merchant Contract
+          amount: nanoTon
+        }
+      ]
+    };
+
+    try {
+      await tonConnectUI.sendTransaction(transaction);
+      alert("Transaction sent! Your IO tokens will arrive in your wallet.");
+    } catch (e) {
+      alert("Transaction cancelled or failed: " + e.message);
+    }
+  }
+
+  // 5. 24-Hour Streak Daily Rewards Logic
+  let streakDay = parseInt(localStorage.getItem('io_streak_day')) || 1;
+  let lastClaimTime = parseInt(localStorage.getItem('io_streak_last_claim')) || 0;
+  const STREAK_INTERVAL = 24 * 3600 * 1000; // 24 Hours
+
+  function renderStreakGrid() {
+    const container = document.getElementById('streak-days-container');
+    container.innerHTML = "";
+    for (let i = 1; i <= 10; i++) {
+      const dayDiv = document.createElement('div');
+      dayDiv.className = `streak-day ${i < streakDay ? 'claimed' : (i === streakDay ? 'current' : '')}`;
+      dayDiv.innerHTML = `<div class="day-num">D${i}</div><div class="day-reward">+${i * 100}</div>`;
+      container.appendChild(dayDiv);
+    }
+    document.getElementById('streak-header').innerText = `Day ${streakDay} / 30`;
+  }
+
+  function updateStreakTimer() {
+    const now = Date.now();
+    const elapsed = now - lastClaimTime;
+    const btn = document.getElementById('claim-streak-btn');
+
+    if (elapsed >= STREAK_INTERVAL || lastClaimTime === 0) {
+      document.getElementById('streak-timer').innerText = "Ready to claim!";
+      btn.style.display = "block";
+    } else {
+      const remain = Math.floor((STREAK_INTERVAL - elapsed) / 1000);
+      const h = String(Math.floor(remain / 3600)).padStart(2, '0');
+      const m = String(Math.floor((remain % 3600) / 60)).padStart(2, '0');
+      const s = String(remain % 60).padStart(2, '0');
+      document.getElementById('streak-timer').innerText = `${h}:${m}:${s}`;
+      btn.style.display = "none";
+    }
+  }
+
+  function claimDailyReward() {
+    const reward = streakDay * 100;
+    totalBalance += reward;
+    streakDay = streakDay >= 30 ? 1 : streakDay + 1;
+    lastClaimTime = Date.now();
+
+    localStorage.setItem('io_total_balance', totalBalance);
+    localStorage.setItem('io_streak_day', streakDay);
+    localStorage.setItem('io_streak_last_claim', lastClaimTime);
+
+    renderStreakGrid();
+    updateStreakTimer();
+    updateMining();
+    alert(`Claimed +${reward} IO daily reward!`);
+  }
+  renderStreakGrid();
+  setInterval(updateStreakTimer, 1000);
+  updateStreakTimer();
+
+  // Social Task
+  function doChannelTask() {
+    window.open("https://t.me/IO_Mining_bot", "_blank");
+    if (!localStorage.getItem('io_task_channel_done')) {
+      setTimeout(() => {
+        totalBalance += 50;
+        localStorage.setItem('io_total_balance', totalBalance);
+        localStorage.setItem('io_task_channel_done', 'true');
+        document.getElementById('channel-task-btn').innerText = "Claimed ✓";
+        document.getElementById('channel-task-btn').style.background = "#2ed573";
+        updateMining();
+      }, 3000);
+    }
+  }
+
+  // 6. Real Referral Link & Sharing
+  const myRefUrl = `https://t.me/IO_Mining_bot?start=ref_${telegramUserId}`;
+  document.getElementById('ref-link-display').innerText = myRefUrl;
+
+  function shareRefTelegram() {
+    const text = encodeURIComponent("⛏️ Mine Infinite Orbit (IO) tokens with me 24/7 on TON! Start here:");
+    window.open(`https://t.me/share/url?url=${encodeURIComponent(myRefUrl)}&text=${text}`);
+  }
+
+  function copyRefLink() {
+    navigator.clipboard.writeText(myRefUrl).then(() => {
+      alert("Referral link copied to clipboard!");
+    });
+  }
+
+  // Tab Navigation
+  function switchTab(tabId, el) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    el.classList.add('active');
   }
 </script>
 </body>
