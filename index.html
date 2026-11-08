@@ -29,7 +29,7 @@
     .user-name { font-size: 15px; font-weight: 700; }
     .user-tag { font-size: 12px; color: var(--text-sub); }
 
-    .lvl-badge { background: #132742; border: 1px solid var(--accent-cyan); color: var(--accent-cyan); font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+    .lvl-badge { background: #132742; border: 1px solid var(--accent-gold); color: var(--accent-gold); font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
 
     /* Cards */
     .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 18px; margin-bottom: 14px; position: relative; }
@@ -37,10 +37,10 @@
     .balance-val { font-size: 30px; font-weight: 800; }
     .balance-val span { font-size: 16px; color: var(--accent-cyan); }
 
-    /* Level / League Card */
+    /* Level Banner */
     .league-card { background: #0c182b; border: 1px solid #1e3557; border-radius: 14px; padding: 12px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
     .league-info { display: flex; align-items: center; gap: 10px; }
-    .league-icon { width: 36px; height: 36px; background: #f59e0b22; border: 1px solid var(--accent-gold); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--accent-gold); font-size: 12px; }
+    .league-icon { width: 38px; height: 38px; background: #f59e0b22; border: 1px solid var(--accent-gold); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--accent-gold); font-size: 12px; }
 
     /* Mining */
     .mining-val { font-size: 26px; font-weight: 800; color: var(--accent-cyan); margin: 6px 0; }
@@ -70,11 +70,13 @@
     .btn-gold { background: linear-gradient(90deg, #f59e0b, #d97706); color: #000; font-weight: 800; }
     .btn-mining { background: #10344d; color: var(--accent-cyan); }
 
-    /* Modal */
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 200; justify-content: center; align-items: flex-end; }
+    /* Modal (500 Levels System) */
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 200; justify-content: center; align-items: flex-end; }
     .modal.active { display: flex; }
-    .modal-content { background: #0e1726; width: 100%; max-width: 480px; border-radius: 24px 24px 0 0; padding: 20px; border-top: 1px solid var(--card-border); max-height: 80vh; overflow-y: auto; }
-    .lvl-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #1a273f; font-size: 13px; }
+    .modal-content { background: #0c1421; width: 100%; max-width: 480px; border-radius: 24px 24px 0 0; padding: 20px; border-top: 1px solid var(--card-border); max-height: 85vh; overflow-y: auto; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .lvl-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #162438; font-size: 13px; }
+    .lvl-row.active-user { background: #1f1b0a; border-radius: 8px; padding: 10px 8px; border: 1px solid var(--accent-gold); margin: 4px 0; }
 
     /* Tabs & Nav */
     .tab-content { display: none; }
@@ -105,7 +107,6 @@
 
   <!-- TAB 1: MINING -->
   <div id="tab-mining" class="tab-content active">
-    <!-- In-App Balance -->
     <div class="card">
       <div class="card-title">
         <span>💼 In-app balance</span>
@@ -114,7 +115,6 @@
       <div class="balance-val"><span id="total-balance">0.0000</span> <span>IO</span></div>
     </div>
 
-    <!-- Active Mining Card -->
     <div class="card">
       <div class="card-title">
         <span style="color: var(--accent-cyan);">● Active Cloud Mining</span>
@@ -131,21 +131,21 @@
       </div>
 
       <div class="stats-grid">
-        <div class="stat-box"><div class="stat-label">Per hour</div><div class="stat-val" id="speed-display">2.5 IO</div></div>
-        <div class="stat-box"><div class="stat-label">Per day</div><div class="stat-val" id="day-display">~60 IO</div></div>
-        <div class="stat-box"><div class="stat-label">Boost</div><div class="stat-val" style="color: var(--accent-cyan);" id="boost-display">x1.0</div></div>
+        <div class="stat-box"><div class="stat-label">Per hour</div><div class="stat-val" id="speed-display">0.50 IO</div></div>
+        <div class="stat-box"><div class="stat-label">Per day</div><div class="stat-val" id="day-display">~12 IO</div></div>
+        <div class="stat-box"><div class="stat-label">Boost</div><div class="stat-val" style="color: var(--accent-cyan);" id="boost-display">x1.00</div></div>
       </div>
 
       <button id="mining-btn" class="btn-main btn-mining">⛏️ Mining Active...</button>
     </div>
 
-    <!-- League / Level Status Box (Wallet Hold) -->
+    <!-- 500 Levels Banner -->
     <div class="league-card" onclick="openLvlModal()">
       <div class="league-info">
         <div class="league-icon" id="league-lvl-box">LV 1</div>
         <div>
-          <div style="font-size: 13px; font-weight: 700;" id="league-title">Orbit Bronze League</div>
-          <div style="font-size: 11px; color: var(--text-sub);">Wallet hold: <span id="wallet-hold-text" style="color: var(--accent-cyan);">0 IO</span></div>
+          <div style="font-size: 13px; font-weight: 700;" id="league-title">Orbit Bronze League (500 Levels)</div>
+          <div style="font-size: 11px; color: var(--text-sub);">Wallet hold: <span id="wallet-hold-text" style="color: var(--accent-gold);">0 IO</span></div>
         </div>
       </div>
       <div style="font-size: 18px; color: var(--text-sub);">›</div>
@@ -210,7 +210,7 @@
       <div style="display: flex; justify-content: space-between; align-items: center;">
         <div>
           <div style="font-size: 14px; font-weight: 700;">Join IO Official Channel</div>
-          <div style="font-size: 12px; color: var(--accent-cyan);">+50 IO</div>
+          <div style="font-size: 12px; color: var(--accent-cyan);">+10 IO</div>
         </div>
         <button id="channel-task-btn" class="btn-main btn-claim" style="width: auto; padding: 8px 18px; font-size: 12px;" onclick="doChannelTask()">Start</button>
       </div>
@@ -235,16 +235,16 @@
     <div class="card">
       <div class="card-title">
         <span style="font-weight: 700; color: #fff;">My Referrals (2)</span>
-        <span style="color: var(--accent-cyan);">Total Earned: +12.5 IO</span>
+        <span style="color: var(--accent-cyan);">Total Earned: +2.5 IO</span>
       </div>
       <div>
         <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--card-border); font-size: 13px;">
           <div><b>@member_ton</b><div style="font-size: 11px; color: var(--text-sub);">Active Mining</div></div>
-          <div style="color: #2ed573; font-weight: 700;">+6.25 IO</div>
+          <div style="color: #2ed573; font-weight: 700;">+1.25 IO</div>
         </div>
         <div style="display: flex; justify-content: space-between; padding: 10px 0; font-size: 13px;">
           <div><b>@ton_trader24</b><div style="font-size: 11px; color: var(--text-sub);">Active Mining</div></div>
-          <div style="color: #2ed573; font-weight: 700;">+6.25 IO</div>
+          <div style="color: #2ed573; font-weight: 700;">+1.25 IO</div>
         </div>
       </div>
     </div>
@@ -254,51 +254,34 @@
   <div id="tab-wallet" class="tab-content">
     <div class="card">
       <h3 style="margin-bottom: 6px;">TON Wallet Status</h3>
-      <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 14px;" id="wallet-status-text">Connect wallet to verify your IO holdings and unlock higher Mining Levels.</p>
+      <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 14px;" id="wallet-status-text">Connect wallet to verify your IO holdings and unlock higher Mining Levels (up to Lvl 500).</p>
       <button class="btn-main btn-mining" style="cursor: not-allowed;">Direct Airdrop to Connected Wallet</button>
     </div>
   </div>
 </div>
 
-<!-- Level Modal (LootVault Style) -->
+<!-- 500 Levels System Modal (LootVault Style) -->
 <div class="modal" id="lvl-modal">
   <div class="modal-content">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+    <div class="modal-header">
       <h3 style="color: var(--accent-gold);">🏆 500 Levels System</h3>
-      <span onclick="closeLvlModal()" style="font-size: 22px; cursor: pointer; color: var(--text-sub);">&times;</span>
+      <span onclick="closeLvlModal()" style="font-size: 24px; cursor: pointer; color: var(--text-sub);">&times;</span>
     </div>
-    
-    <div style="background: #08111e; border: 1px solid var(--card-border); border-radius: 14px; padding: 14px; margin-bottom: 16px;">
+
+    <!-- Current User Status Card -->
+    <div style="background: #08111e; border: 1px solid var(--accent-gold); border-radius: 14px; padding: 14px; margin-bottom: 16px;">
       <div style="font-size: 11px; color: var(--text-sub);">Your Current Status:</div>
       <div style="display: flex; justify-content: space-between; margin-top: 6px;">
-        <div>Level: <b id="modal-status-lvl" style="color: var(--accent-gold);">Lvl 1</b></div>
-        <div>Speed: <b id="modal-status-speed" style="color: var(--accent-cyan);">2.5/h</b></div>
-        <div>Boost: <b id="modal-status-boost" style="color: #2ed573;">x1.0</b></div>
+        <div>Level: <b id="modal-status-lvl" style="color: var(--accent-gold);">Lvl 1 / 500</b></div>
+        <div>Speed: <b id="modal-status-speed" style="color: var(--accent-cyan);">0.50/h</b></div>
+        <div>Boost: <b id="modal-status-boost" style="color: #2ed573;">x1.00</b></div>
       </div>
     </div>
 
-    <div style="font-size: 12px; color: var(--text-sub); margin-bottom: 8px;">Hold IO in your connected TON wallet to automatically level up:</div>
+    <div style="font-size: 12px; color: var(--text-sub); margin-bottom: 8px;">Hold IO tokens in your connected TON wallet to advance up to 500 Levels:</div>
 
-    <div class="lvl-row">
-      <div><b>Lvl 1</b> (Bronze)<div style="font-size: 11px; color: var(--text-sub);">2.5 IO/h • x1.0</div></div>
-      <div style="color: var(--accent-gold); font-weight: 700;">0 IO Hold</div>
-    </div>
-    <div class="lvl-row">
-      <div><b>Lvl 2</b> (Silver)<div style="font-size: 11px; color: var(--text-sub);">3.25 IO/h • x1.3</div></div>
-      <div style="color: var(--accent-gold); font-weight: 700;">100 IO Hold</div>
-    </div>
-    <div class="lvl-row">
-      <div><b>Lvl 3</b> (Gold)<div style="font-size: 11px; color: var(--text-sub);">4.25 IO/h • x1.7</div></div>
-      <div style="color: var(--accent-gold); font-weight: 700;">500 IO Hold</div>
-    </div>
-    <div class="lvl-row">
-      <div><b>Lvl 4</b> (Platinum)<div style="font-size: 11px; color: var(--text-sub);">5.75 IO/h • x2.3</div></div>
-      <div style="color: var(--accent-gold); font-weight: 700;">1,500 IO Hold</div>
-    </div>
-    <div class="lvl-row">
-      <div><b>Lvl 5</b> (Diamond)<div style="font-size: 11px; color: var(--text-sub);">7.5 IO/h • x3.0</div></div>
-      <div style="color: var(--accent-gold); font-weight: 700;">3,000 IO Hold</div>
-    </div>
+    <!-- Dynamically Rendered Milestone Levels (1 to 500) -->
+    <div id="modal-levels-list"></div>
 
     <button class="btn-main btn-gold" style="margin-top: 16px;" onclick="closeLvlModal()">Got it</button>
   </div>
@@ -324,32 +307,91 @@
     document.getElementById('user-display-name').innerText = '@' + (tg.initDataUnsafe.user.username || tg.initDataUnsafe.user.first_name);
   }
 
-  // 1. Level System Based on Wallet Hold
-  let userLvl = 1;
-  let userBoost = 1.0;
-  let baseRate = 2.5; // Base IO per hour
+  // 1. 500 Levels Math & Hold Milestones (Matching LootVault Exact Curve)
+  const LEVEL_TIERS = [
+    { lvl: 1, hold: 58, speed: 0.5, boost: 1.0 },
+    { lvl: 2, hold: 116, speed: 0.65, boost: 1.3 },
+    { lvl: 3, hold: 533, speed: 0.85, boost: 1.7 },
+    { lvl: 4, hold: 1300, speed: 1.15, boost: 2.3 },
+    { lvl: 5, hold: 2447, speed: 1.5, boost: 3.0 },
+    { lvl: 6, hold: 3999, speed: 1.9, boost: 3.8 },
+    { lvl: 7, hold: 5972, speed: 2.35, boost: 4.7 },
+    { lvl: 8, hold: 8383, speed: 2.8, boost: 5.6 },
+    { lvl: 9, hold: 11245, speed: 3.3, boost: 6.6 },
+    { lvl: 10, hold: 14572, speed: 3.85, boost: 7.7 },
+    { lvl: 15, hold: 38518, speed: 7.05, boost: 14.1 },
+    { lvl: 20, hold: 75411, speed: 10.8, boost: 21.6 },
+    { lvl: 25, hold: 126079, speed: 15.15, boost: 30.3 },
+    { lvl: 30, hold: 191185, speed: 19.95, boost: 39.9 },
+    { lvl: 40, hold: 366877, speed: 30.85, boost: 61.7 },
+    { lvl: 50, hold: 606192, speed: 43.6, boost: 87.2 },
+    { lvl: 60, hold: 912123, speed: 56.95, boost: 113.9 },
+    { lvl: 70, hold: 1287202, speed: 71.9, boost: 143.8 },
+    { lvl: 80, hold: 1733638, speed: 87.95, boost: 175.9 },
+    { lvl: 90, hold: 2253392, speed: 105.1, boost: 210.2 },
+    { lvl: 100, hold: 2848238, speed: 123.2, boost: 246.4 },
+    { lvl: 150, hold: 6867000, speed: 225.0, boost: 450.0 },
+    { lvl: 200, hold: 13232916, speed: 350.0, boost: 700.3 },
+    { lvl: 250, hold: 21667927, speed: 489.9, boost: 979.8 },
+    { lvl: 300, hold: 32408238, speed: 644.5, boost: 1288.9 },
+    { lvl: 350, hold: 45540180, speed: 812.5, boost: 1625.0 },
+    { lvl: 400, hold: 61139118, speed: 993.2, boost: 1986.4 },
+    { lvl: 450, hold: 79272171, speed: 1185.5, boost: 2371.1 },
+    { lvl: 500, hold: 100000000, speed: 1388.9, boost: 2777.8 }
+  ];
 
-  function updateLevelByHold(holdAmount) {
-    if (holdAmount >= 3000) { userLvl = 5; userBoost = 3.0; }
-    else if (holdAmount >= 1500) { userLvl = 4; userBoost = 2.3; }
-    else if (holdAmount >= 500) { userLvl = 3; userBoost = 1.7; }
-    else if (holdAmount >= 100) { userLvl = 2; userBoost = 1.3; }
-    else { userLvl = 1; userBoost = 1.0; }
+  let currentLevel = 1;
+  let currentSpeed = 0.50; // Per hour
+  let currentBoost = 1.00;
 
-    const speed = (baseRate * userBoost).toFixed(2);
-    document.getElementById('top-lvl-text').innerText = `Lvl ${userLvl}`;
-    document.getElementById('league-lvl-box').innerText = `LV ${userLvl}`;
-    document.getElementById('speed-display').innerText = `${speed} IO`;
-    document.getElementById('day-display').innerText = `~${Math.round(speed * 24)} IO`;
-    document.getElementById('boost-display').innerText = `x${userBoost.toFixed(1)}`;
-    document.getElementById('wallet-hold-text').innerText = `${holdAmount} IO`;
+  function calculateLevelByHold(hold) {
+    let resolved = LEVEL_TIERS[0];
+    for (let i = LEVEL_TIERS.length - 1; i >= 0; i--) {
+      if (hold >= LEVEL_TIERS[i].hold) {
+        resolved = LEVEL_TIERS[i];
+        break;
+      }
+    }
+    currentLevel = resolved.lvl;
+    currentSpeed = resolved.speed;
+    currentBoost = resolved.boost;
 
-    document.getElementById('modal-status-lvl').innerText = `Lvl ${userLvl}`;
-    document.getElementById('modal-status-speed').innerText = `${speed}/h`;
-    document.getElementById('modal-status-boost').innerText = `x${userBoost.toFixed(1)}`;
+    // UI Updates
+    document.getElementById('top-lvl-text').innerText = `Lvl ${currentLevel}`;
+    document.getElementById('league-lvl-box').innerText = `LV ${currentLevel}`;
+    document.getElementById('speed-display').innerText = `${currentSpeed.toFixed(2)} IO`;
+    document.getElementById('day-display').innerText = `~${Math.round(currentSpeed * 24)} IO`;
+    document.getElementById('boost-display').innerText = `x${currentBoost.toFixed(2)}`;
+    document.getElementById('wallet-hold-text').innerText = `${hold.toLocaleString()} IO`;
+
+    document.getElementById('modal-status-lvl').innerText = `Lvl ${currentLevel} / 500`;
+    document.getElementById('modal-status-speed').innerText = `${currentSpeed.toFixed(2)}/h`;
+    document.getElementById('modal-status-boost').innerText = `x${currentBoost.toFixed(2)}`;
+    renderLevelModalRows();
   }
 
-  // 2. TON Connect & Real Wallet Hold Checking
+  function renderLevelModalRows() {
+    const container = document.getElementById('modal-levels-list');
+    container.innerHTML = "";
+    LEVEL_TIERS.forEach(item => {
+      const isUser = item.lvl === currentLevel;
+      const row = document.createElement('div');
+      row.className = `lvl-row ${isUser ? 'active-user' : ''}`;
+      row.innerHTML = `
+        <div>
+          <b>Lvl ${item.lvl} ${isUser ? '<span style="background:var(--accent-gold);color:#000;padding:1px 5px;border-radius:4px;font-size:10px;font-weight:800;">YOU</span>' : ''}</b>
+          <div style="font-size: 11px; color: var(--text-sub);">${item.speed.toFixed(1)} IO/h • x${item.boost.toFixed(1)}</div>
+        </div>
+        <div style="text-align: right;">
+          <div style="color: var(--accent-gold); font-weight: 700;">${item.hold.toLocaleString()} IO</div>
+          <div style="font-size: 10px; color: #2ed573;">+${Math.round(item.speed * 24).toLocaleString()} / day</div>
+        </div>
+      `;
+      container.appendChild(row);
+    });
+  }
+
+  // 2. TON Connect & Wallet Hold Detection
   const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
     manifestUrl: 'https://io-mining-app.netlify.app/tonconnect-manifest.json',
     buttonRootId: 'ton-connect-btn'
@@ -359,8 +401,6 @@
     if (wallet) {
       const addr = wallet.account.address;
       document.getElementById('wallet-status-text').innerText = "Connected: " + addr.slice(0, 6) + "..." + addr.slice(-4);
-      
-      // TonAPI မှတစ်ဆင့် User ရဲ့ အပြင် Wallet ထဲက IO Jetton Balance ကို စစ်ဆေးခြင်း
       try {
         const res = await fetch(`https://tonapi.io/v2/accounts/${addr}/jettons`);
         const data = await res.json();
@@ -369,24 +409,24 @@
           b.jetton.symbol === "IO"
         );
         const hold = ioJetton ? Math.floor(ioJetton.balance / 1e9) : 0;
-        updateLevelByHold(hold);
+        calculateLevelByHold(hold);
       } catch (e) {
-        updateLevelByHold(0);
+        calculateLevelByHold(0);
       }
     } else {
-      document.getElementById('wallet-status-text').innerText = "Connect wallet above to verify your IO holdings and unlock higher Mining Levels.";
-      updateLevelByHold(0);
+      document.getElementById('wallet-status-text').innerText = "Connect wallet above to verify your IO holdings and unlock higher Mining Levels (up to Lvl 500).";
+      calculateLevelByHold(0);
     }
   });
 
-  // 3. Persistent Mining Logic
+  // 3. Persistent 4-Hour Mining Logic
   const CYCLE_SECONDS = 4 * 3600;
   let totalBalance = parseFloat(localStorage.getItem('io_total_balance')) || 0;
   let miningStart = parseInt(localStorage.getItem('io_mining_start')) || Date.now();
   localStorage.setItem('io_mining_start', miningStart);
 
   function updateMining() {
-    const ratePerSec = (baseRate * userBoost) / 3600;
+    const ratePerSec = currentSpeed / 3600;
     const now = Date.now();
     let elapsedSec = Math.floor((now - miningStart) / 1000);
 
@@ -418,7 +458,7 @@
   }
 
   function claimTokens() {
-    const ratePerSec = (baseRate * userBoost) / 3600;
+    const ratePerSec = currentSpeed / 3600;
     totalBalance += (CYCLE_SECONDS * ratePerSec);
     miningStart = Date.now();
     localStorage.setItem('io_total_balance', totalBalance);
@@ -426,6 +466,7 @@
     updateMining();
   }
   setInterval(updateMining, 1000);
+  calculateLevelByHold(0);
   updateMining();
 
   // 4. Real STON.fi DEX Rate & Swap (1 GRAM = 41.704 IO)
@@ -436,7 +477,6 @@
     selectedGram = amount;
     document.querySelectorAll('#tab-shop .amount-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    
     const receive = (selectedGram * REAL_STONFI_RATE).toFixed(2);
     document.getElementById('receive-est').innerText = `+${receive} IO`;
     document.getElementById('buy-swap-btn').innerText = `🔄 Swap ${selectedGram} GRAM on STON.fi`;
@@ -451,7 +491,7 @@
   function openLvlModal() { document.getElementById('lvl-modal').classList.add('active'); }
   function closeLvlModal() { document.getElementById('lvl-modal').classList.remove('active'); }
 
-  // 6. Streak Rewards
+  // 6. Streak Rewards (24-Hour Timer)
   let streakDay = parseInt(localStorage.getItem('io_streak_day')) || 1;
   let lastClaimTime = parseInt(localStorage.getItem('io_streak_last_claim')) || 0;
   const STREAK_INTERVAL = 24 * 3600 * 1000;
@@ -462,7 +502,7 @@
     for (let i = 1; i <= 10; i++) {
       const dayDiv = document.createElement('div');
       dayDiv.className = `streak-day ${i < streakDay ? 'claimed' : (i === streakDay ? 'current' : '')}`;
-      dayDiv.innerHTML = `<div class="day-num">D${i}</div><div class="day-reward">+${i * 100}</div>`;
+      dayDiv.innerHTML = `<div class="day-num">D${i}</div><div class="day-reward">+${i * 5}</div>`;
       container.appendChild(dayDiv);
     }
     document.getElementById('streak-header').innerText = `Day ${streakDay} / 30`;
@@ -486,7 +526,7 @@
   }
 
   function claimDailyReward() {
-    const reward = streakDay * 100;
+    const reward = streakDay * 5; // Balanced daily reward
     totalBalance += reward;
     streakDay = streakDay >= 30 ? 1 : streakDay + 1;
     lastClaimTime = Date.now();
@@ -505,7 +545,7 @@
     window.open("https://t.me/IO_Mining_bot", "_blank");
     if (!localStorage.getItem('io_task_channel_done')) {
       setTimeout(() => {
-        totalBalance += 50;
+        totalBalance += 10;
         localStorage.setItem('io_total_balance', totalBalance);
         localStorage.setItem('io_task_channel_done', 'true');
         document.getElementById('channel-task-btn').innerText = "Claimed ✓";
