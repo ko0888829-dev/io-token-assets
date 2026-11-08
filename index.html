@@ -78,6 +78,15 @@
     .lvl-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #162438; font-size: 13px; }
     .lvl-row.active-user { background: #1f1b0a; border-radius: 8px; padding: 10px 8px; border: 1px solid var(--accent-gold); margin: 4px 0; }
 
+    /* Withdraw Tab Specifics */
+    .status-badge { font-size: 11px; padding: 3px 8px; border-radius: 6px; font-weight: 700; }
+    .status-processing { background: #3b2c0f; color: var(--accent-gold); border: 1px solid var(--accent-gold); }
+    .status-completed { background: #0a2d21; color: #2ed573; border: 1px solid #2ed573; }
+    .terms-box { background: #08111e; border: 1px solid var(--card-border); border-radius: 12px; padding: 14px; margin: 12px 0; font-size: 12px; }
+    .terms-item { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; color: var(--text-sub); }
+    .terms-item:last-child { margin-bottom: 0; }
+    .tx-input { width: 100%; background: #08111e; border: 1px solid var(--card-border); border-radius: 10px; padding: 12px; color: #fff; font-size: 16px; font-weight: 700; margin: 10px 0; outline: none; }
+
     /* Tabs & Nav */
     .tab-content { display: none; }
     .tab-content.active { display: block; }
@@ -131,15 +140,14 @@
       </div>
 
       <div class="stats-grid">
-        <div class="stat-box"><div class="stat-label">Per hour</div><div class="stat-val" id="speed-display">0.50 IO</div></div>
-        <div class="stat-box"><div class="stat-label">Per day</div><div class="stat-val" id="day-display">~12 IO</div></div>
+        <div class="stat-box"><div class="stat-label">Per hour</div><div class="stat-val" id="speed-display">11.25 IO</div></div>
+        <div class="stat-box"><div class="stat-label">Per day</div><div class="stat-val" id="day-display">~270 IO</div></div>
         <div class="stat-box"><div class="stat-label">Boost</div><div class="stat-val" style="color: var(--accent-cyan);" id="boost-display">x1.00</div></div>
       </div>
 
       <button id="mining-btn" class="btn-main btn-mining">⛏️ Mining Active...</button>
     </div>
 
-    <!-- 500 Levels Banner -->
     <div class="league-card" onclick="openLvlModal()">
       <div class="league-info">
         <div class="league-icon" id="league-lvl-box">LV 1</div>
@@ -210,7 +218,7 @@
       <div style="display: flex; justify-content: space-between; align-items: center;">
         <div>
           <div style="font-size: 14px; font-weight: 700;">Join IO Official Channel</div>
-          <div style="font-size: 12px; color: var(--accent-cyan);">+10 IO</div>
+          <div style="font-size: 12px; color: var(--accent-cyan);">+50 IO</div>
         </div>
         <button id="channel-task-btn" class="btn-main btn-claim" style="width: auto; padding: 8px 18px; font-size: 12px;" onclick="doChannelTask()">Start</button>
       </div>
@@ -235,32 +243,106 @@
     <div class="card">
       <div class="card-title">
         <span style="font-weight: 700; color: #fff;">My Referrals (2)</span>
-        <span style="color: var(--accent-cyan);">Total Earned: +2.5 IO</span>
+        <span style="color: var(--accent-cyan);">Total Earned: +25 IO</span>
       </div>
       <div>
         <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--card-border); font-size: 13px;">
           <div><b>@member_ton</b><div style="font-size: 11px; color: var(--text-sub);">Active Mining</div></div>
-          <div style="color: #2ed573; font-weight: 700;">+1.25 IO</div>
+          <div style="color: #2ed573; font-weight: 700;">+12.5 IO</div>
         </div>
         <div style="display: flex; justify-content: space-between; padding: 10px 0; font-size: 13px;">
           <div><b>@ton_trader24</b><div style="font-size: 11px; color: var(--text-sub);">Active Mining</div></div>
-          <div style="color: #2ed573; font-weight: 700;">+1.25 IO</div>
+          <div style="color: #2ed573; font-weight: 700;">+12.5 IO</div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- TAB 5: WALLET -->
+  <!-- TAB 5: WALLET & PAYOUTS (LOOTVAULT STYLE) -->
   <div id="tab-wallet" class="tab-content">
+    <!-- Balance & Collateral Status -->
     <div class="card">
-      <h3 style="margin-bottom: 6px;">TON Wallet Status</h3>
-      <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 14px;" id="wallet-status-text">Connect wallet to verify your IO holdings and unlock higher Mining Levels (up to Lvl 500).</p>
-      <button class="btn-main btn-mining" style="cursor: not-allowed;">Direct Airdrop to Connected Wallet</button>
+      <div class="card-title">
+        <span style="font-weight: 700; color: #fff;">Wallet & Payouts</span>
+        <span style="font-size: 11px; color: var(--text-sub);">Official Web3</span>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0;">
+        <div style="background: #08111e; border: 1px solid var(--card-border); border-radius: 12px; padding: 12px;">
+          <div style="font-size: 11px; color: var(--text-sub);">App Balance</div>
+          <div style="font-size: 18px; font-weight: 800; color: #fff; margin-top: 4px;"><span id="wallet-tab-balance">0.00</span> <span style="font-size: 12px; color: var(--accent-cyan);">IO</span></div>
+        </div>
+        <div style="background: #08111e; border: 1px solid var(--card-border); border-radius: 12px; padding: 12px;">
+          <div style="font-size: 11px; color: var(--text-sub);">Wallet Hold Status</div>
+          <div style="font-size: 18px; font-weight: 800; color: var(--accent-gold); margin-top: 4px;" id="wallet-hold-check">0 IO</div>
+        </div>
+      </div>
+      <div style="font-size: 11px; color: var(--text-sub); border-top: 1px solid var(--card-border); padding-top: 8px;" id="wallet-linked-text">
+        ● Wallet: Not connected
+      </div>
+    </div>
+
+    <!-- Active Claim (Processing Status) -->
+    <div class="card" id="active-claim-card" style="display: none; border-color: var(--accent-gold);">
+      <div class="card-title">
+        <span style="font-weight: 700; color: #fff;" id="active-claim-id">Active Claim #W-18008</span>
+        <span class="status-badge status-processing">Processing (1-24h)</span>
+      </div>
+      <div style="background: #08111e; border-radius: 10px; padding: 12px; margin: 10px 0; font-size: 12px;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+          <span style="color: var(--text-sub);">Requested:</span>
+          <b id="active-claim-req">0 IO</b>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+          <span style="color: var(--text-sub);">Fee (5%):</span>
+          <span style="color: #ff4757;" id="active-claim-fee">-0 IO</span>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: var(--text-sub);">To payout:</span>
+          <b style="color: #2ed573;" id="active-claim-net">+0 IO</b>
+        </div>
+      </div>
+      <div style="font-size: 11px; color: var(--accent-gold);">⏳ Withdrawal request is being processed on-chain.</div>
+    </div>
+
+    <!-- Withdraw Form -->
+    <div class="card">
+      <h3 style="margin-bottom: 8px;">↗ Withdraw IO</h3>
+
+      <!-- Terms & Requirements -->
+      <div class="terms-box">
+        <div class="terms-item">ℹ <b>Terms & Schedule:</b> Processing time 1-24 hours</div>
+        <div class="terms-item">🔒 <b>Wallet Hold Required:</b> Minimum 1,000 IO in wallet</div>
+        <div class="terms-item">🪙 <b>Minimum:</b> 7,500 IO | <b>Maximum:</b> 100,000 IO</div>
+        <div class="terms-item">% <b>Network Fee:</b> 5%</div>
+      </div>
+
+      <div style="font-size: 12px; color: var(--text-sub); margin-top: 10px;">Amount to Withdraw</div>
+      <input type="number" id="withdraw-amount-input" class="tx-input" placeholder="Min. 7,500 IO" value="7500">
+
+      <div class="amount-grid">
+        <div class="amount-btn" onclick="setWithdrawVal(7500)">7.5k</div>
+        <div class="amount-btn" onclick="setWithdrawVal(15000)">15k</div>
+        <div class="amount-btn" onclick="setWithdrawVal(50000)">50k</div>
+        <div class="amount-btn" onclick="setWithdrawVal('MAX')">MAX</div>
+      </div>
+
+      <button id="submit-withdraw-btn" class="btn-main btn-gold" onclick="submitWithdrawal()">Request Withdrawal</button>
+    </div>
+
+    <!-- Withdrawal History -->
+    <div class="card">
+      <div class="card-title">
+        <span style="font-weight: 700; color: #fff;">Withdrawal History</span>
+        <span style="font-size: 11px; color: var(--text-sub);" id="tx-history-count">(0)</span>
+      </div>
+      <div id="tx-history-container">
+        <div style="font-size: 12px; color: var(--text-sub); text-align: center; padding: 10px 0;">No withdrawals yet.</div>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- 500 Levels System Modal (LootVault Style) -->
+<!-- 500 Levels System Modal (LootVault Exact Curve) -->
 <div class="modal" id="lvl-modal">
   <div class="modal-content">
     <div class="modal-header">
@@ -268,21 +350,17 @@
       <span onclick="closeLvlModal()" style="font-size: 24px; cursor: pointer; color: var(--text-sub);">&times;</span>
     </div>
 
-    <!-- Current User Status Card -->
     <div style="background: #08111e; border: 1px solid var(--accent-gold); border-radius: 14px; padding: 14px; margin-bottom: 16px;">
       <div style="font-size: 11px; color: var(--text-sub);">Your Current Status:</div>
       <div style="display: flex; justify-content: space-between; margin-top: 6px;">
         <div>Level: <b id="modal-status-lvl" style="color: var(--accent-gold);">Lvl 1 / 500</b></div>
-        <div>Speed: <b id="modal-status-speed" style="color: var(--accent-cyan);">0.50/h</b></div>
+        <div>Speed: <b id="modal-status-speed" style="color: var(--accent-cyan);">11.25/h</b></div>
         <div>Boost: <b id="modal-status-boost" style="color: #2ed573;">x1.00</b></div>
       </div>
     </div>
 
-    <div style="font-size: 12px; color: var(--text-sub); margin-bottom: 8px;">Hold IO tokens in your connected TON wallet to advance up to 500 Levels:</div>
-
-    <!-- Dynamically Rendered Milestone Levels (1 to 500) -->
+    <div style="font-size: 12px; color: var(--text-sub); margin-bottom: 8px;">Hold IO in your connected TON wallet to level up (Speed 75% of Loot):</div>
     <div id="modal-levels-list"></div>
-
     <button class="btn-main btn-gold" style="margin-top: 16px;" onclick="closeLvlModal()">Got it</button>
   </div>
 </div>
@@ -307,44 +385,48 @@
     document.getElementById('user-display-name').innerText = '@' + (tg.initDataUnsafe.user.username || tg.initDataUnsafe.user.first_name);
   }
 
-  // 1. 500 Levels Math & Hold Milestones (Matching LootVault Exact Curve)
+  // 1. 500 Levels System (Speed = 3/4 of LootVault)
+  // LootVault: Lvl 1=15, Lvl 2=18.8, Lvl 3=25.6, Lvl 4=34.4, Lvl 5=44.9
+  // 3/4 (75%): Lvl 1=11.25, Lvl 2=14.1, Lvl 3=19.2, Lvl 4=25.8, Lvl 5=33.68
   const LEVEL_TIERS = [
-    { lvl: 1, hold: 58, speed: 0.5, boost: 1.0 },
-    { lvl: 2, hold: 116, speed: 0.65, boost: 1.3 },
-    { lvl: 3, hold: 533, speed: 0.85, boost: 1.7 },
-    { lvl: 4, hold: 1300, speed: 1.15, boost: 2.3 },
-    { lvl: 5, hold: 2447, speed: 1.5, boost: 3.0 },
-    { lvl: 6, hold: 3999, speed: 1.9, boost: 3.8 },
-    { lvl: 7, hold: 5972, speed: 2.35, boost: 4.7 },
-    { lvl: 8, hold: 8383, speed: 2.8, boost: 5.6 },
-    { lvl: 9, hold: 11245, speed: 3.3, boost: 6.6 },
-    { lvl: 10, hold: 14572, speed: 3.85, boost: 7.7 },
-    { lvl: 15, hold: 38518, speed: 7.05, boost: 14.1 },
-    { lvl: 20, hold: 75411, speed: 10.8, boost: 21.6 },
-    { lvl: 25, hold: 126079, speed: 15.15, boost: 30.3 },
-    { lvl: 30, hold: 191185, speed: 19.95, boost: 39.9 },
-    { lvl: 40, hold: 366877, speed: 30.85, boost: 61.7 },
-    { lvl: 50, hold: 606192, speed: 43.6, boost: 87.2 },
-    { lvl: 60, hold: 912123, speed: 56.95, boost: 113.9 },
-    { lvl: 70, hold: 1287202, speed: 71.9, boost: 143.8 },
-    { lvl: 80, hold: 1733638, speed: 87.95, boost: 175.9 },
-    { lvl: 90, hold: 2253392, speed: 105.1, boost: 210.2 },
-    { lvl: 100, hold: 2848238, speed: 123.2, boost: 246.4 },
-    { lvl: 150, hold: 6867000, speed: 225.0, boost: 450.0 },
-    { lvl: 200, hold: 13232916, speed: 350.0, boost: 700.3 },
-    { lvl: 250, hold: 21667927, speed: 489.9, boost: 979.8 },
-    { lvl: 300, hold: 32408238, speed: 644.5, boost: 1288.9 },
-    { lvl: 350, hold: 45540180, speed: 812.5, boost: 1625.0 },
-    { lvl: 400, hold: 61139118, speed: 993.2, boost: 1986.4 },
-    { lvl: 450, hold: 79272171, speed: 1185.5, boost: 2371.1 },
-    { lvl: 500, hold: 100000000, speed: 1388.9, boost: 2777.8 }
+    { lvl: 1, hold: 58, speed: 11.25, boost: 1.0 },
+    { lvl: 2, hold: 116, speed: 14.10, boost: 1.3 },
+    { lvl: 3, hold: 533, speed: 19.20, boost: 1.7 },
+    { lvl: 4, hold: 1300, speed: 25.80, boost: 2.3 },
+    { lvl: 5, hold: 2447, speed: 33.68, boost: 3.0 },
+    { lvl: 6, hold: 3999, speed: 42.60, boost: 3.8 },
+    { lvl: 7, hold: 5972, speed: 52.42, boost: 4.7 },
+    { lvl: 8, hold: 8383, speed: 63.15, boost: 5.6 },
+    { lvl: 9, hold: 11245, speed: 74.62, boost: 6.6 },
+    { lvl: 10, hold: 14572, speed: 86.92, boost: 7.7 },
+    { lvl: 15, hold: 38518, speed: 158.10, boost: 14.1 },
+    { lvl: 20, hold: 75411, speed: 243.37, boost: 21.6 },
+    { lvl: 25, hold: 126079, speed: 340.72, boost: 30.3 },
+    { lvl: 30, hold: 191185, speed: 448.87, boost: 39.9 },
+    { lvl: 40, hold: 366877, speed: 693.82, boost: 61.7 },
+    { lvl: 50, hold: 606192, speed: 980.50, boost: 87.2 },
+    { lvl: 60, hold: 912123, speed: 1281.30, boost: 113.9 },
+    { lvl: 70, hold: 1287202, speed: 1617.52, boost: 143.8 },
+    { lvl: 80, hold: 1733638, speed: 1979.10, boost: 175.9 },
+    { lvl: 90, hold: 2253392, speed: 2364.30, boost: 210.2 },
+    { lvl: 100, hold: 2848238, speed: 2771.85, boost: 246.4 },
+    { lvl: 150, hold: 6867000, speed: 5050.00, boost: 450.0 },
+    { lvl: 200, hold: 13232916, speed: 7878.52, boost: 700.3 },
+    { lvl: 250, hold: 21667927, speed: 11022.60, boost: 979.8 },
+    { lvl: 300, hold: 32408238, speed: 14500.65, boost: 1288.9 },
+    { lvl: 350, hold: 45540180, speed: 18283.00, boost: 1625.0 },
+    { lvl: 400, hold: 61139118, speed: 22347.07, boost: 1986.4 },
+    { lvl: 450, hold: 79272171, speed: 26674.50, boost: 2371.1 },
+    { lvl: 500, hold: 100000000, speed: 31250.00, boost: 2777.8 }
   ];
 
   let currentLevel = 1;
-  let currentSpeed = 0.50; // Per hour
+  let currentSpeed = 11.25;
   let currentBoost = 1.00;
+  let currentWalletHold = 0;
 
   function calculateLevelByHold(hold) {
+    currentWalletHold = hold;
     let resolved = LEVEL_TIERS[0];
     for (let i = LEVEL_TIERS.length - 1; i >= 0; i--) {
       if (hold >= LEVEL_TIERS[i].hold) {
@@ -356,13 +438,13 @@
     currentSpeed = resolved.speed;
     currentBoost = resolved.boost;
 
-    // UI Updates
     document.getElementById('top-lvl-text').innerText = `Lvl ${currentLevel}`;
     document.getElementById('league-lvl-box').innerText = `LV ${currentLevel}`;
     document.getElementById('speed-display').innerText = `${currentSpeed.toFixed(2)} IO`;
-    document.getElementById('day-display').innerText = `~${Math.round(currentSpeed * 24)} IO`;
+    document.getElementById('day-display').innerText = `~${Math.round(currentSpeed * 24).toLocaleString()} IO`;
     document.getElementById('boost-display').innerText = `x${currentBoost.toFixed(2)}`;
     document.getElementById('wallet-hold-text').innerText = `${hold.toLocaleString()} IO`;
+    document.getElementById('wallet-hold-check').innerText = `${hold.toLocaleString()} IO`;
 
     document.getElementById('modal-status-lvl').innerText = `Lvl ${currentLevel} / 500`;
     document.getElementById('modal-status-speed').innerText = `${currentSpeed.toFixed(2)}/h`;
@@ -391,7 +473,7 @@
     });
   }
 
-  // 2. TON Connect & Wallet Hold Detection
+  // 2. TON Connect & Real Wallet Hold
   const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
     manifestUrl: 'https://io-mining-app.netlify.app/tonconnect-manifest.json',
     buttonRootId: 'ton-connect-btn'
@@ -400,7 +482,7 @@
   tonConnectUI.onStatusChange(async (wallet) => {
     if (wallet) {
       const addr = wallet.account.address;
-      document.getElementById('wallet-status-text').innerText = "Connected: " + addr.slice(0, 6) + "..." + addr.slice(-4);
+      document.getElementById('wallet-linked-text').innerText = "● Wallet: " + addr.slice(0, 6) + "..." + addr.slice(-4);
       try {
         const res = await fetch(`https://tonapi.io/v2/accounts/${addr}/jettons`);
         const data = await res.json();
@@ -414,14 +496,14 @@
         calculateLevelByHold(0);
       }
     } else {
-      document.getElementById('wallet-status-text').innerText = "Connect wallet above to verify your IO holdings and unlock higher Mining Levels (up to Lvl 500).";
+      document.getElementById('wallet-linked-text').innerText = "● Wallet: Not connected";
       calculateLevelByHold(0);
     }
   });
 
-  // 3. Persistent 4-Hour Mining Logic
+  // 3. Persistent Mining Logic
   const CYCLE_SECONDS = 4 * 3600;
-  let totalBalance = parseFloat(localStorage.getItem('io_total_balance')) || 0;
+  let totalBalance = parseFloat(localStorage.getItem('io_total_balance')) || 10000; // Demo base
   let miningStart = parseInt(localStorage.getItem('io_mining_start')) || Date.now();
   localStorage.setItem('io_mining_start', miningStart);
 
@@ -455,6 +537,7 @@
       mBtn.onclick = null;
     }
     document.getElementById('total-balance').innerText = totalBalance.toFixed(4);
+    document.getElementById('wallet-tab-balance').innerText = totalBalance.toFixed(2);
   }
 
   function claimTokens() {
@@ -469,7 +552,114 @@
   calculateLevelByHold(0);
   updateMining();
 
-  // 4. Real STON.fi DEX Rate & Swap (1 GRAM = 41.704 IO)
+  // 4. Withdraw Logic (Min: 7,500 | Max: 100,000 | Hold: 1,000 | Fee: 5%)
+  function setWithdrawVal(val) {
+    if (val === 'MAX') {
+      const maxPossible = Math.min(100000, totalBalance);
+      document.getElementById('withdraw-amount-input').value = Math.floor(maxPossible);
+    } else {
+      document.getElementById('withdraw-amount-input').value = val;
+    }
+  }
+
+  function renderWithdrawals() {
+    const activeClaim = JSON.parse(localStorage.getItem('io_active_claim'));
+    const history = JSON.parse(localStorage.getItem('io_withdraw_history')) || [
+      { id: "W-7608", date: "11/04, 05:49 PM", amount: 11123, net: 10566.85, status: "Completed" }
+    ];
+
+    if (activeClaim) {
+      document.getElementById('active-claim-card').style.display = 'block';
+      document.getElementById('active-claim-id').innerText = `Active Claim #${activeClaim.id}`;
+      document.getElementById('active-claim-req').innerText = `${activeClaim.amount.toLocaleString()} IO`;
+      document.getElementById('active-claim-fee').innerText = `-${activeClaim.fee.toLocaleString()} IO`;
+      document.getElementById('active-claim-net').innerText = `+${activeClaim.net.toLocaleString()} IO`;
+      document.getElementById('submit-withdraw-btn').innerText = `#${activeClaim.id} in review`;
+      document.getElementById('submit-withdraw-btn').style.background = "#2a1e0b";
+      document.getElementById('submit-withdraw-btn').style.color = "var(--accent-gold)";
+    } else {
+      document.getElementById('active-claim-card').style.display = 'none';
+      document.getElementById('submit-withdraw-btn').innerText = "Request Withdrawal";
+      document.getElementById('submit-withdraw-btn').className = "btn-main btn-gold";
+    }
+
+    const hContainer = document.getElementById('tx-history-container');
+    hContainer.innerHTML = "";
+    document.getElementById('tx-history-count').innerText = `(${history.length})`;
+    
+    history.forEach(tx => {
+      const isCompleted = tx.status === "Completed";
+      const item = document.createElement('div');
+      item.style.cssText = "padding: 10px 0; border-bottom: 1px solid var(--card-border); font-size: 13px;";
+      item.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+          <b>#${tx.id}</b>
+          <span class="status-badge ${isCompleted ? 'status-completed' : 'status-processing'}">${tx.status}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; color: var(--text-sub); font-size: 11px;">
+          <span>${tx.date}</span>
+          <b style="color: #fff; font-size: 13px;">${tx.amount.toLocaleString()} IO</b>
+        </div>
+        <div style="text-align: right; font-size: 11px; color: ${isCompleted ? '#2ed573' : 'var(--accent-gold)'};">
+          Net: +${tx.net.toLocaleString()} IO
+        </div>
+      `;
+      hContainer.appendChild(item);
+    });
+  }
+  renderWithdrawals();
+
+  function submitWithdrawal() {
+    if (localStorage.getItem('io_active_claim')) {
+      alert("A withdrawal request is already pending. You cannot submit a new one until it is processed.");
+      return;
+    }
+
+    if (!tonConnectUI.connected) {
+      alert("Please connect your TON wallet first!");
+      tonConnectUI.openModal();
+      return;
+    }
+
+    if (currentWalletHold < 1000) {
+      alert("Withdrawal Locked: You must hold at least 1,000 IO in your connected TON wallet to withdraw!");
+      return;
+    }
+
+    const amount = parseFloat(document.getElementById('withdraw-amount-input').value);
+    if (isNaN(amount) || amount < 7500) {
+      alert("Minimum withdrawal amount is 7,500 IO!");
+      return;
+    }
+    if (amount > 100000) {
+      alert("Maximum withdrawal limit per request is 100,000 IO!");
+      return;
+    }
+    if (amount > totalBalance) {
+      alert("Insufficient in-app balance!");
+      return;
+    }
+
+    // Deduct Balance & Create Request
+    totalBalance -= amount;
+    const fee = amount * 0.05;
+    const net = amount - fee;
+    const claimId = "W-" + Math.floor(10000 + Math.random() * 90000);
+
+    const newClaim = { id: claimId, amount: amount, fee: fee, net: net, date: new Date().toLocaleDateString() };
+    localStorage.setItem('io_active_claim', JSON.stringify(newClaim));
+    localStorage.setItem('io_total_balance', totalBalance);
+
+    let history = JSON.parse(localStorage.getItem('io_withdraw_history')) || [];
+    history.unshift({ id: claimId, date: "Just now", amount: amount, net: net, status: "Processing" });
+    localStorage.setItem('io_withdraw_history', JSON.stringify(history));
+
+    updateMining();
+    renderWithdrawals();
+    alert(`Withdrawal request #${claimId} submitted successfully!`);
+  }
+
+  // 5. STON.fi DEX Rate & Swap
   const REAL_STONFI_RATE = 41.704;
   let selectedGram = 1;
 
@@ -487,11 +677,11 @@
     window.open(url, '_blank');
   }
 
-  // 5. Level Modal Functions
+  // Level Modal
   function openLvlModal() { document.getElementById('lvl-modal').classList.add('active'); }
   function closeLvlModal() { document.getElementById('lvl-modal').classList.remove('active'); }
 
-  // 6. Streak Rewards (24-Hour Timer)
+  // Streak
   let streakDay = parseInt(localStorage.getItem('io_streak_day')) || 1;
   let lastClaimTime = parseInt(localStorage.getItem('io_streak_last_claim')) || 0;
   const STREAK_INTERVAL = 24 * 3600 * 1000;
@@ -502,7 +692,7 @@
     for (let i = 1; i <= 10; i++) {
       const dayDiv = document.createElement('div');
       dayDiv.className = `streak-day ${i < streakDay ? 'claimed' : (i === streakDay ? 'current' : '')}`;
-      dayDiv.innerHTML = `<div class="day-num">D${i}</div><div class="day-reward">+${i * 5}</div>`;
+      dayDiv.innerHTML = `<div class="day-num">D${i}</div><div class="day-reward">+${i * 50}</div>`;
       container.appendChild(dayDiv);
     }
     document.getElementById('streak-header').innerText = `Day ${streakDay} / 30`;
@@ -526,7 +716,7 @@
   }
 
   function claimDailyReward() {
-    const reward = streakDay * 5; // Balanced daily reward
+    const reward = streakDay * 50;
     totalBalance += reward;
     streakDay = streakDay >= 30 ? 1 : streakDay + 1;
     lastClaimTime = Date.now();
@@ -545,7 +735,7 @@
     window.open("https://t.me/IO_Mining_bot", "_blank");
     if (!localStorage.getItem('io_task_channel_done')) {
       setTimeout(() => {
-        totalBalance += 10;
+        totalBalance += 50;
         localStorage.setItem('io_total_balance', totalBalance);
         localStorage.setItem('io_task_channel_done', 'true');
         document.getElementById('channel-task-btn').innerText = "Claimed ✓";
@@ -555,15 +745,13 @@
     }
   }
 
-  // 7. Referral
+  // Ref
   const myRefUrl = `https://t.me/IO_Mining_bot?start=ref_${telegramUserId}`;
   document.getElementById('ref-link-display').innerText = myRefUrl;
-
   function shareRefTelegram() {
     const text = encodeURIComponent("⛏️ Mine Infinite Orbit (IO) tokens with me 24/7 on TON! Start here:");
     window.open(`https://t.me/share/url?url=${encodeURIComponent(myRefUrl)}&text=${text}`);
   }
-
   function copyRefLink() {
     navigator.clipboard.writeText(myRefUrl).then(() => {
       alert("Referral link copied!");
