@@ -139,7 +139,7 @@
       <button id="mining-btn" class="btn-main btn-mining">⛏️ Mining Active...</button>
     </div>
 
-    <!-- League / Level Status Box -->
+    <!-- League / Level Status Box (Wallet Hold) -->
     <div class="league-card" onclick="openLvlModal()">
       <div class="league-info">
         <div class="league-icon" id="league-lvl-box">LV 1</div>
@@ -327,7 +327,7 @@
   // 1. Level System Based on Wallet Hold
   let userLvl = 1;
   let userBoost = 1.0;
-  let baseRate = 2.5; // IO per hour
+  let baseRate = 2.5; // Base IO per hour
 
   function updateLevelByHold(holdAmount) {
     if (holdAmount >= 3000) { userLvl = 5; userBoost = 3.0; }
@@ -349,7 +349,7 @@
     document.getElementById('modal-status-boost').innerText = `x${userBoost.toFixed(1)}`;
   }
 
-  // 2. TON Connect & Wallet Hold Checking
+  // 2. TON Connect & Real Wallet Hold Checking
   const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
     manifestUrl: 'https://io-mining-app.netlify.app/tonconnect-manifest.json',
     buttonRootId: 'ton-connect-btn'
@@ -360,11 +360,14 @@
       const addr = wallet.account.address;
       document.getElementById('wallet-status-text').innerText = "Connected: " + addr.slice(0, 6) + "..." + addr.slice(-4);
       
-      // TON API မှတစ်ဆင့် IO Jetton Balance ကို စစ်ဆေးခြင်း
+      // TonAPI မှတစ်ဆင့် User ရဲ့ အပြင် Wallet ထဲက IO Jetton Balance ကို စစ်ဆေးခြင်း
       try {
         const res = await fetch(`https://tonapi.io/v2/accounts/${addr}/jettons`);
         const data = await res.json();
-        const ioJetton = data.balances?.find(b => b.jetton.address === "0:e2d6637084a9e74b28263697cf19eb470075db4a4a10d9712398c89f5604caf4");
+        const ioJetton = data.balances?.find(b => 
+          b.jetton.address.toLowerCase().includes("eqdlianchkzn") || 
+          b.jetton.symbol === "IO"
+        );
         const hold = ioJetton ? Math.floor(ioJetton.balance / 1e9) : 0;
         updateLevelByHold(hold);
       } catch (e) {
