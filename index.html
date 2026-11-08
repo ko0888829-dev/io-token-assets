@@ -1,187 +1,522 @@
 <!DOCTYPE html>
-<html lang="my">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Infinite Orbit (IO) Mining</title>
-  <!-- Telegram WebApp SDK -->
+  <title>Infinite Orbit (IO) Cloud Mining</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    @keyframes pulse-glow {
-      0%, 100% { box-shadow: 0 0 25px rgba(56, 189, 248, 0.4); }
-      50% { box-shadow: 0 0 45px rgba(56, 189, 248, 0.8); }
-    }
-    .mining-active {
-      animation: pulse-glow 3s infinite ease-in-out;
-    }
+    body { background-color: #060913; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    .card-dark { background: rgba(13, 21, 38, 0.7); border: 1px solid rgba(34, 211, 238, 0.15); backdrop-filter: blur(12px); }
+    .card-glow { box-shadow: 0 0 20px rgba(6, 182, 212, 0.15); }
+    .btn-gradient { background: linear-gradient(135deg, #0ea5e9, #06b6d4); }
+    .active-nav { color: #22d3ee; }
+    .nav-indicator { box-shadow: 0 0 12px #22d3ee; }
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
   </style>
 </head>
-<body class="bg-slate-950 text-white min-h-screen flex flex-col justify-between p-6 select-none font-sans">
+<body class="text-slate-200 min-h-screen flex flex-col justify-between select-none pb-24">
 
-  <!-- Header Section -->
-  <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+  <!-- TOP APP HEADER -->
+  <header class="p-4 flex items-center justify-between border-b border-cyan-950/60 bg-slate-950/80 sticky top-0 z-40 backdrop-blur-md">
     <div class="flex items-center gap-3">
-      <div class="w-10 h-10 rounded-full bg-cyan-500/20 flex items-center justify-center border border-cyan-500/40 text-cyan-400 font-bold">
-        IO
-      </div>
+      <img src="https://raw.githubusercontent.com/ko0888829-dev/io-token-assets/main/1794130857757.jpg" class="w-10 h-10 rounded-full border border-cyan-400/40 object-cover shadow-lg shadow-cyan-500/20" alt="IO">
       <div>
-        <h2 id="userName" class="font-bold text-sm text-slate-200">User</h2>
-        <span class="text-xs text-cyan-400">Infinite Orbit Miner</span>
+        <div class="flex items-center gap-1.5">
+          <span class="font-bold text-sm text-white">Infinite Orbit</span>
+          <span class="text-[10px] px-1.5 py-0.5 rounded bg-cyan-950 border border-cyan-700/50 text-cyan-400 font-mono">CLOUD</span>
+        </div>
+        <span id="userName" class="text-xs text-slate-400">@Miner</span>
       </div>
     </div>
-    <div class="text-right">
-      <span class="text-xs text-slate-400">Total Balance</span>
-      <div class="text-lg font-black text-white"><span id="totalBalance">0.00</span> <span class="text-xs text-cyan-400 font-normal">IO</span></div>
+    <div class="flex items-center gap-2">
+      <div class="flex items-center gap-1 bg-slate-900/80 border border-slate-800 px-2.5 py-1 rounded-full text-xs">
+        <i class="fa-solid fa-layer-group text-cyan-400 text-[10px]"></i>
+        <span class="font-semibold text-white">Lvl 1</span>
+      </div>
+      <div class="w-8 h-8 rounded-full bg-cyan-950 border border-cyan-500/40 flex items-center justify-center text-cyan-400 text-xs">
+        <i class="fa-solid fa-satellite"></i>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN VIEWPORT CONTAINER -->
+  <main class="p-4 flex-1 overflow-y-auto hide-scrollbar space-y-4">
+
+    <!-- TAB 1: MINING PAGE -->
+    <section id="tab-mining" class="space-y-4">
+      <!-- Balance Card -->
+      <div class="card-dark rounded-2xl p-4 flex flex-col gap-1 card-glow">
+        <div class="flex justify-between items-center text-xs text-slate-400">
+          <span><i class="fa-solid fa-wallet text-cyan-400 mr-1"></i> In-app balance</span>
+          <span class="text-[10px] text-slate-400">TON Jetton Verified</span>
+        </div>
+        <div class="text-3xl font-black text-white flex items-baseline gap-2 mt-1">
+          <span id="miningTotalBal">0.0000</span>
+          <span class="text-xs font-semibold text-cyan-400">IO</span>
+        </div>
+      </div>
+
+      <!-- Active Mining Monitor -->
+      <div class="card-dark rounded-2xl p-5 space-y-3 relative overflow-hidden">
+        <div class="flex justify-between items-center text-xs">
+          <div class="flex items-center gap-2 text-cyan-400 font-medium">
+            <span class="relative flex h-2 w-2">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+            </span>
+            Active Cloud Mining
+          </div>
+          <span class="text-slate-400 text-[11px]">Cycle: 4h</span>
+        </div>
+
+        <div class="text-3xl font-extrabold text-cyan-400 tracking-tight">
+          +<span id="unclaimedDisplay">0.0000</span> <span class="text-sm font-semibold text-white">IO</span>
+        </div>
+
+        <div class="space-y-1">
+          <div class="flex justify-between text-[11px] text-slate-400">
+            <span>Storage Progress</span>
+            <span id="miningTimer">04:00:00</span>
+          </div>
+          <div class="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden border border-slate-800 p-0.5">
+            <div id="miningBar" class="bg-gradient-to-r from-cyan-500 to-blue-500 h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2 pt-2 text-center">
+          <div class="bg-slate-950/60 p-2 rounded-xl border border-slate-800/80">
+            <span class="text-[10px] text-slate-400 block">Per hour</span>
+            <span class="text-xs font-bold text-white">2.5 IO</span>
+          </div>
+          <div class="bg-slate-950/60 p-2 rounded-xl border border-slate-800/80">
+            <span class="text-[10px] text-slate-400 block">Per day</span>
+            <span class="text-xs font-bold text-white">~60 IO</span>
+          </div>
+          <div class="bg-slate-950/60 p-2 rounded-xl border border-slate-800/80">
+            <span class="text-[10px] text-slate-400 block">Boost</span>
+            <span class="text-xs font-bold text-cyan-400">x1.0</span>
+          </div>
+        </div>
+
+        <button id="claimBtn" onclick="handleClaim()" class="w-full py-3.5 rounded-xl font-bold text-sm btn-gradient text-slate-950 active:scale-[0.98] transition-all shadow-lg shadow-cyan-500/20 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+          <i class="fa-solid fa-bolt"></i> Claim Mined IO
+        </button>
+      </div>
+
+      <!-- League Tier -->
+      <div class="card-dark rounded-2xl p-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-xs font-bold">
+            LVL 1
+          </div>
+          <div>
+            <div class="text-xs font-bold text-white">Orbit Bronze League</div>
+            <div class="text-[11px] text-slate-400">Wallet hold: 0 IO</div>
+          </div>
+        </div>
+        <i class="fa-solid fa-chevron-right text-xs text-slate-500"></i>
+      </div>
+    </section>
+
+    <!-- TAB 2: EXCHANGE (STON.fi) -->
+    <section id="tab-exchange" class="space-y-4 hidden">
+      <div class="card-dark rounded-2xl p-5 space-y-4">
+        <div>
+          <h3 class="text-base font-bold text-white">STON.fi DEX Exchange</h3>
+          <p class="text-xs text-slate-400 mt-0.5">Swap TON for Infinite Orbit (IO) tokens instantly.</p>
+        </div>
+
+        <div class="bg-slate-950/70 p-3.5 rounded-xl border border-slate-800 space-y-2">
+          <div class="flex justify-between text-xs text-slate-400">
+            <span>Market Rate (Simulated)</span>
+            <span class="text-cyan-400 font-semibold"><i class="fa-solid fa-circle text-[7px] mr-1"></i>STON.fi Pool</span>
+          </div>
+          <div class="text-lg font-bold text-white">1 TON ≈ <span class="text-cyan-400">5,000</span> IO</div>
+        </div>
+
+        <div class="space-y-2">
+          <label class="text-xs text-slate-400">Select TON Amount</label>
+          <div class="grid grid-cols-4 gap-2">
+            <button onclick="setSwapAmount(0.5)" class="py-2 rounded-lg bg-slate-900 border border-slate-800 hover:border-cyan-500 text-xs font-bold">0.5</button>
+            <button onclick="setSwapAmount(1)" class="py-2 rounded-lg bg-slate-900 border border-cyan-500/50 text-cyan-400 text-xs font-bold">1 TON</button>
+            <button onclick="setSwapAmount(5)" class="py-2 rounded-lg bg-slate-900 border border-slate-800 hover:border-cyan-500 text-xs font-bold">5</button>
+            <button onclick="setSwapAmount(10)" class="py-2 rounded-lg bg-slate-900 border border-slate-800 hover:border-cyan-500 text-xs font-bold">10</button>
+          </div>
+        </div>
+
+        <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800 text-xs space-y-1.5">
+          <div class="flex justify-between text-slate-400">
+            <span>You receive:</span>
+            <span id="swapReceive" class="font-bold text-cyan-400">+5,000 IO</span>
+          </div>
+          <div class="flex justify-between text-slate-400">
+            <span>Service Fee:</span>
+            <span class="text-slate-300">0.05 TON</span>
+          </div>
+        </div>
+
+        <a href="https://ston.fi" target="_blank" class="w-full py-3.5 rounded-xl font-bold text-sm btn-gradient text-slate-950 text-center block active:scale-[0.98] transition-all">
+          <i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> Open on STON.fi DEX
+        </a>
+      </div>
+    </section>
+
+    <!-- TAB 3: FRIENDS / REFERRAL -->
+    <section id="tab-friends" class="space-y-4 hidden">
+      <div class="card-dark rounded-2xl p-5 space-y-3">
+        <h3 class="text-base font-bold text-white">Invite Friends</h3>
+        <p class="text-xs text-slate-400 leading-relaxed">
+          Invite friends to join Infinite Orbit and earn <span class="text-cyan-400 font-bold">5%</span> of all their mining claims.
+        </p>
+
+        <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800 flex items-center justify-between">
+          <div>
+            <span class="text-[10px] text-slate-500 block uppercase">Referral Code</span>
+            <span id="refCode" class="text-sm font-mono font-bold text-cyan-400">IO-7798X</span>
+          </div>
+          <button onclick="copyRefLink()" class="px-3 py-1.5 rounded-lg bg-cyan-950 border border-cyan-500/50 text-cyan-400 text-xs font-bold active:scale-95">
+            <i class="fa-solid fa-copy mr-1"></i> Copy
+          </button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 pt-2">
+          <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800 text-center">
+            <span class="text-xs text-slate-400 block">Invited</span>
+            <span class="text-lg font-bold text-white">0</span>
+          </div>
+          <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800 text-center">
+            <span class="text-xs text-slate-400 block">Earned</span>
+            <span class="text-lg font-bold text-cyan-400">+0.00 IO</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: WITHDRAW -->
+    <section id="tab-withdraw" class="space-y-4 hidden">
+      <div class="card-dark rounded-2xl p-5 space-y-4">
+        <div>
+          <h3 class="text-base font-bold text-white">Wallet & Withdraw</h3>
+          <p class="text-xs text-slate-400 mt-0.5">Withdraw mined IO to your Tonkeeper wallet.</p>
+        </div>
+
+        <div class="bg-slate-950/70 p-3.5 rounded-xl border border-slate-800 space-y-1.5">
+          <div class="flex justify-between items-center text-xs">
+            <span class="text-slate-400"><i class="fa-solid fa-shield-halved text-cyan-400 mr-1"></i> Connected Wallet</span>
+            <span class="text-cyan-400 text-[11px] cursor-pointer">Change</span>
+          </div>
+          <div class="font-mono text-xs text-slate-200 truncate">UQCtFaX7GTO...4re6YHnakETuES8</div>
+        </div>
+
+        <div class="space-y-2">
+          <div class="flex justify-between text-xs text-slate-400">
+            <span>Withdraw Amount</span>
+            <span>Min: 100 IO</span>
+          </div>
+          <input type="number" id="withdrawInput" placeholder="Amount (IO)" class="w-full bg-slate-900 border border-slate-800 focus:border-cyan-500 rounded-xl px-4 py-3 text-sm text-white outline-none">
+        </div>
+
+        <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800 text-xs space-y-1.5 text-slate-400">
+          <div class="flex justify-between">
+            <span>Frequency:</span>
+            <span class="text-slate-300">Once every 24h</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Network Fee:</span>
+            <span class="text-slate-300">5% IO</span>
+          </div>
+        </div>
+
+        <button onclick="handleWithdraw()" class="w-full py-3.5 rounded-xl font-bold text-sm btn-gradient text-slate-950 active:scale-[0.98] transition-all">
+          Submit Withdrawal Request
+        </button>
+      </div>
+    </section>
+
+    <!-- SUB-PAGES ACCESSED VIA CENTER MODAL (STAKING, TASKS, NODES, SUPPORT) -->
+
+    <!-- SUB-PAGE: STAKING -->
+    <section id="sub-staking" class="space-y-4 hidden">
+      <div class="flex items-center gap-2 mb-2">
+        <button onclick="switchTab('mining')" class="text-xs text-cyan-400"><i class="fa-solid fa-chevron-left mr-1"></i> Back</button>
+        <h3 class="font-bold text-sm text-white">IO Token Staking</h3>
+      </div>
+      <div class="card-dark rounded-2xl p-5 space-y-4">
+        <div class="text-xs text-slate-400">Lock IO tokens to boost your daily passive yields.</div>
+        <div class="grid grid-cols-3 gap-2">
+          <div class="bg-cyan-950/40 border border-cyan-500/50 p-3 rounded-xl text-center">
+            <span class="text-[10px] text-cyan-400 block font-bold">+35%</span>
+            <span class="text-xs font-bold text-white">30 Days</span>
+          </div>
+          <div class="bg-slate-900/60 border border-slate-800 p-3 rounded-xl text-center">
+            <span class="text-[10px] text-slate-400 block font-bold">+110%</span>
+            <span class="text-xs font-bold text-white">90 Days</span>
+          </div>
+          <div class="bg-slate-900/60 border border-slate-800 p-3 rounded-xl text-center">
+            <span class="text-[10px] text-slate-400 block font-bold">+150%</span>
+            <span class="text-xs font-bold text-white">120 Days</span>
+          </div>
+        </div>
+        <button class="w-full py-3 rounded-xl font-bold text-xs btn-gradient text-slate-950">Confirm Stake</button>
+      </div>
+    </section>
+
+    <!-- SUB-PAGE: TASKS -->
+    <section id="sub-tasks" class="space-y-4 hidden">
+      <div class="flex items-center gap-2 mb-2">
+        <button onclick="switchTab('mining')" class="text-xs text-cyan-400"><i class="fa-solid fa-chevron-left mr-1"></i> Back</button>
+        <h3 class="font-bold text-sm text-white">Nebula Quests & Daily</h3>
+      </div>
+      <div class="card-dark rounded-2xl p-4 space-y-3">
+        <div class="flex justify-between items-center text-xs">
+          <span class="font-bold text-white">30-Day Mining Streak</span>
+          <span class="text-cyan-400 font-bold">Day 1</span>
+        </div>
+        <div class="grid grid-cols-7 gap-1 text-center">
+          <div class="bg-cyan-500 text-slate-950 font-bold text-[10px] py-1 rounded">D1</div>
+          <div class="bg-slate-900 text-slate-500 text-[10px] py-1 rounded">D2</div>
+          <div class="bg-slate-900 text-slate-500 text-[10px] py-1 rounded">D3</div>
+          <div class="bg-slate-900 text-slate-500 text-[10px] py-1 rounded">D4</div>
+          <div class="bg-slate-900 text-slate-500 text-[10px] py-1 rounded">D5</div>
+          <div class="bg-slate-900 text-slate-500 text-[10px] py-1 rounded">D6</div>
+          <div class="bg-slate-900 text-slate-500 text-[10px] py-1 rounded">D7</div>
+        </div>
+      </div>
+      <div class="card-dark rounded-2xl p-4 space-y-2">
+        <div class="flex justify-between items-center text-xs border-b border-slate-800 pb-2">
+          <div>
+            <div class="font-bold text-white">Join IO Official Channel</div>
+            <span class="text-[10px] text-cyan-400">+50 IO</span>
+          </div>
+          <button class="px-3 py-1 rounded-lg bg-cyan-500 text-slate-950 text-xs font-bold">Start</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SUB-PAGE: NODES / SPIRE -->
+    <section id="sub-spire" class="space-y-4 hidden">
+      <div class="flex items-center gap-2 mb-2">
+        <button onclick="switchTab('mining')" class="text-xs text-cyan-400"><i class="fa-solid fa-chevron-left mr-1"></i> Back</button>
+        <h3 class="font-bold text-sm text-white">Orbit Spire Nodes</h3>
+      </div>
+      <div class="card-dark rounded-2xl p-4 space-y-3">
+        <div class="flex justify-between items-center text-xs">
+          <span class="font-bold text-white">Node #1: Dawn Cluster</span>
+          <span class="text-cyan-400 font-bold">+10 IO/h</span>
+        </div>
+        <div class="grid grid-cols-4 gap-2 text-center text-[10px] pt-1">
+          <div class="bg-slate-900 p-2 rounded-lg border border-cyan-500/30 text-cyan-300">Core 0/2</div>
+          <div class="bg-slate-900 p-2 rounded-lg border border-slate-800 text-slate-500">Pulse 0/2</div>
+          <div class="bg-slate-900 p-2 rounded-lg border border-slate-800 text-slate-500">Coolant 0/2</div>
+          <div class="bg-slate-900 p-2 rounded-lg border border-slate-800 text-slate-500">Heart 0/2</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SUB-PAGE: SUPPORT & TICKETS -->
+    <section id="sub-support" class="space-y-4 hidden">
+      <div class="flex items-center gap-2 mb-2">
+        <button onclick="switchTab('mining')" class="text-xs text-cyan-400"><i class="fa-solid fa-chevron-left mr-1"></i> Back</button>
+        <h3 class="font-bold text-sm text-white">Support & FAQ</h3>
+      </div>
+      <div class="card-dark rounded-2xl p-4 space-y-3">
+        <div class="flex rounded-xl bg-slate-900 p-1 border border-slate-800 text-xs font-semibold">
+          <button id="tabWriteBtn" onclick="toggleSupportTab('write')" class="flex-1 py-1.5 rounded-lg bg-cyan-950 text-cyan-400 border border-cyan-500/40">Write</button>
+          <button id="tabTicketsBtn" onclick="toggleSupportTab('tickets')" class="flex-1 py-1.5 rounded-lg text-slate-400">Tickets</button>
+        </div>
+
+        <div id="supportWriteForm" class="space-y-3">
+          <input type="text" placeholder="Short summary of issue..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white outline-none">
+          <textarea rows="3" placeholder="Transaction hash or issue details..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white outline-none"></textarea>
+          <button onclick="alert('Ticket submitted!')" class="w-full py-2.5 rounded-xl font-bold text-xs btn-gradient text-slate-950">Send Request</button>
+        </div>
+
+        <div id="supportTicketsList" class="hidden text-center py-6 text-xs text-slate-500">
+          <i class="fa-solid fa-ticket text-xl mb-2 block text-slate-600"></i>
+          No support tickets yet.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- CENTER MODAL POPUP FOR SERVICES (MENU) -->
+  <div id="menuModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-end justify-center hidden" onclick="toggleMenuModal(false)">
+    <div class="card-dark w-full max-w-md rounded-t-3xl p-6 space-y-4 border-t border-cyan-500/30" onclick="event.stopPropagation()">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <h3 class="text-sm font-bold text-white"><i class="fa-solid fa-shapes text-cyan-400 mr-2"></i>Platform Sections</h3>
+        <button onclick="toggleMenuModal(false)" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div onclick="openSubPage('sub-staking')" class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 hover:border-cyan-500/40 cursor-pointer">
+          <i class="fa-solid fa-vault text-cyan-400 text-lg mb-1 block"></i>
+          <span class="text-xs font-bold text-white block">Staking</span>
+          <span class="text-[10px] text-cyan-400">+35% APR</span>
+        </div>
+        <div onclick="openSubPage('sub-tasks')" class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 hover:border-cyan-500/40 cursor-pointer">
+          <i class="fa-solid fa-list-check text-cyan-400 text-lg mb-1 block"></i>
+          <span class="text-xs font-bold text-white block">Tasks</span>
+          <span class="text-[10px] text-slate-400">Streak Quests</span>
+        </div>
+        <div onclick="openSubPage('sub-spire')" class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 hover:border-cyan-500/40 cursor-pointer">
+          <i class="fa-solid fa-server text-cyan-400 text-lg mb-1 block"></i>
+          <span class="text-xs font-bold text-white block">Orbit Spire</span>
+          <span class="text-[10px] text-slate-400">Compute Nodes</span>
+        </div>
+        <div onclick="openSubPage('sub-support')" class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 hover:border-cyan-500/40 cursor-pointer">
+          <i class="fa-solid fa-headset text-cyan-400 text-lg mb-1 block"></i>
+          <span class="text-xs font-bold text-white block">Support</span>
+          <span class="text-[10px] text-slate-400">24/7 Desk</span>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Center: Coin & Mining Visual -->
-  <div class="flex flex-col items-center justify-center my-auto py-8">
-    <div class="relative flex items-center justify-center mb-6">
-      <!-- Glow Ring -->
-      <div id="coinGlow" class="w-52 h-52 rounded-full border-2 border-cyan-500/30 flex items-center justify-center mining-active bg-gradient-to-b from-cyan-950/40 to-slate-900/60 backdrop-blur-sm">
-        <!-- Coin Logo -->
-        <img 
-          src="https://raw.githubusercontent.com/ko0888829-dev/io-token-assets/main/1794130857757.jpg" 
-          alt="IO Token" 
-          class="w-40 h-40 rounded-full object-cover shadow-2xl border border-cyan-400/40"
-        />
-      </div>
-    </div>
-
-    <!-- Live Counter -->
-    <span class="text-xs tracking-wider uppercase text-slate-400 mb-1">Mined in current cycle</span>
-    <div class="text-4xl font-black tracking-tight text-cyan-400 mb-2">
-      +<span id="unclaimedIO">0.0000</span> <span class="text-lg font-semibold text-white">IO</span>
-    </div>
-    <div id="statusBadge" class="text-xs px-3 py-1 rounded-full bg-cyan-900/40 text-cyan-300 border border-cyan-700/50">
-      ⚡ 1 နာရီလျှင် 2.5 IO နှုန်းဖြင့် တူးနေသည်
-    </div>
-  </div>
-
-  <!-- Bottom: Progress Bar & Claim Button -->
-  <div class="w-full space-y-4">
-    <!-- Storage Bar -->
-    <div class="space-y-1.5">
-      <div class="flex justify-between text-xs text-slate-400 font-medium">
-        <span>သိုလှောင်ကန် (Storage)</span>
-        <span id="timerText">04:00:00</span>
-      </div>
-      <div class="w-full bg-slate-900 h-3 rounded-full overflow-hidden border border-slate-800 p-0.5">
-        <div id="progressBar" class="bg-gradient-to-r from-cyan-500 to-blue-500 h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
-      </div>
-    </div>
-
-    <!-- Action Button -->
-    <button 
-      id="claimBtn" 
-      onclick="handleClaim()" 
-      class="w-full py-4 rounded-2xl font-bold text-base transition-all duration-200 bg-cyan-500 text-slate-950 shadow-lg shadow-cyan-500/20 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed">
-      📥 Claim IO Token
+  <!-- BOTTOM NAVIGATION BAR -->
+  <nav class="fixed bottom-0 left-0 right-0 h-20 bg-slate-950/95 border-t border-cyan-950/80 backdrop-blur-lg flex items-center justify-around px-2 z-40">
+    <button onclick="switchTab('mining')" id="nav-mining" class="flex flex-col items-center gap-1 active-nav text-slate-400 flex-1">
+      <i class="fa-solid fa-hammer text-base"></i>
+      <span class="text-[10px] font-medium">Mining</span>
     </button>
-  </div>
+    <button onclick="switchTab('exchange')" id="nav-exchange" class="flex flex-col items-center gap-1 text-slate-400 flex-1">
+      <i class="fa-solid fa-store text-base"></i>
+      <span class="text-[10px] font-medium">Exchange</span>
+    </button>
+    
+    <!-- Central Menu Floating Button -->
+    <div class="relative -top-4 flex-1 flex justify-center">
+      <button onclick="toggleMenuModal(true)" class="w-13 h-13 p-3 rounded-full btn-gradient text-slate-950 shadow-lg shadow-cyan-500/40 flex items-center justify-center active:scale-95 transition-all">
+        <i class="fa-solid fa-layer-group text-lg"></i>
+      </button>
+    </div>
 
+    <button onclick="switchTab('friends')" id="nav-friends" class="flex flex-col items-center gap-1 text-slate-400 flex-1">
+      <i class="fa-solid fa-user-group text-base"></i>
+      <span class="text-[10px] font-medium">Friends</span>
+    </button>
+    <button onclick="switchTab('withdraw')" id="nav-withdraw" class="flex flex-col items-center gap-1 text-slate-400 flex-1">
+      <i class="fa-solid fa-wallet text-base"></i>
+      <span class="text-[10px] font-medium">Withdraw</span>
+    </button>
+  </nav>
+
+  <!-- LOGIC & SCRIPTS -->
   <script>
-    // Telegram WebApp Initialization
     const tg = window.Telegram?.WebApp;
     if (tg) {
       tg.ready();
       tg.expand();
       if (tg.initDataUnsafe?.user) {
-        document.getElementById('userName').innerText = tg.initDataUnsafe.user.first_name;
+        document.getElementById('userName').innerText = '@' + (tg.initDataUnsafe.user.username || tg.initDataUnsafe.user.first_name);
       }
     }
 
-    // သတ်မှတ်ချက်များ
-    const CYCLE_DURATION = 4 * 3600; // ၄ နာရီ (စက္ကန့်)
-    const HOURLY_RATE = 2.5;         // ၁ နာရီလျှင် ၂.၅ IO
-    const MAX_CAP = HOURLY_RATE * 4;  // အများဆုံး ၁၀ IO
+    const CYCLE_SECONDS = 4 * 3600;
+    const RATE_HOUR = 2.5;
+    const MAX_UNCLAIMED = RATE_HOUR * 4;
 
-    // Local Storage မှ Data ဆွဲယူခြင်း (API Backend ချိတ်လျှင် Server ထံမှ ယူပါ)
-    let totalBalance = parseFloat(localStorage.getItem('io_total_balance')) || 0.00;
-    let lastClaimTime = parseInt(localStorage.getItem('io_last_claim')) || Date.now();
+    let totalBalance = parseFloat(localStorage.getItem('io_total_bal')) || 0.00;
+    let lastClaim = parseInt(localStorage.getItem('io_last_claim_time')) || Date.now();
 
     function updateMining() {
       const now = Date.now();
-      const elapsedSeconds = Math.floor((now - lastClaimTime) / 1000);
+      const elapsed = Math.floor((now - lastClaim) / 1000);
+      let unclaimed = Math.min((elapsed / 3600) * RATE_HOUR, MAX_UNCLAIMED);
+      let remaining = Math.max(CYCLE_SECONDS - elapsed, 0);
+      let percent = Math.min((elapsed / CYCLE_SECONDS) * 100, 100);
 
-      let unclaimed = (elapsedSeconds / 3600) * HOURLY_RATE;
-      let percent = (elapsedSeconds / CYCLE_DURATION) * 100;
-      let remainingSeconds = CYCLE_DURATION - elapsedSeconds;
+      document.getElementById('unclaimedDisplay').innerText = unclaimed.toFixed(4);
+      document.getElementById('miningTotalBal').innerText = totalBalance.toFixed(4);
+      document.getElementById('miningBar').style.width = percent + '%';
 
-      const claimBtn = document.getElementById('claimBtn');
-      const progressBar = document.getElementById('progressBar');
-      const timerText = document.getElementById('timerText');
-      const unclaimedIO = document.getElementById('unclaimedIO');
-      const statusBadge = document.getElementById('statusBadge');
-      const coinGlow = document.getElementById('coinGlow');
+      const hrs = String(Math.floor(remaining / 3600)).padStart(2, '0');
+      const mins = String(Math.floor((remaining % 3600) / 60)).padStart(2, '0');
+      const secs = String(remaining % 60).padStart(2, '0');
+      document.getElementById('miningTimer').innerText = (remaining === 0) ? "Storage Full" : `${hrs}:${mins}:${secs}`;
 
-      if (elapsedSeconds >= CYCLE_DURATION) {
-        // ၄ နာရီပြည့်ပြီး ရပ်တန့်သည့် အခြေအနေ
-        unclaimed = MAX_CAP;
-        percent = 100;
-        remainingSeconds = 0;
-
-        claimBtn.disabled = false;
-        claimBtn.innerText = "📥 Claim " + MAX_CAP.toFixed(2) + " IO";
-        claimBtn.classList.remove('bg-slate-800', 'text-slate-400');
-        claimBtn.classList.add('bg-cyan-400', 'text-slate-950');
-
-        timerText.innerText = "Storage Full (ပြည့်သွားပါပြီ)";
-        statusBadge.innerText = "⚠️ သိုလှောင်ကန် ပြည့်နေပါသည်! Claim ပြုလုပ်ပါ";
-        statusBadge.className = "text-xs px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40";
-        coinGlow.classList.remove('mining-active');
+      const btn = document.getElementById('claimBtn');
+      if (unclaimed < 0.05) {
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fa-solid fa-hammer"></i> Mining Active...`;
       } else {
-        // ပုံမှန် တူးနေဆဲ အခြေအနေ
-        const hrs = String(Math.floor(remainingSeconds / 3600)).padStart(2, '0');
-        const mins = String(Math.floor((remainingSeconds % 3600) / 60)).padStart(2, '0');
-        const secs = String(remainingSeconds % 60).padStart(2, '0');
-        timerText.innerText = `${hrs}:${mins}:${secs}`;
-
-        // အနည်းဆုံး 0.1 IO မတူးရသေးပါက Claim ပိတ်ထားမည်
-        if (unclaimed < 0.1) {
-          claimBtn.disabled = true;
-          claimBtn.innerText = "⛏️ Mining Active...";
-        } else {
-          claimBtn.disabled = false;
-          claimBtn.innerText = `📥 Claim (${unclaimed.toFixed(2)} IO)`;
-        }
-
-        statusBadge.innerText = "⚡ 1 နာရီလျှင် 2.5 IO နှုန်းဖြင့် တူးနေသည်";
-        statusBadge.className = "text-xs px-3 py-1 rounded-full bg-cyan-900/40 text-cyan-300 border border-cyan-700/50";
-        coinGlow.classList.add('mining-active');
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-bolt"></i> Claim Mined (${unclaimed.toFixed(2)} IO)`;
       }
-
-      unclaimedIO.innerText = unclaimed.toFixed(4);
-      progressBar.style.width = Math.min(percent, 100) + '%';
-      document.getElementById('totalBalance').innerText = totalBalance.toFixed(2);
     }
 
     function handleClaim() {
       const now = Date.now();
-      const elapsedSeconds = Math.floor((now - lastClaimTime) / 1000);
-      let minedAmount = Math.min((elapsedSeconds / 3600) * HOURLY_RATE, MAX_CAP);
+      const elapsed = Math.floor((now - lastClaim) / 1000);
+      let mined = Math.min((elapsed / 3600) * RATE_HOUR, MAX_UNCLAIMED);
+      if (mined <= 0.05) return;
 
-      if (minedAmount <= 0.05) return;
+      totalBalance += mined;
+      lastClaim = Date.now();
+      localStorage.setItem('io_total_bal', totalBalance);
+      localStorage.setItem('io_last_claim_time', lastClaim);
 
-      totalBalance += minedAmount;
-      lastClaimTime = Date.now();
-
-      // သိမ်းဆည်းခြင်း
-      localStorage.setItem('io_total_balance', totalBalance);
-      localStorage.setItem('io_last_claim', lastClaimTime);
-
-      // Telegram Haptic Feedback (ဖုန်းတုန်ခါမှု)
-      if (tg?.HapticFeedback) {
-        tg.HapticFeedback.notificationOccurred('success');
-      }
-
+      if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
       updateMining();
     }
 
-    // ၁ စက္ကန့်တစ်ကြိမ် Timer ပုံမှန် Update လုပ်ခြင်း
+    function switchTab(tab) {
+      ['mining', 'exchange', 'friends', 'withdraw'].forEach(t => {
+        document.getElementById('tab-' + t).classList.add('hidden');
+        document.getElementById('nav-' + t).classList.remove('active-nav');
+      });
+      ['sub-staking', 'sub-tasks', 'sub-spire', 'sub-support'].forEach(s => {
+        document.getElementById(s).classList.add('hidden');
+      });
+
+      document.getElementById('tab-' + tab).classList.remove('hidden');
+      document.getElementById('nav-' + tab).classList.add('active-nav');
+    }
+
+    function toggleMenuModal(open) {
+      document.getElementById('menuModal').classList.toggle('hidden', !open);
+    }
+
+    function openSubPage(pageId) {
+      toggleMenuModal(false);
+      ['tab-mining', 'tab-exchange', 'tab-friends', 'tab-withdraw'].forEach(t => {
+        document.getElementById(t).classList.add('hidden');
+      });
+      ['sub-staking', 'sub-tasks', 'sub-spire', 'sub-support'].forEach(s => {
+        document.getElementById(s).classList.add('hidden');
+      });
+      document.getElementById(pageId).classList.remove('hidden');
+    }
+
+    function toggleSupportTab(type) {
+      const isWrite = type === 'write';
+      document.getElementById('supportWriteForm').classList.toggle('hidden', !isWrite);
+      document.getElementById('supportTicketsList').classList.toggle('hidden', isWrite);
+      document.getElementById('tabWriteBtn').className = isWrite ? 'flex-1 py-1.5 rounded-lg bg-cyan-950 text-cyan-400 border border-cyan-500/40' : 'flex-1 py-1.5 rounded-lg text-slate-400';
+      document.getElementById('tabTicketsBtn').className = !isWrite ? 'flex-1 py-1.5 rounded-lg bg-cyan-950 text-cyan-400 border border-cyan-500/40' : 'flex-1 py-1.5 rounded-lg text-slate-400';
+    }
+
+    function setSwapAmount(ton) {
+      document.getElementById('swapReceive').innerText = `+${(ton * 5000).toLocaleString()} IO`;
+    }
+
+    function copyRefLink() {
+      const code = document.getElementById('refCode').innerText;
+      navigator.clipboard.writeText(`https://t.me/IO_Mining_bot?start=${code}`);
+      alert('Referral link copied!');
+    }
+
+    function handleWithdraw() {
+      const val = parseFloat(document.getElementById('withdrawInput').value);
+      if (!val || val < 100) return alert('Minimum withdrawal is 100 IO.');
+      if (val > totalBalance) return alert('Insufficient IO balance.');
+      totalBalance -= val;
+      localStorage.setItem('io_total_bal', totalBalance);
+      alert('Withdrawal request submitted for ' + val + ' IO!');
+      updateMining();
+    }
+
     setInterval(updateMining, 1000);
     updateMining();
   </script>
