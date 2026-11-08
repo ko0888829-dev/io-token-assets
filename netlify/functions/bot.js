@@ -36,7 +36,7 @@ export async function handler(event, context) {
             // အလယ်က STON.fi DEX တိုက်ရိုက် Swap ခလုတ် နှင့် Community
             [
               { text: "📦 Community", url: "https://t.me/IO_Mining_bot" },
-              { text: "💎 STON.fi (GRAM ⇄ IO)", url: STONFI_SWAP_URL }
+              { text: "💎 STON.fi", url: STONFI_SWAP_URL }
             ],
             // အောက်ဆုံး News Channel
             [
