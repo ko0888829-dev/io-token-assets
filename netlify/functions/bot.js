@@ -11,6 +11,7 @@ export async function handler(event, context) {
       const text = body.message.text;
       const BOT_TOKEN = "9126577611:AAEZDAju0zpZNOi6pUkE6m-2BbG3M6PargY";
       const WEBAPP_URL = "https://io-mining-app.netlify.app";
+      const STONFI_SWAP_URL = "https://app.ston.fi/swap?ft=EQC47093oX5Xhb0xuk2lCr2RhS8rj-vul61u4W2UH58rwL_l&tt=EQDliaNChKznSyglMpfPGetHAHXbSkoQ2XEjmMifVgTK9HkE";
 
       if (text.startsWith("/start")) {
         const welcomeText = 
@@ -28,7 +29,7 @@ export async function handler(event, context) {
             ],
             [
               { text: "📦 Community", url: "https://t.me/IO_Mining_bot" },
-              { text: "💎 STON.fi DEX", url: "https://app.ston.fi" }
+              { text: "💎 STON.fi DEX", url: STONFI_SWAP_URL }
             ],
             [
               { text: "📢 News Channel", url: "https://t.me/IO_Mining_bot" }
