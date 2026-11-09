@@ -31,7 +31,7 @@
 
     .lvl-badge { background: #132742; border: 1px solid var(--accent-gold); color: var(--accent-gold); font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
 
-    /* Anti-Bot Verify Banner */
+    /* Verify Banner */
     .verify-banner { background: linear-gradient(90deg, #221a08, #131d2e); border: 1px solid var(--accent-gold); border-radius: 16px; padding: 14px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
     .verify-banner.verified { border-color: #2ed573; background: #081d14; }
 
@@ -41,12 +41,12 @@
     .balance-val { font-size: 30px; font-weight: 800; }
     .balance-val span { font-size: 16px; color: var(--accent-cyan); }
 
-    /* Level League Box */
+    /* League */
     .league-card { background: #0c182b; border: 1px solid #1e3557; border-radius: 14px; padding: 12px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
     .league-info { display: flex; align-items: center; gap: 10px; }
     .league-icon { width: 38px; height: 38px; background: #f59e0b22; border: 1px solid var(--accent-gold); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--accent-gold); font-size: 12px; }
 
-    /* Mining Progress */
+    /* Mining */
     .mining-val { font-size: 26px; font-weight: 800; color: var(--accent-cyan); margin: 6px 0; }
     .progress-bar-bg { width: 100%; height: 7px; background: #132238; border-radius: 10px; overflow: hidden; margin: 10px 0; }
     .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan)); }
@@ -82,7 +82,7 @@
     .lvl-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #162438; font-size: 13px; }
     .lvl-row.active-user { background: #1f1b0a; border-radius: 8px; padding: 10px 8px; border: 1px solid var(--accent-gold); margin: 4px 0; }
 
-    /* Withdraw View Elements */
+    /* Withdraw Details */
     .status-badge { font-size: 11px; padding: 3px 8px; border-radius: 6px; font-weight: 700; }
     .status-processing { background: #3b2c0f; color: var(--accent-gold); border: 1px solid var(--accent-gold); }
     .status-completed { background: #0a2d21; color: #2ed573; border: 1px solid #2ed573; }
@@ -173,7 +173,7 @@
     </div>
   </div>
 
-  <!-- TAB 2: SHOP (REAL STON.FI RATE) -->
+  <!-- TAB 2: SHOP -->
   <div id="tab-shop" class="tab-content">
     <div class="card">
       <div class="card-title">
@@ -238,7 +238,7 @@
     </div>
   </div>
 
-  <!-- TAB 4: FRIENDS (QUALIFIED REFERRALS) -->
+  <!-- TAB 4: FRIENDS -->
   <div id="tab-friends" class="tab-content">
     <div class="card">
       <h3 style="margin-bottom: 6px;">Invite Friends</h3>
@@ -263,9 +263,7 @@
         <span style="font-weight: 700; color: #fff;">Qualified Referrals (<span id="ref-count">0</span>)</span>
         <span style="color: var(--accent-cyan);">Bonus: <span id="ref-bonus-earned">0.00</span> IO</span>
       </div>
-      <div id="ref-list-container">
-        <!-- Qualified Refs Rendered -->
-      </div>
+      <div id="ref-list-container"></div>
     </div>
   </div>
 
@@ -291,7 +289,7 @@
       </div>
     </div>
 
-    <!-- Active Claim -->
+    <!-- Active Claim (Processing Status) -->
     <div class="card" id="active-claim-card" style="display: none; border-color: var(--accent-gold);">
       <div class="card-title">
         <span style="font-weight: 700; color: #fff;" id="active-claim-id">Active Claim</span>
@@ -339,7 +337,7 @@
       <button id="submit-withdraw-btn" class="btn-main btn-gold" onclick="submitWithdrawal()">Request Withdrawal</button>
     </div>
 
-    <!-- Clean History -->
+    <!-- Real Submissions Only History -->
     <div class="card">
       <div class="card-title">
         <span style="font-weight: 700; color: #fff;">Withdrawal History</span>
@@ -352,7 +350,7 @@
   </div>
 </div>
 
-<!-- 500 Levels System Modal -->
+<!-- 500 Levels Modal -->
 <div class="modal" id="lvl-modal">
   <div class="modal-content">
     <div class="modal-header">
@@ -459,6 +457,19 @@
     currentLevel = resolved.lvl;
     currentSpeed = resolved.speed;
     currentBoost = resolved.boost;
+
+    // အကယ်၍ User ရဲ့ Wallet ထဲ IO Token ဝင်လာပြီး အရင်က Request တင်ထားတာ ရှိလျှင် Auto-Complete ပြုလုပ်ပေးခြင်း
+    if (hold > 0 && localStorage.getItem('io_active_claim')) {
+      let activeClaim = JSON.parse(localStorage.getItem('io_active_claim'));
+      let history = JSON.parse(localStorage.getItem('io_withdraw_history')) || [];
+      history = history.map(item => {
+        if (item.id === activeClaim.id) item.status = "Completed";
+        return item;
+      });
+      localStorage.setItem('io_withdraw_history', JSON.stringify(history));
+      localStorage.removeItem('io_active_claim');
+      renderWithdrawals();
+    }
 
     document.getElementById('top-lvl-text').innerText = `Lvl ${currentLevel}`;
     document.getElementById('league-lvl-box').innerText = `LV ${currentLevel}`;
@@ -590,7 +601,7 @@
     }
   }
 
-  // 3. TON Connect & Real Wallet Hold
+  // 3. TON Connect
   const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
     manifestUrl: 'https://io-mining-app.netlify.app/tonconnect-manifest.json',
     buttonRootId: 'ton-connect-btn'
@@ -619,7 +630,7 @@
     }
   });
 
-  // 4. Persistent Mining Logic
+  // 4. Mining Logic
   const CYCLE_SECONDS = 4 * 3600;
   let totalBalance = parseFloat(localStorage.getItem('io_total_balance')) || 0;
   let miningStart = parseInt(localStorage.getItem('io_mining_start')) || Date.now();
@@ -670,7 +681,7 @@
   calculateLevelByHold(0);
   updateMining();
 
-  // 5. Withdrawal Logic with Sequential ID (#IO-1, #IO-2...) and One-Click Callback
+  // 5. Withdrawal Logic with Sequential ID (#IO-1, #IO-2...)
   function setWithdrawVal(val) {
     if (val === 'MAX') {
       const maxPossible = Math.min(100000, totalBalance);
@@ -765,7 +776,7 @@
       return;
     }
 
-    // Sequential ID Generator (#IO-1, #IO-2...)
+    // Sequential ID (#IO-1, #IO-2...)
     let currentSeq = parseInt(localStorage.getItem('io_seq_counter')) || 0;
     currentSeq += 1;
     localStorage.setItem('io_seq_counter', currentSeq);
@@ -783,7 +794,7 @@
     history.unshift({ id: claimId, date: "Just now", amount: amount, net: net, status: "Processing" });
     localStorage.setItem('io_withdraw_history', JSON.stringify(history));
 
-    // Admin Telegram သို့ တိုက်ရိုက် သတိပေးစာ ပို့ခြင်း (Inline 'Mark as Paid' Button ဖြင့်)
+    // Admin Telegram ဆီ အကြောင်းကြားစာ ပို့ခြင်း
     const alertMsg = 
       `🚨 <b>NEW WITHDRAWAL REQUEST</b>\n\n` +
       `🆔 <b>Claim ID:</b> <code>#${claimId}</code>\n` +
@@ -792,15 +803,8 @@
       `📉 <b>Fee (5%):</b> <b>${fee.toLocaleString()} IO</b>\n` +
       `💎 <b>Payout Net:</b> <b>${net.toLocaleString()} IO</b>\n\n` +
       `📬 <b>Payout Address:</b>\n<code>${userConnectedWallet}</code>\n\n` +
-      `👉 <i>Copy address & send tokens, then click the button below to confirm:</i>`;
-
-    const inlineMarkup = {
-      inline_keyboard: [
-        [
-          { text: `✅ Mark as Paid (#${claimId})`, callback_data: `paid_${telegramUserId}_${claimId}_${net}` }
-        ]
-      ]
-    };
+      `👉 <i>Copy this command to complete payout:</i>\n` +
+      `<code>/done ${telegramUserId} ${claimId} ${net} &lt;TX_HASH&gt;</code>`;
 
     fetch(`https://api.telegram.org/bot${ADMIN_BOT_TOKEN}/sendMessage`, {
       method: "POST",
@@ -808,8 +812,7 @@
       body: JSON.stringify({
         chat_id: ADMIN_TELEGRAM_ID,
         text: alertMsg,
-        parse_mode: "HTML",
-        reply_markup: inlineMarkup
+        parse_mode: "HTML"
       })
     });
 
@@ -818,7 +821,7 @@
     alert(`Withdrawal request #${claimId} submitted successfully! Admin will process your payout.`);
   }
 
-  // 6. STON.fi DEX Rate & Swap
+  // 6. STON.fi Swap
   const REAL_STONFI_RATE = 41.704;
   let selectedGram = 1;
 
@@ -917,7 +920,6 @@
     });
   }
 
-  // Render Qualified Referrals List
   function renderQualifiedRefs() {
     const container = document.getElementById('ref-list-container');
     const myRefs = JSON.parse(localStorage.getItem('io_my_qualified_refs')) || [];
@@ -959,9 +961,7 @@
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     document.getElementById(tabId).classList.add('active');
     el.classList.add('active');
-    if (tabId === 'tab-friends') {
-      renderQualifiedRefs();
-    }
+    if (tabId === 'tab-friends') renderQualifiedRefs();
   }
 </script>
 </body>
