@@ -1,30 +1,27 @@
+const BOT_TOKEN = "9126577611:AAEZDAju0zpZNOi6pUkE6m-2BbG3M6PargY";
+
 export async function handler(event, context) {
-  // Webhook Health Check
   if (event.httpMethod !== "POST") {
-    return { 
-      statusCode: 200, 
-      body: JSON.stringify({ status: "alive", message: "IO Bot is online" }) 
-    };
+    return { statusCode: 200, body: "IO Mining Bot Live" };
   }
 
-  const BOT_TOKEN = "9126577611:AAEZDAju0zpZNOi6pUkE6m-2BbG3M6PargY";
-  const TELEGRAM_API = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-
   try {
-    const update = JSON.parse(event.body);
+    const body = JSON.parse(event.body || "{}");
+    const msg = body.message;
 
-    if (update.message && update.message.text) {
-      const chatId = update.message.chat.id;
-      const text = update.message.text.trim();
+    if (msg && msg.text) {
+      const chatId = msg.chat.id;
+      const text = msg.text.trim();
 
       // 1. /done သို့မဟုတ် /payout Command
       if (text.startsWith("/done") || text.startsWith("/payout")) {
+        // Space, newline အားလုံး split လုပ်ခြင်း
         const parts = text.split(/\s+/);
 
         let targetId = chatId;
-        let claimId = "IO-1";
-        let amount = "9,832.5";
-        let txHash = "tonviewer_tx";
+        let claimId = "IO-Payout";
+        let amount = "0";
+        let txHash = "";
 
         if (parts.length >= 5) {
           targetId = parts[1].trim();
@@ -37,17 +34,16 @@ export async function handler(event, context) {
           txHash = parts[3].trim();
         }
 
-        // Parse Mode မသုံးဘဲ ရိုးရိုး Text စစ်စစ်ဖြင့် ပို့ခြင်း (Telegram Syntax Error ၁၀၀% ကင်းဝေးစေရန်)
         const receiptText = 
           "✅ Вывод средств успешно выполнен!\n" +
           "━━━━━━━━━━━━━━━━━━━━\n" +
-          "🆔 Заявка: " + claimId + "\n" +
+          "🆔 Заявка: #" + claimId.replace("#", "") + "\n" +
           "💰 Выплачено на кошелёк: " + amount + " IO\n" +
           "🔗 Хеш транзакции:\n" + txHash + "\n\n" +
           "🔍 Tonviewer: https://tonviewer.com/transaction/" + txHash;
 
-        // Command ရိုက်ပို့သူထံ စာပြန်ပို့ခြင်း
-        await fetch(TELEGRAM_API, {
+        // Command ရိုက်ပို့သူဆီ ပြေစာ ပြန်ပို့ခြင်း
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -57,10 +53,10 @@ export async function handler(event, context) {
           })
         });
 
-        // Target User ထံသို့လည်း စာပို့ခြင်း
+        // Target User ဆီသို့လည်း သီးခြား ပို့ပေးခြင်း
         if (String(targetId) !== String(chatId)) {
           try {
-            await fetch(TELEGRAM_API, {
+            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
@@ -69,7 +65,7 @@ export async function handler(event, context) {
                 disable_web_page_preview: false
               })
             });
-          } catch(e) {}
+          } catch(err) {}
         }
 
         return { statusCode: 200, body: "OK" };
@@ -94,7 +90,7 @@ export async function handler(event, context) {
           "🔸 Invite friends — get 5% referral claims\n\n" +
           "Tap the button below to start mining!\n👇";
 
-        await fetch(TELEGRAM_API, {
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -118,7 +114,7 @@ export async function handler(event, context) {
     }
 
     return { statusCode: 200, body: "No Message" };
-  } catch (err) {
-    return { statusCode: 200, body: err.toString() };
+  } catch (e) {
+    return { statusCode: 200, body: "Error Handled" };
   }
 }
