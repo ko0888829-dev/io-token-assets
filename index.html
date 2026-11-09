@@ -74,7 +74,7 @@
     .btn-gold { background: linear-gradient(90deg, #f59e0b, #d97706); color: #000; font-weight: 800; }
     .btn-mining { background: #10344d; color: var(--accent-cyan); }
 
-    /* 500 Levels Modal */
+    /* Modal */
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 200; justify-content: center; align-items: flex-end; }
     .modal.active { display: flex; }
     .modal-content { background: #0c1421; width: 100%; max-width: 480px; border-radius: 24px 24px 0 0; padding: 20px; border-top: 1px solid var(--card-border); max-height: 85vh; overflow-y: auto; }
@@ -264,7 +264,7 @@
         <span style="color: var(--accent-cyan);">Bonus: <span id="ref-bonus-earned">0.00</span> IO</span>
       </div>
       <div id="ref-list-container">
-        <!-- Rendered via Local/Cloud Sync -->
+        <!-- Qualified Refs Rendered -->
       </div>
     </div>
   </div>
@@ -339,7 +339,7 @@
       <button id="submit-withdraw-btn" class="btn-main btn-gold" onclick="submitWithdrawal()">Request Withdrawal</button>
     </div>
 
-    <!-- Withdrawal History (Real Submissions Only) -->
+    <!-- Real Submissions Only History -->
     <div class="card">
       <div class="card-title">
         <span style="font-weight: 700; color: #fff;">Withdrawal History</span>
@@ -562,7 +562,6 @@
       localStorage.setItem('io_is_verified', 'true');
       updateVerifyUI();
 
-      // ၁။ Admin ဆီ Verification Alert ပို့ခြင်း
       fetch(`https://api.telegram.org/bot${ADMIN_BOT_TOKEN}/sendMessage`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -573,7 +572,6 @@
         })
       });
 
-      // ၂။ Inviter ရှိပါက Inviter ဆီ Ref Bonus Alert ချက်ချင်း ပို့ပေးခြင်း
       const inviter = localStorage.getItem('io_my_inviter');
       if (inviter) {
         fetch(`https://api.telegram.org/bot${ADMIN_BOT_TOKEN}/sendMessage`, {
@@ -673,7 +671,7 @@
   calculateLevelByHold(0);
   updateMining();
 
-  // 5. Withdrawal Logic with Instant Telegram Notification
+  // 5. Withdrawal Logic with Instant Telegram Notification & Command Helper
   function setWithdrawVal(val) {
     if (val === 'MAX') {
       const maxPossible = Math.min(100000, totalBalance);
@@ -781,6 +779,7 @@
     history.unshift({ id: claimId, date: "Just now", amount: amount, net: net, status: "Processing" });
     localStorage.setItem('io_withdraw_history', JSON.stringify(history));
 
+    // Admin ဆီသို့ Telegram Alert ပေးပို့ခြင်း (Admin အဆင်ပြေစေရန် တစ်ခါတည်း Command ပါ တွဲလျက် ထည့်သွင်းထားသည်)
     const alertMsg = 
       `🚨 *NEW WITHDRAWAL REQUEST*\n\n` +
       `🆔 Claim ID: \`#${claimId}\`\n` +
@@ -789,7 +788,8 @@
       `📉 Fee (5%): *${fee.toLocaleString()} IO*\n` +
       `💎 *Payout Net*: *${net.toLocaleString()} IO*\n\n` +
       `📬 *Payout Address*:\n\`${userConnectedWallet}\`\n\n` +
-      `👉 Copy this address and send *${net.toLocaleString()} IO* from your wallet!`;
+      `👉 *Send IO from wallet, then copy & paste this command to complete:*\n` +
+      `\`/payout ${telegramUserId} ${claimId} ${net} <TX_HASH>\``;
 
     fetch(`https://api.telegram.org/bot${ADMIN_BOT_TOKEN}/sendMessage`, {
       method: "POST",
@@ -910,9 +910,7 @@
     const container = document.getElementById('ref-list-container');
     const myRefs = JSON.parse(localStorage.getItem('io_my_qualified_refs')) || [];
     
-    // Check if current user is admin viewing demonstration or has real referrals
     if (telegramUserId === "5330848428") {
-      // Admin အကောင့်အတွက် စမ်းသပ် Verified ဖြစ်ထားပြီးသော @max_official_1_1 အကောင့်ကို အလိုအလျောက် ပေါင်းထည့်ပြသခြင်း
       if (!myRefs.some(r => r.id === "max_official_1_1")) {
         myRefs.push({ id: "max_official_1_1", name: "@max_official_1_1", hold: 1014, bonus: 10.0 });
         localStorage.setItem('io_my_qualified_refs', JSON.stringify(myRefs));
