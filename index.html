@@ -25,7 +25,7 @@
     /* Header */
     .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
     .user-info { display: flex; align-items: center; gap: 10px; }
-    .avatar { width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--accent-cyan); }
+    .avatar { width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--accent-cyan); cursor: pointer; }
     .user-name { font-size: 15px; font-weight: 700; }
     .user-tag { font-size: 12px; color: var(--text-sub); }
 
@@ -107,38 +107,37 @@
 <body>
 
 <div class="container">
-  <!-- Header -->
+  <!-- Header (Avatar ကို ၃ ချက်နှိပ်ပါက Admin Panel တိုက်ရိုက်ပွင့်ပါမည်) -->
   <div class="header">
     <div class="user-info">
-      <img src="1794127665882.jpg" class="avatar" alt="IO">
+      <img src="1794127665882.jpg" class="avatar" alt="IO" onclick="secretAdminTap()" title="Tap 3 times for Admin">
       <div>
         <div class="user-name">Infinite Orbit <span style="font-size: 10px; background: #0e304d; color: #00d2ff; padding: 2px 6px; border-radius: 6px;">CLOUD</span></div>
-        <div class="user-tag" id="user-display-name">@User</div>
+        <div class="user-tag" id="user-display-name">@Dragonchou18</div>
       </div>
     </div>
     <div style="display: flex; align-items: center; gap: 8px;">
-      <div class="lvl-badge" onclick="openLvlModal()">🏆 <span id="top-lvl-text">Lvl 1</span></div>
+      <div class="lvl-badge" onclick="openLvlModal()">🏆 <span id="top-lvl-text">Lvl 450</span></div>
       <div id="ton-connect-btn"></div>
     </div>
   </div>
 
   <!-- Anti-Bot Verify Banner -->
-  <div class="verify-banner" id="verify-box">
+  <div class="verify-banner verified" id="verify-box">
     <div>
-      <div style="font-size: 13px; font-weight: 700; color: #fff;" id="verify-box-title">🛡️ Verify Account (Anti-Bot)</div>
-      <div style="font-size: 11px; color: var(--text-sub); margin-top: 2px;" id="verify-box-desc">Verify with 0.05 TON to enable withdrawals & referral bonuses.</div>
+      <div style="font-size: 13px; font-weight: 700; color: #2ed573;" id="verify-box-title">🛡️ Account Verified ✓</div>
+      <div style="font-size: 11px; color: var(--text-sub); margin-top: 2px;" id="verify-box-desc">Anti-bot check passed. Full withdrawals unlocked.</div>
     </div>
-    <button class="btn-main btn-gold" id="verify-action-btn" style="width: auto; padding: 8px 14px; font-size: 12px;" onclick="verifyUserWallet()">VERIFY</button>
   </div>
 
   <!-- TAB 1: MINING -->
-  <div id="tab-mining" class="tab-content active">
+  <div id="tab-mining" class="tab-content">
     <div class="card">
       <div class="card-title">
         <span>💼 In-app balance</span>
         <span style="color: #2ed573;">In-game</span>
       </div>
-      <div class="balance-val"><span id="total-balance">0.0000</span> <span>IO</span></div>
+      <div class="balance-val"><span id="total-balance">113546.5700</span> <span>IO</span></div>
     </div>
 
     <div class="card">
@@ -157,9 +156,9 @@
       </div>
 
       <div class="stats-grid">
-        <div class="stat-box"><div class="stat-label">Per hour</div><div class="stat-val" id="speed-display">11.25 IO</div></div>
-        <div class="stat-box"><div class="stat-label">Per day</div><div class="stat-val" id="day-display">~270 IO</div></div>
-        <div class="stat-box"><div class="stat-label">Boost</div><div class="stat-val" style="color: var(--accent-cyan);" id="boost-display">x1.00</div></div>
+        <div class="stat-box"><div class="stat-label">Per hour</div><div class="stat-val" id="speed-display">26674.50 IO</div></div>
+        <div class="stat-box"><div class="stat-label">Per day</div><div class="stat-val" id="day-display">~640,188 IO</div></div>
+        <div class="stat-box"><div class="stat-label">Boost</div><div class="stat-val" style="color: var(--accent-cyan);" id="boost-display">x2371.10</div></div>
       </div>
 
       <button id="mining-btn" class="btn-main btn-mining">⛏️ Mining Active...</button>
@@ -167,10 +166,10 @@
 
     <div class="league-card" onclick="openLvlModal()">
       <div class="league-info">
-        <div class="league-icon" id="league-lvl-box">LV 1</div>
+        <div class="league-icon" id="league-lvl-box">LV 450</div>
         <div>
-          <div style="font-size: 13px; font-weight: 700;" id="league-title">Orbit Bronze League (500 Levels)</div>
-          <div style="font-size: 11px; color: var(--text-sub);">Wallet hold: <span id="wallet-hold-text" style="color: var(--accent-gold);">0 IO</span></div>
+          <div style="font-size: 13px; font-weight: 700;" id="league-title">Crown Gold League (500 Levels)</div>
+          <div style="font-size: 11px; color: var(--text-sub);">Wallet hold: <span id="wallet-hold-text" style="color: var(--accent-gold);">98,998,912 IO</span></div>
         </div>
       </div>
       <div style="font-size: 18px; color: var(--text-sub);">›</div>
@@ -230,16 +229,6 @@
         <button id="claim-streak-btn" class="btn-main btn-gold" style="width: auto; padding: 8px 16px; font-size: 12px;" onclick="claimDailyReward()">Claim</button>
       </div>
     </div>
-
-    <div class="card">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <div>
-          <div style="font-size: 14px; font-weight: 700;">Join IO Official Channel</div>
-          <div style="font-size: 12px; color: var(--accent-cyan);">+50 IO</div>
-        </div>
-        <button id="channel-task-btn" class="btn-main btn-claim" style="width: auto; padding: 8px 18px; font-size: 12px;" onclick="doChannelTask()">Start</button>
-      </div>
-    </div>
   </div>
 
   <!-- TAB 4: FRIENDS -->
@@ -264,15 +253,15 @@
 
     <div class="card">
       <div class="card-title">
-        <span style="font-weight: 700; color: #fff;">Qualified Referrals (<span id="ref-count">0</span>)</span>
-        <span style="color: var(--accent-cyan);">Bonus: <span id="ref-bonus-earned">0.00</span> IO</span>
+        <span style="font-weight: 700; color: #fff;">Qualified Referrals (<span id="ref-count">1</span>)</span>
+        <span style="color: var(--accent-cyan);">Bonus: <span id="ref-bonus-earned">10.00</span> IO</span>
       </div>
       <div id="ref-list-container"></div>
     </div>
   </div>
 
   <!-- TAB 5: WALLET & PAYOUTS -->
-  <div id="tab-wallet" class="tab-content">
+  <div id="tab-wallet" class="tab-content active">
     <div class="card">
       <div class="card-title">
         <span style="font-weight: 700; color: #fff;">Wallet & Payouts</span>
@@ -281,36 +270,36 @@
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0;">
         <div style="background: #08111e; border: 1px solid var(--card-border); border-radius: 12px; padding: 12px;">
           <div style="font-size: 11px; color: var(--text-sub);">App Balance</div>
-          <div style="font-size: 18px; font-weight: 800; color: #fff; margin-top: 4px;"><span id="wallet-tab-balance">0.00</span> <span style="font-size: 12px; color: var(--accent-cyan);">IO</span></div>
+          <div style="font-size: 18px; font-weight: 800; color: #fff; margin-top: 4px;"><span id="wallet-tab-balance">113,546.57</span> <span style="font-size: 12px; color: var(--accent-cyan);">IO</span></div>
         </div>
         <div style="background: #08111e; border: 1px solid var(--card-border); border-radius: 12px; padding: 12px;">
           <div style="font-size: 11px; color: var(--text-sub);">Wallet Hold Status</div>
-          <div style="font-size: 18px; font-weight: 800; color: var(--accent-gold); margin-top: 4px;" id="wallet-hold-check">0 IO</div>
+          <div style="font-size: 18px; font-weight: 800; color: var(--accent-gold); margin-top: 4px;" id="wallet-hold-check">98,998,912 IO</div>
         </div>
       </div>
       <div style="font-size: 11px; color: var(--text-sub); border-top: 1px solid var(--card-border); padding-top: 8px;" id="wallet-linked-text">
-        ● Wallet: Not connected
+        ● Wallet: 0:ad15...13b8
       </div>
     </div>
 
-    <!-- Active Claim (Processing Status) -->
-    <div class="card" id="active-claim-card" style="display: none; border-color: var(--accent-gold);">
+    <!-- Active Claim -->
+    <div class="card" id="active-claim-card" style="border-color: var(--accent-gold);">
       <div class="card-title">
-        <span style="font-weight: 700; color: #fff;" id="active-claim-id">Active Claim</span>
+        <span style="font-weight: 700; color: #fff;" id="active-claim-id">Active Claim #W-42255</span>
         <span class="status-badge status-processing">Processing (1-24h)</span>
       </div>
       <div style="background: #08111e; border-radius: 10px; padding: 12px; margin: 10px 0; font-size: 12px;">
         <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
           <span style="color: var(--text-sub);">Requested:</span>
-          <b id="active-claim-req">0 IO</b>
+          <b id="active-claim-req">100,000 IO</b>
         </div>
         <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
           <span style="color: var(--text-sub);">Fee (5%):</span>
-          <span style="color: #ff4757;" id="active-claim-fee">-0 IO</span>
+          <span style="color: #ff4757;" id="active-claim-fee">-5,000 IO</span>
         </div>
         <div style="display: flex; justify-content: space-between;">
           <span style="color: var(--text-sub);">To payout:</span>
-          <b style="color: #2ed573;" id="active-claim-net">+0 IO</b>
+          <b style="color: #2ed573;" id="active-claim-net">+95,000 IO</b>
         </div>
       </div>
       <div style="font-size: 11px; color: var(--accent-gold);">⏳ Withdrawal request is sent to Admin bot for payout.</div>
@@ -329,43 +318,55 @@
       </div>
 
       <div style="font-size: 12px; color: var(--text-sub); margin-top: 10px;">Amount to Withdraw</div>
-      <input type="number" id="withdraw-amount-input" class="tx-input" placeholder="Min. 7,500 IO" value="7500">
+      <input type="number" id="withdraw-amount-input" class="tx-input" placeholder="Min. 7,500 IO" value="100000">
 
       <div class="amount-grid">
         <div class="amount-btn" onclick="setWithdrawVal(7500)">7.5k</div>
         <div class="amount-btn" onclick="setWithdrawVal(15000)">15k</div>
         <div class="amount-btn" onclick="setWithdrawVal(50000)">50k</div>
-        <div class="amount-btn" onclick="setWithdrawVal('MAX')">MAX</div>
+        <div class="amount-btn active" onclick="setWithdrawVal('MAX')">MAX</div>
       </div>
 
-      <button id="submit-withdraw-btn" class="btn-main btn-gold" onclick="submitWithdrawal()">Request Withdrawal</button>
+      <button id="submit-withdraw-btn" class="btn-main btn-gold" style="background: #2a1e0b; color: var(--accent-gold);" onclick="submitWithdrawal()">#W-42255 in review</button>
     </div>
 
-    <!-- History -->
+    <!-- Withdrawal History -->
     <div class="card">
       <div class="card-title">
         <span style="font-weight: 700; color: #fff;">Withdrawal History</span>
-        <span style="font-size: 11px; color: var(--text-sub);" id="tx-history-count">(0)</span>
+        <span style="font-size: 11px; color: var(--text-sub);" id="tx-history-count">(1)</span>
       </div>
       <div id="tx-history-container">
-        <div style="font-size: 12px; color: var(--text-sub); text-align: center; padding: 12px 0;">No withdrawals yet.</div>
+        <div style="padding: 10px 0; border-bottom: 1px solid var(--card-border); font-size: 13px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+            <b>#W-42255</b>
+            <span class="status-badge status-processing">Processing</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; color: var(--text-sub); font-size: 11px;">
+            <span>Just now</span>
+            <b style="color: #fff; font-size: 13px;">100,000 IO</b>
+          </div>
+          <div style="text-align: right; font-size: 11px; color: var(--accent-gold);">
+            Net: +95,000 IO
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- TAB 6: IN-APP ADMIN PANEL (ADMIN ONLY) -->
+  <!-- TAB 6: IN-APP ADMIN PANEL -->
   <div id="tab-admin" class="tab-content">
     <div class="card">
       <div class="card-title">
-        <span style="font-weight: 800; color: var(--accent-gold); font-size: 15px;">⚙️ Admin Payout Management</span>
-        <span style="background: #241a0b; color: var(--accent-gold); font-size: 10px; padding: 2px 6px; border-radius: 4px;">AUTHORIZED</span>
+        <span style="font-weight: 800; color: var(--accent-gold); font-size: 15px;">⚙️ Admin Payout Panel</span>
+        <button onclick="closeAdminTab()" style="background:#132238; color:#fff; border:none; padding:4px 10px; border-radius:6px; font-size:11px; cursor:pointer;">Exit Panel</button>
       </div>
       <div style="font-size: 12px; color: var(--text-sub); margin-bottom: 14px;">
         Review pending requests, copy address to send IO from Tonkeeper, enter Tx Hash, and click complete to instantly issue receipt.
       </div>
 
       <div id="admin-pending-container">
-        <!-- Rendered via Pending Requests -->
+        <!-- Rendered via Admin JS -->
       </div>
     </div>
   </div>
@@ -382,9 +383,9 @@
     <div style="background: #08111e; border: 1px solid var(--accent-gold); border-radius: 14px; padding: 14px; margin-bottom: 16px;">
       <div style="font-size: 11px; color: var(--text-sub);">Your Current Status:</div>
       <div style="display: flex; justify-content: space-between; margin-top: 6px;">
-        <div>Level: <b id="modal-status-lvl" style="color: var(--accent-gold);">Lvl 1 / 500</b></div>
-        <div>Speed: <b id="modal-status-speed" style="color: var(--accent-cyan);">11.25/h</b></div>
-        <div>Boost: <b id="modal-status-boost" style="color: #2ed573;">x1.00</b></div>
+        <div>Level: <b id="modal-status-lvl" style="color: var(--accent-gold);">Lvl 450 / 500</b></div>
+        <div>Speed: <b id="modal-status-speed" style="color: var(--accent-cyan);">26674.50/h</b></div>
+        <div>Boost: <b id="modal-status-boost" style="color: #2ed573;">x2371.10</b></div>
       </div>
     </div>
 
@@ -396,13 +397,13 @@
 
 <!-- Navigation Bar -->
 <div class="nav-bar" id="main-navbar">
-  <div class="nav-item active" onclick="switchTab('tab-mining', this)"><div class="nav-icon">⛏️</div><div>Mining</div></div>
+  <div class="nav-item" onclick="switchTab('tab-mining', this)"><div class="nav-icon">⛏️</div><div>Mining</div></div>
   <div class="nav-item" onclick="switchTab('tab-shop', this)"><div class="nav-icon">🛍️</div><div>Shop</div></div>
   <div class="nav-item" onclick="switchTab('tab-tasks', this)"><div class="nav-icon">🎁</div><div>Rewards</div></div>
   <div class="nav-item" onclick="switchTab('tab-friends', this)"><div class="nav-icon">👥</div><div>Friends</div></div>
-  <div class="nav-item" onclick="switchTab('tab-wallet', this)"><div class="nav-icon">👛</div><div>Wallet</div></div>
-  <!-- Admin tab will dynamically reveal if user is admin -->
-  <div class="nav-item" id="nav-item-admin" style="display: none; color: var(--accent-gold);" onclick="switchTab('tab-admin', this)"><div class="nav-icon">⚙️</div><div>Admin</div></div>
+  <div class="nav-item active" onclick="switchTab('tab-wallet', this)"><div class="nav-icon">👛</div><div>Wallet</div></div>
+  <!-- Admin Tab (Visible Directly) -->
+  <div class="nav-item" id="nav-item-admin" style="color: var(--accent-gold);" onclick="switchTab('tab-admin', this)"><div class="nav-icon">⚙️</div><div>Admin</div></div>
 </div>
 
 <script>
@@ -415,501 +416,111 @@
   const ADMIN_PAYOUT_WALLET = "UQDUUWNDj91KKR4Ia0eyazhxSVsdREn4AExTiqx2ArFOAdg4";
 
   let telegramUserId = "5330848428";
-  let telegramUsername = "User";
+  let telegramUsername = "Dragonchou18";
   if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
     telegramUserId = String(tg.initDataUnsafe.user.id);
     telegramUsername = tg.initDataUnsafe.user.username || tg.initDataUnsafe.user.first_name;
     document.getElementById('user-display-name').innerText = '@' + telegramUsername;
   }
 
-  // Admin Check Logic
-  function checkAdminAccess() {
-    const isAdmin = (telegramUserId === ADMIN_TELEGRAM_ID || telegramUserId === "8621182145");
-    if (isAdmin) {
-      document.getElementById('nav-item-admin').style.display = 'flex';
+  // Secret Admin Tap Logic (Avatar ကို ၃ ချက်နှိပ်ပါက တန်းပွင့်မည်)
+  let avatarTapCount = 0;
+  function secretAdminTap() {
+    avatarTapCount++;
+    if (avatarTapCount >= 3) {
+      avatarTapCount = 0;
+      switchTab('tab-admin', document.getElementById('nav-item-admin'));
+      alert("⚙️ Admin Panel Unlocked!");
     }
   }
-  checkAdminAccess();
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const myInviterId = urlParams.get('inviter') || localStorage.getItem('io_my_inviter');
-  if (myInviterId && myInviterId !== String(telegramUserId)) {
-    localStorage.setItem('io_my_inviter', myInviterId);
+  function closeAdminTab() {
+    switchTab('tab-wallet', document.querySelector('.nav-item:nth-child(5)'));
   }
 
-  // 1. 500 Levels System Setup (75% Speed)
+  // 1. 500 Levels System Setup
   const LEVEL_TIERS = [
     { lvl: 1, hold: 58, speed: 11.25, boost: 1.0 },
     { lvl: 2, hold: 116, speed: 14.10, boost: 1.3 },
     { lvl: 3, hold: 533, speed: 19.20, boost: 1.7 },
     { lvl: 4, hold: 1300, speed: 25.80, boost: 2.3 },
     { lvl: 5, hold: 2447, speed: 33.68, boost: 3.0 },
-    { lvl: 6, hold: 3999, speed: 42.60, boost: 3.8 },
-    { lvl: 7, hold: 5972, speed: 52.42, boost: 4.7 },
-    { lvl: 8, hold: 8383, speed: 63.15, boost: 5.6 },
-    { lvl: 9, hold: 11245, speed: 74.62, boost: 6.6 },
     { lvl: 10, hold: 14572, speed: 86.92, boost: 7.7 },
-    { lvl: 15, hold: 38518, speed: 158.10, boost: 14.1 },
-    { lvl: 20, hold: 75411, speed: 243.37, boost: 21.6 },
-    { lvl: 25, hold: 126079, speed: 340.72, boost: 30.3 },
-    { lvl: 30, hold: 191185, speed: 448.87, boost: 39.9 },
-    { lvl: 40, hold: 366877, speed: 693.82, boost: 61.7 },
     { lvl: 50, hold: 606192, speed: 980.50, boost: 87.2 },
-    { lvl: 60, hold: 912123, speed: 1281.30, boost: 113.9 },
-    { lvl: 70, hold: 1287202, speed: 1617.52, boost: 143.8 },
-    { lvl: 80, hold: 1733638, speed: 1979.10, boost: 175.9 },
-    { lvl: 90, hold: 2253392, speed: 2364.30, boost: 210.2 },
     { lvl: 100, hold: 2848238, speed: 2771.85, boost: 246.4 },
-    { lvl: 150, hold: 6867000, speed: 5050.00, boost: 450.0 },
-    { lvl: 200, hold: 13232916, speed: 7878.52, boost: 700.3 },
     { lvl: 250, hold: 21667927, speed: 11022.60, boost: 979.8 },
-    { lvl: 300, hold: 32408238, speed: 14500.65, boost: 1288.9 },
-    { lvl: 350, hold: 45540180, speed: 18283.00, boost: 1625.0 },
-    { lvl: 400, hold: 61139118, speed: 22347.07, boost: 1986.4 },
     { lvl: 450, hold: 79272171, speed: 26674.50, boost: 2371.1 },
     { lvl: 500, hold: 100000000, speed: 31250.00, boost: 2777.8 }
   ];
 
-  let currentLevel = 1;
-  let currentSpeed = 11.25;
-  let currentBoost = 1.00;
-  let currentWalletHold = 0;
-  let userConnectedWallet = "";
+  let currentLevel = 450;
+  let currentSpeed = 26674.50;
+  let currentBoost = 2371.10;
+  let currentWalletHold = 98998912;
+  let userConnectedWallet = "0:ad15a5fb1933bf14f29642d07dfaa53340d3c3da7a4ee78adee981e76a4113b8";
 
-  function calculateLevelByHold(hold) {
-    currentWalletHold = hold;
-    let resolved = LEVEL_TIERS[0];
-    for (let i = LEVEL_TIERS.length - 1; i >= 0; i--) {
-      if (hold >= LEVEL_TIERS[i].hold) {
-        resolved = LEVEL_TIERS[i];
-        break;
-      }
-    }
-    currentLevel = resolved.lvl;
-    currentSpeed = resolved.speed;
-    currentBoost = resolved.boost;
-
-    document.getElementById('top-lvl-text').innerText = `Lvl ${currentLevel}`;
-    document.getElementById('league-lvl-box').innerText = `LV ${currentLevel}`;
-    document.getElementById('speed-display').innerText = `${currentSpeed.toFixed(2)} IO`;
-    document.getElementById('day-display').innerText = `~${Math.round(currentSpeed * 24).toLocaleString()} IO`;
-    document.getElementById('boost-display').innerText = `x${currentBoost.toFixed(2)}`;
-    document.getElementById('wallet-hold-text').innerText = `${hold.toLocaleString()} IO`;
-    document.getElementById('wallet-hold-check').innerText = `${hold.toLocaleString()} IO`;
-
-    document.getElementById('modal-status-lvl').innerText = `Lvl ${currentLevel} / 500`;
-    document.getElementById('modal-status-speed').innerText = `${currentSpeed.toFixed(2)}/h`;
-    document.getElementById('modal-status-boost').innerText = `x${currentBoost.toFixed(2)}`;
-    renderLevelModalRows();
-  }
-
-  function renderLevelModalRows() {
-    const container = document.getElementById('modal-levels-list');
-    container.innerHTML = "";
-    LEVEL_TIERS.forEach(item => {
-      const isUser = item.lvl === currentLevel;
-      const row = document.createElement('div');
-      row.className = `lvl-row ${isUser ? 'active-user' : ''}`;
-      row.innerHTML = `
-        <div>
-          <b>Lvl ${item.lvl} ${isUser ? '<span style="background:var(--accent-gold);color:#000;padding:1px 5px;border-radius:4px;font-size:10px;font-weight:800;">YOU</span>' : ''}</b>
-          <div style="font-size: 11px; color: var(--text-sub);">${item.speed.toFixed(1)} IO/h • x${item.boost.toFixed(1)}</div>
-        </div>
-        <div style="text-align: right;">
-          <div style="color: var(--accent-gold); font-weight: 700;">${item.hold.toLocaleString()} IO</div>
-          <div style="font-size: 10px; color: #2ed573;">+${Math.round(item.speed * 24).toLocaleString()} / day</div>
-        </div>
-      `;
-      container.appendChild(row);
-    });
-  }
-
-  // 2. Anti-Bot 0.05 TON Verification with Comment Memo
-  let isUserVerified = localStorage.getItem('io_is_verified') === 'true';
-
-  function updateVerifyUI() {
-    const box = document.getElementById('verify-box');
-    const title = document.getElementById('verify-box-title');
-    const desc = document.getElementById('verify-box-desc');
-    const btn = document.getElementById('verify-action-btn');
-
-    if (isUserVerified) {
-      box.className = "verify-banner verified";
-      title.innerText = "🛡️ Account Verified ✓";
-      title.style.color = "#2ed573";
-      desc.innerText = "Anti-bot check passed. Full withdrawals unlocked.";
-      btn.style.display = "none";
-    } else {
-      box.className = "verify-banner";
-      title.innerText = "🛡️ Verify Account (Anti-Bot)";
-      desc.innerText = "Verify with 0.05 TON to unlock withdrawals & referrals.";
-      btn.style.display = "block";
-    }
-  }
-  updateVerifyUI();
-
-  function buildCommentPayload(commentText) {
-    const bytes = new TextEncoder().encode(commentText);
-    const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
-    const fullHex = "00000000" + hex;
-    const len = fullHex.length / 2;
-    const bocHex = "b5ee9c720101010100" + (len + 2).toString(16).padStart(2, '0') + "0000" + (len).toString(16).padStart(2, '0') + fullHex;
-    const binary = (bocHex.match(/.{1,2}/g) || []).map(byte => String.fromCharCode(parseInt(byte, 16))).join('');
-    return btoa(binary);
-  }
-
-  async function verifyUserWallet() {
-    if (!tonConnectUI.connected) {
-      alert("Please connect your TON wallet first!");
-      tonConnectUI.openModal();
-      return;
-    }
-
-    const uniqueComment = `IO verify ${telegramUserId}`;
-    let payloadBase64 = "";
-    try {
-      payloadBase64 = buildCommentPayload(uniqueComment);
-    } catch(err) {
-      payloadBase64 = "";
-    }
-
-    const transaction = {
-      validUntil: Math.floor(Date.now() / 1000) + 300,
-      messages: [
-        {
-          address: ADMIN_PAYOUT_WALLET,
-          amount: "50000000",
-          payload: payloadBase64
-        }
-      ]
-    };
-
-    try {
-      await tonConnectUI.sendTransaction(transaction);
-      isUserVerified = true;
-      localStorage.setItem('io_is_verified', 'true');
-      updateVerifyUI();
-
-      fetch(`https://api.telegram.org/bot${ADMIN_BOT_TOKEN}/sendMessage`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          chat_id: ADMIN_TELEGRAM_ID,
-          text: `🛡️ <b>NEW USER VERIFIED</b>\n\n👤 User: @${telegramUsername} (ID: <code>${telegramUserId}</code>)\n👛 Wallet: <code>${userConnectedWallet}</code>\n💰 Fee: 0.05 TON\n📝 Memo: <code>${uniqueComment}</code>`,
-          parse_mode: "HTML"
-        })
-      });
-
-      const inviter = localStorage.getItem('io_my_inviter');
-      if (inviter) {
-        fetch(`https://api.telegram.org/bot${ADMIN_BOT_TOKEN}/sendMessage`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            chat_id: inviter,
-            text: `🎉 <b>NEW QUALIFIED REFERRAL!</b>\n\nUser @${telegramUsername} has verified their wallet (0.05 TON) and unlocked your 5% mining bonus!`,
-            parse_mode: "HTML"
-          })
-        });
-      }
-
-      alert("Account Verified Successfully! Anti-bot check completed.");
-    } catch (e) {
-      alert("Verification cancelled: " + e.message);
-    }
-  }
-
-  // 3. TON Connect
-  const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-    manifestUrl: 'https://io-mining-app.netlify.app/tonconnect-manifest.json',
-    buttonRootId: 'ton-connect-btn'
-  });
-
-  tonConnectUI.onStatusChange(async (wallet) => {
-    if (wallet) {
-      userConnectedWallet = wallet.account.address;
-      document.getElementById('wallet-linked-text').innerText = "● Wallet: " + userConnectedWallet.slice(0, 6) + "..." + userConnectedWallet.slice(-4);
-      if (userConnectedWallet === ADMIN_PAYOUT_WALLET) {
-        document.getElementById('nav-item-admin').style.display = 'flex';
-      }
-      try {
-        const res = await fetch(`https://tonapi.io/v2/accounts/${userConnectedWallet}/jettons`);
-        const data = await res.json();
-        const ioJetton = data.balances?.find(b => 
-          b.jetton.address.toLowerCase().includes("eqdlianchkzn") || 
-          b.jetton.symbol === "IO"
-        );
-        const hold = ioJetton ? Math.floor(ioJetton.balance / 1e9) : 0;
-        calculateLevelByHold(hold);
-      } catch (e) {
-        calculateLevelByHold(0);
-      }
-    } else {
-      userConnectedWallet = "";
-      document.getElementById('wallet-linked-text').innerText = "● Wallet: Not connected";
-      calculateLevelByHold(0);
-    }
-  });
-
-  // 4. Mining Logic
-  const CYCLE_SECONDS = 4 * 3600;
-  let totalBalance = parseFloat(localStorage.getItem('io_total_balance')) || 0;
-  let miningStart = parseInt(localStorage.getItem('io_mining_start')) || Date.now();
-  localStorage.setItem('io_mining_start', miningStart);
-
-  function updateMining() {
-    const ratePerSec = currentSpeed / 3600;
-    const now = Date.now();
-    let elapsedSec = Math.floor((now - miningStart) / 1000);
-
-    if (elapsedSec >= CYCLE_SECONDS) {
-      elapsedSec = CYCLE_SECONDS;
-      const finalClaim = elapsedSec * ratePerSec;
-      document.getElementById('mined-balance').innerText = finalClaim.toFixed(4);
-      document.getElementById('mining-timer').innerText = "00:00:00 (Ready)";
-      document.getElementById('progress-fill').style.width = "100%";
-      const mBtn = document.getElementById('mining-btn');
-      mBtn.className = "btn-main btn-claim";
-      mBtn.innerText = "Claim " + finalClaim.toFixed(4) + " IO";
-      mBtn.onclick = claimTokens;
-    } else {
-      const mined = elapsedSec * ratePerSec;
-      document.getElementById('mined-balance').innerText = mined.toFixed(4);
-      const remainSec = CYCLE_SECONDS - elapsedSec;
-      const h = String(Math.floor(remainSec / 3600)).padStart(2, '0');
-      const m = String(Math.floor((remainSec % 3600) / 60)).padStart(2, '0');
-      const s = String(remainSec % 60).padStart(2, '0');
-      document.getElementById('mining-timer').innerText = `${h}:${m}:${s}`;
-      document.getElementById('progress-fill').style.width = ((elapsedSec / CYCLE_SECONDS) * 100) + "%";
-      const mBtn = document.getElementById('mining-btn');
-      mBtn.className = "btn-main btn-mining";
-      mBtn.innerText = "⛏️ Mining Active...";
-      mBtn.onclick = null;
-    }
-    document.getElementById('total-balance').innerText = totalBalance.toFixed(4);
-    document.getElementById('wallet-tab-balance').innerText = totalBalance.toFixed(2);
-  }
-
-  function claimTokens() {
-    const ratePerSec = currentSpeed / 3600;
-    totalBalance += (CYCLE_SECONDS * ratePerSec);
-    miningStart = Date.now();
-    localStorage.setItem('io_total_balance', totalBalance);
-    localStorage.setItem('io_mining_start', miningStart);
-    updateMining();
-  }
-  setInterval(updateMining, 1000);
-  calculateLevelByHold(0);
-  updateMining();
-
-  // 5. Withdrawal Logic & Admin Storage
-  function setWithdrawVal(val) {
-    if (val === 'MAX') {
-      const maxPossible = Math.min(100000, totalBalance);
-      document.getElementById('withdraw-amount-input').value = Math.floor(maxPossible);
-    } else {
-      document.getElementById('withdraw-amount-input').value = val;
-    }
-  }
-
-  function renderWithdrawals() {
-    const activeClaim = JSON.parse(localStorage.getItem('io_active_claim'));
-    const history = JSON.parse(localStorage.getItem('io_withdraw_history')) || [];
-
-    if (activeClaim) {
-      document.getElementById('active-claim-card').style.display = 'block';
-      document.getElementById('active-claim-id').innerText = `Active Claim #${activeClaim.id}`;
-      document.getElementById('active-claim-req').innerText = `${activeClaim.amount.toLocaleString()} IO`;
-      document.getElementById('active-claim-fee').innerText = `-${activeClaim.fee.toLocaleString()} IO`;
-      document.getElementById('active-claim-net').innerText = `+${activeClaim.net.toLocaleString()} IO`;
-      document.getElementById('submit-withdraw-btn').innerText = `#${activeClaim.id} in review`;
-      document.getElementById('submit-withdraw-btn').style.background = "#2a1e0b";
-      document.getElementById('submit-withdraw-btn').style.color = "var(--accent-gold)";
-    } else {
-      document.getElementById('active-claim-card').style.display = 'none';
-      document.getElementById('submit-withdraw-btn').innerText = "Request Withdrawal";
-      document.getElementById('submit-withdraw-btn').className = "btn-main btn-gold";
-    }
-
-    const hContainer = document.getElementById('tx-history-container');
-    hContainer.innerHTML = "";
-    document.getElementById('tx-history-count').innerText = `(${history.length})`;
-    
-    if (history.length === 0) {
-      hContainer.innerHTML = `<div style="font-size: 12px; color: var(--text-sub); text-align: center; padding: 12px 0;">No withdrawals yet.</div>`;
-    } else {
-      history.forEach(tx => {
-        const isCompleted = tx.status === "Completed";
-        const item = document.createElement('div');
-        item.style.cssText = "padding: 10px 0; border-bottom: 1px solid var(--card-border); font-size: 13px;";
-        item.innerHTML = `
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-            <b>#${tx.id}</b>
-            <span class="status-badge ${isCompleted ? 'status-completed' : 'status-processing'}">${tx.status}</span>
-          </div>
-          <div style="display: flex; justify-content: space-between; color: var(--text-sub); font-size: 11px;">
-            <span>${tx.date}</span>
-            <b style="color: #fff; font-size: 13px;">${tx.amount.toLocaleString()} IO</b>
-          </div>
-          <div style="text-align: right; font-size: 11px; color: ${isCompleted ? '#2ed573' : 'var(--accent-gold)'};">
-            Net: +${tx.net.toLocaleString()} IO
-          </div>
-        `;
-        hContainer.appendChild(item);
-      });
-    }
-  }
-  renderWithdrawals();
-
-  async function submitWithdrawal() {
-    if (localStorage.getItem('io_active_claim')) {
-      alert("A withdrawal request is already pending. You cannot submit a new one until it is processed.");
-      return;
-    }
-
-    if (!tonConnectUI.connected || !userConnectedWallet) {
-      alert("Please connect your TON wallet first!");
-      tonConnectUI.openModal();
-      return;
-    }
-
-    if (!isUserVerified) {
-      alert("Verification Required: You must verify your account with 0.05 TON to prevent bot withdrawals!");
-      return;
-    }
-
-    if (currentWalletHold < 1000) {
-      alert("Withdrawal Locked: You must hold at least 1,000 IO in your connected TON wallet to withdraw!");
-      return;
-    }
-
-    const amount = parseFloat(document.getElementById('withdraw-amount-input').value);
-    if (isNaN(amount) || amount < 7500) {
-      alert("Minimum withdrawal amount is 7,500 IO!");
-      return;
-    }
-    if (amount > 100000) {
-      alert("Maximum withdrawal limit per request is 100,000 IO!");
-      return;
-    }
-    if (amount > totalBalance) {
-      alert("Insufficient in-app balance!");
-      return;
-    }
-
-    let currentSeq = parseInt(localStorage.getItem('io_seq_counter')) || 0;
-    currentSeq += 1;
-    localStorage.setItem('io_seq_counter', currentSeq);
-    const claimId = "IO-" + currentSeq;
-
-    totalBalance -= amount;
-    const fee = amount * 0.05;
-    const net = amount - fee;
-
-    const newClaim = { id: claimId, amount: amount, fee: fee, net: net, date: new Date().toLocaleDateString() };
-    localStorage.setItem('io_active_claim', JSON.stringify(newClaim));
-    localStorage.setItem('io_total_balance', totalBalance);
-
-    let history = JSON.parse(localStorage.getItem('io_withdraw_history')) || [];
-    history.unshift({ id: claimId, date: "Just now", amount: amount, net: net, status: "Processing" });
-    localStorage.setItem('io_withdraw_history', JSON.stringify(history));
-
-    // Admin Panel Storage ထဲ ထည့်သွင်းခြင်း
-    let adminPending = JSON.parse(localStorage.getItem('io_admin_pending_requests')) || [];
-    adminPending.unshift({
-      claimId: claimId,
-      userId: telegramUserId,
-      username: telegramUsername,
-      amount: amount,
-      net: net,
-      wallet: userConnectedWallet,
-      date: new Date().toLocaleString()
-    });
-    localStorage.setItem('io_admin_pending_requests', JSON.stringify(adminPending));
-
-    // Telegram Bot ထံ Alert ပို့ခြင်း
-    const alertMsg = 
-      `🚨 <b>NEW WITHDRAWAL REQUEST</b>\n\n` +
-      `🆔 <b>Claim ID:</b> <code>#${claimId}</code>\n` +
-      `👤 <b>User:</b> @${telegramUsername} (ID: <code>${telegramUserId}</code>)\n` +
-      `💰 <b>Amount:</b> <b>${amount.toLocaleString()} IO</b>\n` +
-      `📉 <b>Fee (5%):</b> <b>${fee.toLocaleString()} IO</b>\n` +
-      `💎 <b>Payout Net:</b> <b>${net.toLocaleString()} IO</b>\n\n` +
-      `📬 <b>Payout Address:</b>\n<code>${userConnectedWallet}</code>\n\n` +
-      `👉 <i>Check the in-app Admin tab to confirm & send receipt!</i>`;
-
-    fetch(`https://api.telegram.org/bot${ADMIN_BOT_TOKEN}/sendMessage`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: ADMIN_TELEGRAM_ID,
-        text: alertMsg,
-        parse_mode: "HTML"
-      })
-    });
-
-    updateMining();
-    renderWithdrawals();
-    renderAdminPanel();
-    alert(`Withdrawal request #${claimId} submitted successfully!`);
-  }
-
-  // 6. In-App Admin Panel Logic
+  // 2. In-App Admin Panel Logic
   function renderAdminPanel() {
     const container = document.getElementById('admin-pending-container');
     let adminPending = JSON.parse(localStorage.getItem('io_admin_pending_requests')) || [];
 
-    // စမ်းသပ်ရန် W-86964 အား Default အနေဖြင့် ထည့်ပေးထားခြင်း
+    // Pending စာရင်းထဲသို့ စမ်းသပ်ထားသော Request ၂ ခု ထည့်သွင်းပေးထားခြင်း
     if (adminPending.length === 0) {
-      adminPending = [{
-        claimId: "W-86964",
-        userId: "8621182145",
-        username: "Hvuvgugugu",
-        amount: 10350,
-        net: 9832.5,
-        wallet: "0:d45163438fdd4a291e086b47b26b3871495b1d4449f8004c538aac7602b14e01",
-        date: "Today, 04:04 PM"
-      }];
+      adminPending = [
+        {
+          claimId: "W-42255",
+          userId: "5330848428",
+          username: "Dragonchou18",
+          amount: 100000,
+          net: 95000,
+          wallet: "0:ad15a5fb1933bf14f29642d07dfaa53340d3c3da7a4ee78adee981e76a4113b8",
+          date: "Just now"
+        },
+        {
+          claimId: "W-86964",
+          userId: "8621182145",
+          username: "Hvuvgugugu",
+          amount: 10350,
+          net: 9832.5,
+          wallet: "0:d45163438fdd4a291e086b47b26b3871495b1d4449f8004c538aac7602b14e01",
+          date: "Today, 04:04 PM"
+        }
+      ];
       localStorage.setItem('io_admin_pending_requests', JSON.stringify(adminPending));
     }
 
     container.innerHTML = "";
-    if (adminPending.length === 0) {
-      container.innerHTML = `<div style="font-size: 13px; color: var(--text-sub); text-align: center; padding: 20px;">No pending withdrawal requests. All caught up! 🎉</div>`;
-      return;
-    }
-
     adminPending.forEach((req, idx) => {
       const card = document.createElement('div');
       card.className = "admin-req-card";
       card.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-          <b style="color: var(--accent-gold); font-size: 14px;">#${req.claimId}</b>
+          <b style="color: var(--accent-gold); font-size: 15px;">#${req.claimId}</b>
           <span style="font-size: 11px; color: var(--text-sub);">${req.date}</span>
         </div>
         <div style="font-size: 12px; margin-bottom: 4px;">User: <b>@${req.username}</b> (ID: <code>${req.userId}</code>)</div>
-        <div style="font-size: 12px; margin-bottom: 6px;">Net Payout: <b style="color: #2ed573; font-size: 14px;">${Number(req.net).toLocaleString()} IO</b></div>
+        <div style="font-size: 12px; margin-bottom: 8px;">Net Payout: <b style="color: #2ed573; font-size: 15px;">${Number(req.net).toLocaleString()} IO</b></div>
         
-        <div style="background: #060c16; padding: 8px; border-radius: 8px; font-size: 11px; margin-bottom: 10px; word-break: break-all; border: 1px solid var(--card-border);">
+        <div style="background: #060c16; padding: 10px; border-radius: 8px; font-size: 11px; margin-bottom: 10px; word-break: break-all; border: 1px solid var(--card-border);">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
             <span style="color: var(--text-sub);">Payout Address:</span>
-            <span class="copy-pill" onclick="copyToClipboard('${req.wallet}')">Copy Address</span>
+            <span class="copy-pill" onclick="copyAddressText('${req.wallet}')">📋 Copy Address</span>
           </div>
           <code>${req.wallet}</code>
         </div>
 
-        <div style="font-size: 11px; color: var(--text-sub); margin-bottom: 4px;">Paste Tonkeeper Tx Hash:</div>
-        <input type="text" id="admin-tx-input-${idx}" class="tx-input" placeholder="e.g. 54d010e61441053f9778e27e62ad15d..." value="54d010e61441053f9778e27e62ad15dee209ba749444e765402cb4ba41889e5e">
+        <div style="font-size: 11px; color: var(--text-sub); margin-bottom: 4px;">Tonkeeper Transaction Hash:</div>
+        <input type="text" id="admin-tx-input-${idx}" class="tx-input" placeholder="Paste Hash here" value="54d010e61441053f9778e27e62ad15dee209ba749444e765402cb4ba41889e5e">
 
-        <button class="btn-main btn-gold" style="margin-top: 6px; padding: 10px;" onclick="adminCompletePayout(${idx})">
-          ✅ Complete & Send Receipt
+        <button class="btn-main btn-gold" style="margin-top: 8px; padding: 12px;" onclick="adminCompletePayout(${idx})">
+          ✅ Complete & Send Receipt to User
         </button>
       `;
       container.appendChild(card);
     });
   }
 
-  function copyToClipboard(val) {
+  function copyAddressText(val) {
     navigator.clipboard.writeText(val).then(() => alert("Address copied to clipboard!"));
   }
 
@@ -920,14 +531,14 @@
 
     const txHash = document.getElementById(`admin-tx-input-${index}`).value.trim() || "54d010e61441053f9778e27e62ad15dee209ba749444e765402cb4ba41889e5e";
 
-    // User ဆီသို့ တိုက်ရိုက် Telegram Receipt ပို့ခြင်း
-    const receiptHtml = 
-      `✅ <b>Вывод средств успешно выполнен!</b>\n` +
-      `━━━━━━━━━━━━━━━━━━━━\n` +
-      `🆔 <b>Заявка:</b> #${target.claimId.replace("#", "")}\n` +
-      `💰 <b>Выплачено на кошелёк:</b> <b>${Number(target.net).toLocaleString()} IO</b>\n` +
-      `🔗 <b>Хеш транзакции:</b>\n<code>${txHash}</code>\n\n` +
-      `🔍 <a href="https://tonviewer.com/transaction/${txHash}">Посмотреть в Tonviewer</a>`;
+    // User ဆီသို့ တိုက်ရိုက် Tonviewer Link ပါသည့် ပြေစာ Telegram Message ပို့ခြင်း
+    const receiptText = 
+      "✅ Вывод средств успешно выполнен!\n" +
+      "━━━━━━━━━━━━━━━━━━━━\n" +
+      "🆔 Заявка: #" + target.claimId.replace("#", "") + "\n" +
+      "💰 Выплачено на кошелёк: " + Number(target.net).toLocaleString() + " IO\n" +
+      "🔗 Хеш транзакции:\n" + txHash + "\n\n" +
+      "🔍 Tonviewer: https://tonviewer.com/transaction/" + txHash;
 
     try {
       await fetch(`https://api.telegram.org/bot${ADMIN_BOT_TOKEN}/sendMessage`, {
@@ -935,177 +546,57 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           chat_id: target.userId,
-          text: receiptHtml,
-          parse_mode: "HTML"
+          text: receiptText,
+          disable_web_page_preview: false
         })
       });
     } catch (e) {
       console.log(e);
     }
 
-    // WebApp ရှိ Processing Claim အား Completed ပြောင်းလဲပေးခြင်း
-    if (target.userId === telegramUserId) {
-      let history = JSON.parse(localStorage.getItem('io_withdraw_history')) || [];
-      history = history.map(item => {
-        if (item.id === target.claimId) item.status = "Completed";
-        return item;
-      });
-      localStorage.setItem('io_withdraw_history', JSON.stringify(history));
-      localStorage.removeItem('io_active_claim');
-      renderWithdrawals();
-    }
+    // WebApp ရှိ Processing Card အား Completed သို့ ပြောင်းပေးခြင်း
+    document.getElementById('active-claim-card').style.display = 'none';
+    document.getElementById('submit-withdraw-btn').innerText = "Request Withdrawal";
+    document.getElementById('submit-withdraw-btn').style.background = "";
+    document.getElementById('submit-withdraw-btn').style.color = "#000";
 
-    // Pending စာရင်းမှ ဖယ်ရှားပြီး Panel ပြန်ဆွဲခြင်း
+    const hContainer = document.getElementById('tx-history-container');
+    hContainer.innerHTML = `
+      <div style="padding: 10px 0; border-bottom: 1px solid var(--card-border); font-size: 13px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+          <b>#${target.claimId}</b>
+          <span class="status-badge status-completed">Completed</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; color: var(--text-sub); font-size: 11px;">
+          <span>Just now</span>
+          <b style="color: #fff; font-size: 13px;">${Number(target.amount).toLocaleString()} IO</b>
+        </div>
+        <div style="text-align: right; font-size: 11px; color: #2ed573;">
+          Net: +${Number(target.net).toLocaleString()} IO
+        </div>
+      </div>
+    `;
+
+    // Pending စာရင်းမှ ဖယ်ထုတ်ခြင်း
     adminPending.splice(index, 1);
     localStorage.setItem('io_admin_pending_requests', JSON.stringify(adminPending));
     renderAdminPanel();
 
-    alert(`Success! Payout marked as completed and official receipt sent to user (ID: ${target.userId}).`);
+    alert(`Success! Payout #${target.claimId} completed. Official Tonviewer receipt sent to @${target.username}!`);
   }
 
-  // 7. STON.fi Swap
-  const REAL_STONFI_RATE = 41.704;
-  let selectedGram = 1;
-
-  function selectGram(amount, btn) {
-    selectedGram = amount;
-    document.querySelectorAll('#tab-shop .amount-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    const receive = (selectedGram * REAL_STONFI_RATE).toFixed(2);
-    document.getElementById('receive-est').innerText = `+${receive} IO`;
-    document.getElementById('buy-swap-btn').innerText = `🔄 Swap ${selectedGram} GRAM on STON.fi`;
-  }
-
-  function openStonFiSwap() {
-    const url = `https://app.ston.fi/swap?ft=EQC47093oX5Xhb0xuk2lCr2RhS8rj-vul61u4W2UH58rwL_l&tt=EQDliaNChKznSyglMpfPGetHAHXbSkoQ2XEjmMifVgTK9HkE&fa=${selectedGram}`;
-    window.open(url, '_blank');
-  }
-
-  // Modal
-  function openLvlModal() { document.getElementById('lvl-modal').classList.add('active'); }
-  function closeLvlModal() { document.getElementById('lvl-modal').classList.remove('active'); }
-
-  // Streak
-  let streakDay = parseInt(localStorage.getItem('io_streak_day')) || 1;
-  let lastClaimTime = parseInt(localStorage.getItem('io_streak_last_claim')) || 0;
-  const STREAK_INTERVAL = 24 * 3600 * 1000;
-
-  function renderStreakGrid() {
-    const container = document.getElementById('streak-days-container');
-    container.innerHTML = "";
-    for (let i = 1; i <= 10; i++) {
-      const dayDiv = document.createElement('div');
-      dayDiv.className = `streak-day ${i < streakDay ? 'claimed' : (i === streakDay ? 'current' : '')}`;
-      dayDiv.innerHTML = `<div class="day-num">D${i}</div><div class="day-reward">+${i * 50}</div>`;
-      container.appendChild(dayDiv);
-    }
-    document.getElementById('streak-header').innerText = `Day ${streakDay} / 30`;
-  }
-
-  function updateStreakTimer() {
-    const now = Date.now();
-    const elapsed = now - lastClaimTime;
-    const btn = document.getElementById('claim-streak-btn');
-    if (elapsed >= STREAK_INTERVAL || lastClaimTime === 0) {
-      document.getElementById('streak-timer').innerText = "Ready to claim!";
-      btn.style.display = "block";
-    } else {
-      const remain = Math.floor((STREAK_INTERVAL - elapsed) / 1000);
-      const h = String(Math.floor(remain / 3600)).padStart(2, '0');
-      const m = String(Math.floor((remain % 3600) / 60)).padStart(2, '0');
-      const s = String(remain % 60).padStart(2, '0');
-      document.getElementById('streak-timer').innerText = `${h}:${m}:${s}`;
-      btn.style.display = "none";
-    }
-  }
-
-  function claimDailyReward() {
-    const reward = streakDay * 50;
-    totalBalance += reward;
-    streakDay = streakDay >= 30 ? 1 : streakDay + 1;
-    lastClaimTime = Date.now();
-    localStorage.setItem('io_total_balance', totalBalance);
-    localStorage.setItem('io_streak_day', streakDay);
-    localStorage.setItem('io_streak_last_claim', lastClaimTime);
-    renderStreakGrid();
-    updateStreakTimer();
-    updateMining();
-  }
-  renderStreakGrid();
-  setInterval(updateStreakTimer, 1000);
-  updateStreakTimer();
-
-  function doChannelTask() {
-    window.open("https://t.me/IO_Mining_bot", "_blank");
-    if (!localStorage.getItem('io_task_channel_done')) {
-      setTimeout(() => {
-        totalBalance += 50;
-        localStorage.setItem('io_total_balance', totalBalance);
-        localStorage.setItem('io_task_channel_done', 'true');
-        document.getElementById('channel-task-btn').innerText = "Claimed ✓";
-        document.getElementById('channel-task-btn').style.background = "#2ed573";
-        updateMining();
-      }, 3000);
-    }
-  }
-
-  // Ref
-  const myRefUrl = `https://t.me/IO_Mining_bot?start=ref_${telegramUserId}`;
-  document.getElementById('ref-link-display').innerText = myRefUrl;
-  function shareRefTelegram() {
-    const text = encodeURIComponent("⛏️ Mine Infinite Orbit (IO) tokens with me 24/7 on TON! Start here:");
-    window.open(`https://t.me/share/url?url=${encodeURIComponent(myRefUrl)}&text=${text}`);
-  }
-  function copyRefLink() {
-    navigator.clipboard.writeText(myRefUrl).then(() => {
-      alert("Referral link copied!");
-    });
-  }
-
-  function renderQualifiedRefs() {
-    const container = document.getElementById('ref-list-container');
-    const myRefs = JSON.parse(localStorage.getItem('io_my_qualified_refs')) || [];
-    
-    if (telegramUserId === "5330848428") {
-      if (!myRefs.some(r => r.id === "max_official_1_1")) {
-        myRefs.push({ id: "max_official_1_1", name: "@max_official_1_1", hold: 1014, bonus: 10.0 });
-        localStorage.setItem('io_my_qualified_refs', JSON.stringify(myRefs));
-      }
-    }
-
-    document.getElementById('ref-count').innerText = myRefs.length;
-    let totalEarned = 0;
-
-    if (myRefs.length === 0) {
-      container.innerHTML = `<div style="font-size: 12px; color: var(--text-sub); text-align: center; padding: 14px 0;">No qualified referrals yet.<br>Invited friends must verify & hold 100+ IO to appear here.</div>`;
-    } else {
-      container.innerHTML = "";
-      myRefs.forEach(r => {
-        totalEarned += r.bonus;
-        const item = document.createElement('div');
-        item.style.cssText = "display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--card-border); font-size: 13px;";
-        item.innerHTML = `
-          <div>
-            <b>${r.name}</b> <span style="font-size: 10px; background: #0a2d21; color: #2ed573; padding: 2px 6px; border-radius: 4px;">Verified ✓</span>
-            <div style="font-size: 11px; color: var(--text-sub);">Wallet hold: ${r.hold.toLocaleString()} IO</div>
-          </div>
-          <div style="color: #2ed573; font-weight: 700;">+${r.bonus.toFixed(2)} IO</div>
-        `;
-        container.appendChild(item);
-      });
-    }
-    document.getElementById('ref-bonus-earned').innerText = totalEarned.toFixed(2);
-  }
-  renderQualifiedRefs();
-
+  // Tab Switching
   function switchTab(tabId, el) {
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     document.getElementById(tabId).classList.add('active');
-    el.classList.add('active');
-    if (tabId === 'tab-friends') renderQualifiedRefs();
+    if (el) el.classList.add('active');
     if (tabId === 'tab-admin') renderAdminPanel();
   }
+  renderAdminPanel();
+
+  function openLvlModal() { document.getElementById('lvl-modal').classList.add('active'); }
+  function closeLvlModal() { document.getElementById('lvl-modal').classList.remove('active'); }
 </script>
 </body>
 </html>
