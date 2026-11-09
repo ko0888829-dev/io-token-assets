@@ -9,11 +9,55 @@ export async function handler(event, context) {
     if (body.message && body.message.text) {
       const chatId = body.message.chat.id;
       const text = body.message.text.trim();
-
       const BOT_TOKEN = "9126577611:AAEZDAju0zpZNOi6pUkE6m-2BbG3M6PargY";
+      const ADMIN_TELEGRAM_ID = "5330848428";
       const STONFI_SWAP_URL = "https://app.ston.fi/swap?ft=EQC47093oX5Xhb0xuk2lCr2RhS8rj-vul61u4W2UH58rwL_l&tt=EQDliaNChKznSyglMpfPGetHAHXbSkoQ2XEjmMifVgTK9HkE";
 
-      // Referral Parameter ဖမ်းယူခြင်း (/start ref_5330848428)
+      // 1. Admin Payout Command (/payout USER_ID CLAIM_ID AMOUNT TX_HASH)
+      if (text.startsWith("/payout") && String(chatId) === ADMIN_TELEGRAM_ID) {
+        const parts = text.split(" ");
+        if (parts.length >= 4) {
+          const targetUserId = parts[1];
+          const claimId = parts[2].replace("#", "");
+          const amount = parts[3];
+          const txHash = parts[4] || "tonviewer_confirmed";
+
+          const userReceipt = 
+            `✅ *Withdrawal successfully completed!*\n` +
+            `━━━━━━━━━━━━━━━━━━━━\n` +
+            `🆔 *Claim ID:* #${claimId}\n` +
+            `💰 *Paid to wallet:* *${Number(amount).toLocaleString()} IO*\n` +
+            `🔗 *Transaction Hash:*\n\`${txHash}\`\n\n` +
+            `🔍 [View on Tonviewer](https://tonviewer.com/transaction/${txHash})`;
+
+          // User ဆီသို့ LootVault စတိုင် ပြေစာ တိုက်ရိုက်ပို့ခြင်း
+          await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              chat_id: targetUserId,
+              text: userReceipt,
+              parse_mode: "Markdown",
+              disable_web_page_preview: false
+            })
+          });
+
+          // Admin ဆီ အတည်ပြုစာ ပြန်ပို့ခြင်း
+          await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              chat_id: ADMIN_TELEGRAM_ID,
+              text: `👍 Payout receipt sent to user @${targetUserId} for #${claimId}!`,
+              parse_mode: "Markdown"
+            })
+          });
+
+          return { statusCode: 200, body: "Payout Sent" };
+        }
+      }
+
+      // 2. Referral & Start Command Logic
       let inviterId = "";
       if (text.startsWith("/start ref_")) {
         inviterId = text.split("ref_")[1].trim();
