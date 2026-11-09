@@ -1,6 +1,6 @@
 export async function handler(event, context) {
   if (event.httpMethod !== "POST") {
-    return { statusCode: 200, body: "IO Mining Bot is Running" };
+    return { statusCode: 200, body: "IO Mining Bot Running" };
   }
 
   try {
@@ -12,59 +12,96 @@ export async function handler(event, context) {
       const chatId = body.message.chat.id;
       const text = (body.message.text || "").trim();
 
-      // နည်းလမ်း - Withdrawal Alert မက်ဆေ့ခ်ျကို Reply လုပ်ပြီး Tx Hash ပို့ရုံဖြင့် ပြေစာတန်းထွက်စေခြင်း
-      if (body.message.reply_to_message && body.message.reply_to_message.text) {
-        const originalText = body.message.reply_to_message.text;
+      // နည်းလမ်း ၁ - Admin Command ဖြင့် ပြေစာပို့ခြင်း
+      // ပုံစံ: /done <USER_ID> <CLAIM_ID> <AMOUNT> <TX_HASH>
+      if (text.startsWith("/done") || text.startsWith("/payout")) {
+        const parts = text.split(/\s+/);
+        if (parts.length >= 5) {
+          const targetUserId = parts[1].trim();
+          const claimId = parts[2].trim().replace("#", "");
+          const amount = parts[3].trim();
+          const txHash = parts[4].trim();
 
-        // NEW WITHDRAWAL REQUEST ဟုတ်မဟုတ် စစ်ဆေးခြင်း
-        if (originalText.includes("NEW WITHDRAWAL REQUEST")) {
-          const txHash = text; // Admin ရိုက်ပို့လိုက်သည့် Hash
+          const formattedAmount = Number(amount) ? Number(amount).toLocaleString() : amount;
 
-          // မူလစာသားထဲမှ User ID, Claim ID, Net Amount ကို အလိုအလျောက် ရှာဖွေဖတ်ယူခြင်း
-          const idMatch = originalText.match(/ID:\s*(\d+)/);
-          const claimMatch = originalText.match(/Claim ID:\s*([#\w-]+)/);
-          const netMatch = originalText.match(/Payout Net:\s*([\d,.]+)/);
-
-          const targetUserId = idMatch ? idMatch[1] : null;
-          const claimId = claimMatch ? claimMatch[1] : "IO-Payout";
-          const netAmount = netMatch ? netMatch[1] : "0";
-
-          // LootVault ပုံစံ On-Chain ပြေစာ
           const receiptHtml = 
             `✅ <b>Вывод средств успешно выполнен!</b>\n` +
             `━━━━━━━━━━━━━━━━━━━━\n` +
-            `🆔 <b>Заявка:</b> ${claimId}\n` +
-            `💰 <b>Выплачено на кошелёк:</b> <b>${netAmount} IO</b>\n` +
+            `🆔 <b>Заявка:</b> #${claimId}\n` +
+            `💰 <b>Выплачено на кошелёк:</b> <b>${formattedAmount} IO</b>\n` +
             `🔗 <b>Хеш транзакции:</b>\n<code>${txHash}</code>\n\n` +
             `🔍 <a href="https://tonviewer.com/transaction/${txHash}">Посмотреть в Tonviewer</a>`;
 
-          // ၁။ User ဆီသို့ တကယ့် Tonviewer Link ပါသော ပြေစာ ပို့ပေးခြင်း
-          if (targetUserId) {
-            try {
-              await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  chat_id: targetUserId,
-                  text: receiptHtml,
-                  parse_mode: "HTML"
-                })
-              });
-            } catch (e) {}
-          }
+          // User ဆီသို့ ပြေစာ တိုက်ရိုက်ပို့ခြင်း
+          await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              chat_id: targetUserId,
+              text: receiptHtml,
+              parse_mode: "HTML"
+            })
+          });
 
-          // ၂။ Admin ဆီသို့လည်း အတည်ပြု အောင်မြင်ကြောင်း အကြောင်းကြားခြင်း
+          // Admin ဆီ အောင်မြင်ကြောင်း စာပြန်ပို့ခြင်း
           await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               chat_id: chatId,
-              text: `✅ <b>Success!</b> Receipt with Tonviewer link sent to user (ID: <code>${targetUserId}</code>).`,
+              text: `✅ <b>Success!</b> Receipt sent to User <code>${targetUserId}</code> for #${claimId}.`,
               parse_mode: "HTML"
             })
           });
 
-          return { statusCode: 200, body: "Reply Payout Handled" };
+          return { statusCode: 200, body: "OK" };
+        }
+      }
+
+      // နည်းလမ်း ၂ - Reply ပြုလုပ်ပြီး Hash ပို့ရုံဖြင့် ပြေစာထွက်စေခြင်း
+      if (body.message.reply_to_message && body.message.reply_to_message.text) {
+        const orig = body.message.reply_to_message.text;
+        if (orig.includes("NEW WITHDRAWAL REQUEST") || orig.includes("Claim ID")) {
+          const txHash = text;
+          const idMatch = orig.match(/ID:\s*(\d+)/);
+          const claimMatch = orig.match(/Claim ID:\s*([#\w-]+)/);
+          const netMatch = orig.match(/Payout Net:\s*([\d,.]+)/);
+
+          const targetUserId = idMatch ? idMatch[1] : null;
+          const claimId = claimMatch ? claimMatch[1].replace("#", "") : "IO-1";
+          const netAmount = netMatch ? netMatch[1] : "0";
+
+          const receiptHtml = 
+            `✅ <b>Вывод средств успешно выполнен!</b>\n` +
+            `━━━━━━━━━━━━━━━━━━━━\n` +
+            `🆔 <b>Заявка:</b> #${claimId}\n` +
+            `💰 <b>Выплачено на кошелёк:</b> <b>${netAmount} IO</b>\n` +
+            `🔗 <b>Хеш транзакции:</b>\n<code>${txHash}</code>\n\n` +
+            `🔍 <a href="https://tonviewer.com/transaction/${txHash}">Посмотреть в Tonviewer</a>`;
+
+          if (targetUserId) {
+            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                chat_id: targetUserId,
+                text: receiptHtml,
+                parse_mode: "HTML"
+              })
+            });
+          }
+
+          await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              chat_id: chatId,
+              text: `✅ <b>Success!</b> Receipt sent to User <code>${targetUserId}</code> for #${claimId}.`,
+              parse_mode: "HTML"
+            })
+          });
+
+          return { statusCode: 200, body: "OK" };
         }
       }
 
@@ -87,21 +124,6 @@ export async function handler(event, context) {
           "🔸 Invite friends — get 5% referral claims\n\n" +
           "Tap the button below to start mining!\n👇";
 
-        const replyMarkup = {
-          inline_keyboard: [
-            [
-              { text: "⛏️ Open Infinite Orbit", web_app: { url: WEBAPP_URL } }
-            ],
-            [
-              { text: "📦 Community", url: "https://t.me/IO_Mining_bot" },
-              { text: "💎 STON.fi", url: STONFI_SWAP_URL }
-            ],
-            [
-              { text: "📢 News Channel", url: "https://t.me/IO_Mining_bot" }
-            ]
-          ]
-        };
-
         await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -109,7 +131,13 @@ export async function handler(event, context) {
             chat_id: chatId,
             text: welcomeText,
             parse_mode: "HTML",
-            reply_markup: replyMarkup
+            reply_markup: {
+              inline_keyboard: [
+                [{ text: "⛏️ Open Infinite Orbit", web_app: { url: WEBAPP_URL } }],
+                [{ text: "📦 Community", url: "https://t.me/IO_Mining_bot" }, { text: "💎 STON.fi", url: STONFI_SWAP_URL }],
+                [{ text: "📢 News Channel", url: "https://t.me/IO_Mining_bot" }]
+              ]
+            }
           })
         });
       }
