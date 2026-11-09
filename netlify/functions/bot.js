@@ -14,21 +14,36 @@ export async function handler(event, context) {
       const STONFI_SWAP_URL = "https://app.ston.fi/swap?ft=EQC47093oX5Xhb0xuk2lCr2RhS8rj-vul61u4W2UH58rwL_l&tt=EQDliaNChKznSyglMpfPGetHAHXbSkoQ2XEjmMifVgTK9HkE";
 
       // 1. Admin Payout Command (/payout USER_ID CLAIM_ID AMOUNT TX_HASH)
-      if (text.startsWith("/payout") && String(chatId) === ADMIN_TELEGRAM_ID) {
-        const parts = text.split(" ");
-        if (parts.length >= 4) {
-          const targetUserId = parts[1];
-          const claimId = parts[2].replace("#", "");
-          const amount = parts[3];
-          const txHash = parts[4] || "tonviewer_confirmed";
+      if (text.startsWith("/payout")) {
+        // Admin ID စစ်ဆေးခြင်း
+        if (String(chatId) !== ADMIN_TELEGRAM_ID) {
+          await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              chat_id: chatId,
+              text: "⚠️ Unauthorized: Only admin can use this command."
+            })
+          });
+          return { statusCode: 200, body: "Unauthorized" };
+        }
 
+        // Space သို့မဟုတ် Newline အားလုံးကို split လုပ်ခြင်း
+        const parts = text.split(/\s+/);
+        if (parts.length >= 4) {
+          const targetUserId = parts[1].trim();
+          const claimId = parts[2].trim().replace("#", "");
+          const amount = parts[3].trim();
+          const txHash = parts[4] ? parts[4].trim() : "tonviewer_confirmed";
+
+          // HTML format ဖြင့် ရေးထား၍ Hash ထဲရှိ underscore ကြောင့် error မတက်တော့ပါ
           const userReceipt = 
-            `✅ *Withdrawal successfully completed!*\n` +
+            `✅ <b>Withdrawal successfully completed!</b>\n` +
             `━━━━━━━━━━━━━━━━━━━━\n` +
-            `🆔 *Claim ID:* #${claimId}\n` +
-            `💰 *Paid to wallet:* *${Number(amount).toLocaleString()} IO*\n` +
-            `🔗 *Transaction Hash:*\n\`${txHash}\`\n\n` +
-            `🔍 [View on Tonviewer](https://tonviewer.com/transaction/${txHash})`;
+            `🆔 <b>Claim ID:</b> #${claimId}\n` +
+            `💰 <b>Paid to wallet:</b> <b>${Number(amount).toLocaleString()} IO</b>\n` +
+            `🔗 <b>Transaction Hash:</b>\n<code>${txHash}</code>\n\n` +
+            `🔍 <a href="https://tonviewer.com/transaction/${txHash}">View on Tonviewer</a>`;
 
           // User ဆီသို့ LootVault စတိုင် ပြေစာ တိုက်ရိုက်ပို့ခြင်း
           await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
@@ -37,27 +52,38 @@ export async function handler(event, context) {
             body: JSON.stringify({
               chat_id: targetUserId,
               text: userReceipt,
-              parse_mode: "Markdown",
+              parse_mode: "HTML",
               disable_web_page_preview: false
             })
           });
 
-          // Admin ဆီ အတည်ပြုစာ ပြန်ပို့ခြင်း
+          // Admin ဆီသို့ အတည်ပြု မက်ဆေ့ခ်ျ ပြန်ပို့ခြင်း
           await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               chat_id: ADMIN_TELEGRAM_ID,
-              text: `👍 Payout receipt sent to user @${targetUserId} for #${claimId}!`,
-              parse_mode: "Markdown"
+              text: `👍 <b>Success!</b> Payout receipt sent to user <code>${targetUserId}</code> for <b>#${claimId}</b>.`,
+              parse_mode: "HTML"
             })
           });
 
           return { statusCode: 200, body: "Payout Sent" };
+        } else {
+          await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              chat_id: ADMIN_TELEGRAM_ID,
+              text: "⚠️ Format မှားနေပါသည်:\n<code>/payout USER_ID CLAIM_ID AMOUNT TX_HASH</code>",
+              parse_mode: "HTML"
+            })
+          });
+          return { statusCode: 200, body: "Invalid format" };
         }
       }
 
-      // 2. Referral & Start Command Logic
+      // 2. Referral & Start Command
       let inviterId = "";
       if (text.startsWith("/start ref_")) {
         inviterId = text.split("ref_")[1].trim();
@@ -69,7 +95,7 @@ export async function handler(event, context) {
 
       if (text.startsWith("/start")) {
         const welcomeText = 
-          "⛏️ *Welcome to Infinite Orbit (IO)!*\n\n" +
+          "⛏️ <b>Welcome to Infinite Orbit (IO)!</b>\n\n" +
           "🔸 Mine IO automatically 24/7\n" +
           "🔸 Hold IO — get mining boost & higher tier\n" +
           "🔸 Build Orbit Spire nodes for extra yields\n" +
@@ -97,7 +123,7 @@ export async function handler(event, context) {
           body: JSON.stringify({
             chat_id: chatId,
             text: welcomeText,
-            parse_mode: "Markdown",
+            parse_mode: "HTML",
             reply_markup: replyMarkup
           })
         });
