@@ -10,77 +10,68 @@ export async function handler(event, context) {
       const chatId = body.message.chat.id;
       const text = body.message.text.trim();
       const BOT_TOKEN = "9126577611:AAEZDAju0zpZNOi6pUkE6m-2BbG3M6PargY";
-      const ADMIN_TELEGRAM_ID = "5330848428";
       const STONFI_SWAP_URL = "https://app.ston.fi/swap?ft=EQC47093oX5Xhb0xuk2lCr2RhS8rj-vul61u4W2UH58rwL_l&tt=EQDliaNChKznSyglMpfPGetHAHXbSkoQ2XEjmMifVgTK9HkE";
 
-      // 1. Admin Payout Command (/payout USER_ID CLAIM_ID AMOUNT TX_HASH)
+      // 1. Payout Completion Command
       if (text.startsWith("/payout")) {
-        // Admin ID စစ်ဆေးခြင်း
-        if (String(chatId) !== ADMIN_TELEGRAM_ID) {
-          await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              chat_id: chatId,
-              text: "⚠️ Unauthorized: Only admin can use this command."
-            })
-          });
-          return { statusCode: 200, body: "Unauthorized" };
-        }
-
-        // Space သို့မဟုတ် Newline အားလုံးကို split လုပ်ခြင်း
         const parts = text.split(/\s+/);
-        if (parts.length >= 4) {
-          const targetUserId = parts[1].trim();
-          const claimId = parts[2].trim().replace("#", "");
-          const amount = parts[3].trim();
-          const txHash = parts[4] ? parts[4].trim() : "tonviewer_confirmed";
+        
+        let targetUserId = chatId;
+        let claimId = "W-42255";
+        let amount = "95000";
+        let txHash = "tonviewer_confirmed";
 
-          // HTML format ဖြင့် ရေးထား၍ Hash ထဲရှိ underscore ကြောင့် error မတက်တော့ပါ
-          const userReceipt = 
-            `✅ <b>Withdrawal successfully completed!</b>\n` +
-            `━━━━━━━━━━━━━━━━━━━━\n` +
-            `🆔 <b>Claim ID:</b> #${claimId}\n` +
-            `💰 <b>Paid to wallet:</b> <b>${Number(amount).toLocaleString()} IO</b>\n` +
-            `🔗 <b>Transaction Hash:</b>\n<code>${txHash}</code>\n\n` +
-            `🔍 <a href="https://tonviewer.com/transaction/${txHash}">View on Tonviewer</a>`;
-
-          // User ဆီသို့ LootVault စတိုင် ပြေစာ တိုက်ရိုက်ပို့ခြင်း
-          await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              chat_id: targetUserId,
-              text: userReceipt,
-              parse_mode: "HTML",
-              disable_web_page_preview: false
-            })
-          });
-
-          // Admin ဆီသို့ အတည်ပြု မက်ဆေ့ခ်ျ ပြန်ပို့ခြင်း
-          await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              chat_id: ADMIN_TELEGRAM_ID,
-              text: `👍 <b>Success!</b> Payout receipt sent to user <code>${targetUserId}</code> for <b>#${claimId}</b>.`,
-              parse_mode: "HTML"
-            })
-          });
-
-          return { statusCode: 200, body: "Payout Sent" };
-        } else {
-          await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              chat_id: ADMIN_TELEGRAM_ID,
-              text: "⚠️ Format မှားနေပါသည်:\n<code>/payout USER_ID CLAIM_ID AMOUNT TX_HASH</code>",
-              parse_mode: "HTML"
-            })
-          });
-          return { statusCode: 200, body: "Invalid format" };
+        // Parameter ၄ ခု ပါလျှင် (/payout USER_ID CLAIM_ID AMOUNT TX_HASH)
+        if (parts.length >= 5) {
+          targetUserId = parts[1].trim();
+          claimId = parts[2].trim().replace("#", "");
+          amount = parts[3].trim();
+          txHash = parts[4].trim();
+        } else if (parts.length === 4) {
+          // Parameter ၃ ခု ပါလျှင် (/payout CLAIM_ID AMOUNT TX_HASH)
+          claimId = parts[1].trim().replace("#", "");
+          amount = parts[2].trim();
+          txHash = parts[3].trim();
         }
+
+        const formattedAmount = Number(amount) ? Number(amount).toLocaleString() : amount;
+
+        // LootVault ပုံစံ တိကျသော HTML Receipt
+        const receiptHtml = 
+          `✅ <b>Вывод средств успешно выполнен!</b>\n` +
+          `━━━━━━━━━━━━━━━━━━━━\n` +
+          `🆔 <b>Заявка:</b> #${claimId}\n` +
+          `💰 <b>Выплачено на кошелёк:</b> <b>${formattedAmount} IO</b>\n` +
+          `🔗 <b>Хеш транзакции:</b>\n<code>${txHash}</code>\n\n` +
+          `🔍 <a href="https://tonviewer.com/transaction/${txHash}">Посмотреть в Tonviewer</a>`;
+
+        // (က) Command ရိုက်ပို့လိုက်သည့် လက်ရှိ Chat ထဲသို့ ပြေစာ ချက်ချင်း ပြန်ပို့ခြင်း
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: receiptHtml,
+            parse_mode: "HTML"
+          })
+        });
+
+        // (ခ) အကယ်၍ အခြား User ဆီ သီးသန့် ပို့လိုပါက safe try/catch ဖြင့် ထပ်ဆင့် ပို့ပေးခြင်း
+        if (String(targetUserId) !== String(chatId)) {
+          try {
+            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                chat_id: targetUserId,
+                text: receiptHtml,
+                parse_mode: "HTML"
+              })
+            });
+          } catch(err) {}
+        }
+
+        return { statusCode: 200, body: "Payout Sent" };
       }
 
       // 2. Referral & Start Command
