@@ -2,7 +2,7 @@ const BOT_TOKEN = "9126577611:AAEZDAju0zpZNOi6pUkE6m-2BbG3M6PargY";
 
 export async function handler(event, context) {
   if (event.httpMethod !== "POST") {
-    return { statusCode: 200, body: "IO Mining Bot Live" };
+    return { statusCode: 200, body: "IO Bot is online" };
   }
 
   try {
@@ -13,36 +13,34 @@ export async function handler(event, context) {
       const chatId = msg.chat.id;
       const text = msg.text.trim();
 
-      // 1. /done သို့မဟုတ် /payout Command
+      // /done သို့မဟုတ် /payout ပါလာပါက ချက်ချင်း အလုပ်လုပ်စေခြင်း
       if (text.startsWith("/done") || text.startsWith("/payout")) {
-        // Space, newline အားလုံး split လုပ်ခြင်း
-        const parts = text.split(/\s+/);
+        // စာသားထဲမှ W-86964 (Claim ID) ကို ရှာခြင်း
+        const claimMatch = text.match(/(W-\d+|IO-\d+|#\w+)/i);
+        const claimId = claimMatch ? claimMatch[0].replace("#", "") : "W-86964";
 
-        let targetId = chatId;
-        let claimId = "IO-Payout";
-        let amount = "0";
-        let txHash = "";
+        // Amount ကို ရှာခြင်း (ဥပမာ 9832.5 သို့မဟုတ် 95000)
+        const amountMatch = text.match(/(\d+[\d,.]*)\s+([a-f0-9]{30,})/i) || text.match(/\s+(\d+[\d,.]*)\s+/);
+        const amount = amountMatch ? amountMatch[1] : "9,832.5";
 
-        if (parts.length >= 5) {
-          targetId = parts[1].trim();
-          claimId = parts[2].trim();
-          amount = parts[3].trim();
-          txHash = parts[4].trim();
-        } else if (parts.length === 4) {
-          claimId = parts[1].trim();
-          amount = parts[2].trim();
-          txHash = parts[3].trim();
-        }
+        // Hash အရှည်ကြီး (30 လုံးအထက် hex) ကို ရှာခြင်း
+        const hashMatch = text.match(/([a-f0-9]{32,64})/i);
+        const txHash = hashMatch ? hashMatch[0] : "54d010e61441053f9778e27e62ad15dee209ba749444e765402cb4ba41889e5e";
 
+        // ပို့ရမည့် User ID ကို ရှာခြင်း (chatId မဟုတ်သော 8621182145 စသည့် ဂဏန်း)
+        const userMatch = text.match(/\/done\s+(\d+)/i) || text.match(/\/payout\s+(\d+)/i);
+        const targetUserId = userMatch ? userMatch[1] : chatId;
+
+        // LootVault ပုံစံ On-Chain ပြေစာ
         const receiptText = 
           "✅ Вывод средств успешно выполнен!\n" +
           "━━━━━━━━━━━━━━━━━━━━\n" +
-          "🆔 Заявка: #" + claimId.replace("#", "") + "\n" +
+          "🆔 Заявка: #" + claimId + "\n" +
           "💰 Выплачено на кошелёк: " + amount + " IO\n" +
           "🔗 Хеш транзакции:\n" + txHash + "\n\n" +
           "🔍 Tonviewer: https://tonviewer.com/transaction/" + txHash;
 
-        // Command ရိုက်ပို့သူဆီ ပြေစာ ပြန်ပို့ခြင်း
+        // ၁။ Command ရိုက်ပို့လိုက်သည့် သင်၏ Chat ထဲသို့ ပြေစာ တိုက်ရိုက် ထုတ်ပေးခြင်း
         await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -53,14 +51,14 @@ export async function handler(event, context) {
           })
         });
 
-        // Target User ဆီသို့လည်း သီးခြား ပို့ပေးခြင်း
-        if (String(targetId) !== String(chatId)) {
+        // ၂။ User ဆီသို့လည်း သီးသန့် ပြေစာ ပို့ပေးခြင်း
+        if (String(targetUserId) !== String(chatId)) {
           try {
             await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
-                chat_id: targetId,
+                chat_id: targetUserId,
                 text: receiptText,
                 disable_web_page_preview: false
               })
@@ -71,7 +69,7 @@ export async function handler(event, context) {
         return { statusCode: 200, body: "OK" };
       }
 
-      // 2. /start Command
+      // /start Command
       if (text.startsWith("/start")) {
         let inviter = "";
         if (text.startsWith("/start ref_")) {
