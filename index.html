@@ -291,7 +291,7 @@
       </div>
     </div>
 
-    <!-- Active Claim (Only displays if user requested) -->
+    <!-- Active Claim -->
     <div class="card" id="active-claim-card" style="display: none; border-color: var(--accent-gold);">
       <div class="card-title">
         <span style="font-weight: 700; color: #fff;" id="active-claim-id">Active Claim</span>
@@ -339,7 +339,7 @@
       <button id="submit-withdraw-btn" class="btn-main btn-gold" onclick="submitWithdrawal()">Request Withdrawal</button>
     </div>
 
-    <!-- Real Submissions Only History -->
+    <!-- Clean History -->
     <div class="card">
       <div class="card-title">
         <span style="font-weight: 700; color: #fff;">Withdrawal History</span>
@@ -402,7 +402,6 @@
     document.getElementById('user-display-name').innerText = '@' + telegramUsername;
   }
 
-  // URL Inviter Detection (?inviter=5330848428)
   const urlParams = new URLSearchParams(window.location.search);
   const myInviterId = urlParams.get('inviter') || localStorage.getItem('io_my_inviter');
   if (myInviterId && myInviterId !== String(telegramUserId)) {
@@ -550,7 +549,7 @@
       messages: [
         {
           address: ADMIN_PAYOUT_WALLET,
-          amount: "50000000", // 0.05 TON
+          amount: "50000000",
           payload: payloadBase64
         }
       ]
@@ -567,8 +566,8 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           chat_id: ADMIN_TELEGRAM_ID,
-          text: `🛡️ *NEW USER VERIFIED*\n\n👤 User: @${telegramUsername} (ID: \`${telegramUserId}\`)\n👛 Wallet: \`${userConnectedWallet}\`\n💰 Fee: 0.05 TON\n📝 Memo: \`${uniqueComment}\``,
-          parse_mode: "Markdown"
+          text: `🛡️ <b>NEW USER VERIFIED</b>\n\n👤 User: @${telegramUsername} (ID: <code>${telegramUserId}</code>)\n👛 Wallet: <code>${userConnectedWallet}</code>\n💰 Fee: 0.05 TON\n📝 Memo: <code>${uniqueComment}</code>`,
+          parse_mode: "HTML"
         })
       });
 
@@ -579,8 +578,8 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             chat_id: inviter,
-            text: `🎉 *NEW QUALIFIED REFERRAL!*\n\nUser @${telegramUsername} has verified their wallet (0.05 TON) and unlocked your 5% mining bonus!`,
-            parse_mode: "Markdown"
+            text: `🎉 <b>NEW QUALIFIED REFERRAL!</b>\n\nUser @${telegramUsername} has verified their wallet (0.05 TON) and unlocked your 5% mining bonus!`,
+            parse_mode: "HTML"
           })
         });
       }
@@ -671,7 +670,7 @@
   calculateLevelByHold(0);
   updateMining();
 
-  // 5. Withdrawal Logic with Instant Telegram Notification & Command Helper
+  // 5. Withdrawal Logic with Sequential ID (#IO-1, #IO-2...) and One-Click Callback
   function setWithdrawVal(val) {
     if (val === 'MAX') {
       const maxPossible = Math.min(100000, totalBalance);
@@ -766,10 +765,15 @@
       return;
     }
 
+    // Sequential ID Generator (#IO-1, #IO-2...)
+    let currentSeq = parseInt(localStorage.getItem('io_seq_counter')) || 0;
+    currentSeq += 1;
+    localStorage.setItem('io_seq_counter', currentSeq);
+    const claimId = "IO-" + currentSeq;
+
     totalBalance -= amount;
     const fee = amount * 0.05;
     const net = amount - fee;
-    const claimId = "W-" + Math.floor(10000 + Math.random() * 90000);
 
     const newClaim = { id: claimId, amount: amount, fee: fee, net: net, date: new Date().toLocaleDateString() };
     localStorage.setItem('io_active_claim', JSON.stringify(newClaim));
@@ -779,17 +783,24 @@
     history.unshift({ id: claimId, date: "Just now", amount: amount, net: net, status: "Processing" });
     localStorage.setItem('io_withdraw_history', JSON.stringify(history));
 
-    // Admin ဆီသို့ Telegram Alert ပေးပို့ခြင်း (Admin အဆင်ပြေစေရန် တစ်ခါတည်း Command ပါ တွဲလျက် ထည့်သွင်းထားသည်)
+    // Admin Telegram သို့ တိုက်ရိုက် သတိပေးစာ ပို့ခြင်း (Inline 'Mark as Paid' Button ဖြင့်)
     const alertMsg = 
-      `🚨 *NEW WITHDRAWAL REQUEST*\n\n` +
-      `🆔 Claim ID: \`#${claimId}\`\n` +
-      `👤 User: @${telegramUsername} (ID: \`${telegramUserId}\`)\n` +
-      `💰 Amount: *${amount.toLocaleString()} IO*\n` +
-      `📉 Fee (5%): *${fee.toLocaleString()} IO*\n` +
-      `💎 *Payout Net*: *${net.toLocaleString()} IO*\n\n` +
-      `📬 *Payout Address*:\n\`${userConnectedWallet}\`\n\n` +
-      `👉 *Send IO from wallet, then copy & paste this command to complete:*\n` +
-      `\`/payout ${telegramUserId} ${claimId} ${net} <TX_HASH>\``;
+      `🚨 <b>NEW WITHDRAWAL REQUEST</b>\n\n` +
+      `🆔 <b>Claim ID:</b> <code>#${claimId}</code>\n` +
+      `👤 <b>User:</b> @${telegramUsername} (ID: <code>${telegramUserId}</code>)\n` +
+      `💰 <b>Amount:</b> <b>${amount.toLocaleString()} IO</b>\n` +
+      `📉 <b>Fee (5%):</b> <b>${fee.toLocaleString()} IO</b>\n` +
+      `💎 <b>Payout Net:</b> <b>${net.toLocaleString()} IO</b>\n\n` +
+      `📬 <b>Payout Address:</b>\n<code>${userConnectedWallet}</code>\n\n` +
+      `👉 <i>Copy address & send tokens, then click the button below to confirm:</i>`;
+
+    const inlineMarkup = {
+      inline_keyboard: [
+        [
+          { text: `✅ Mark as Paid (#${claimId})`, callback_data: `paid_${telegramUserId}_${claimId}_${net}` }
+        ]
+      ]
+    };
 
     fetch(`https://api.telegram.org/bot${ADMIN_BOT_TOKEN}/sendMessage`, {
       method: "POST",
@@ -797,7 +808,8 @@
       body: JSON.stringify({
         chat_id: ADMIN_TELEGRAM_ID,
         text: alertMsg,
-        parse_mode: "Markdown"
+        parse_mode: "HTML",
+        reply_markup: inlineMarkup
       })
     });
 
