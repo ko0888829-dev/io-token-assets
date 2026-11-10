@@ -1,8 +1,8 @@
-const BOT_TOKEN = "9044078069:AAHARiuHEtFtY0uP8wn-X8VrLnCcR6d0vFM";
+const BOT_TOKEN = "9126577611:AAEZDAju0zpZNOi6pUkE6m-2BbG3M6PargY";
 
 export async function handler(event, context) {
   if (event.httpMethod !== "POST") {
-    return { statusCode: 200, body: "NEXORA Bot Live" };
+    return { statusCode: 200, body: "NEXORA Bot Active" };
   }
 
   try {
@@ -19,10 +19,10 @@ export async function handler(event, context) {
           inviter = text.split("_")[1].trim();
         }
 
-        // Cache မငြိစေရန် Version query အသစ်ထည့်ထားပါသည်
+        // Version query (?v=20261110) ထည့်ထားသဖြင့် Telegram Cache လုံးဝ မမိဘဲ NEXORA သစ် တန်းပွင့်ပါမည်
         const webAppUrl = inviter 
-          ? `https://io-mining-app.netlify.app?v=nexora_fresh&inviter=${inviter}`
-          : "https://io-mining-app.netlify.app?v=nexora_fresh";
+          ? `https://io-mining-app.netlify.app?v=nexora2&inviter=${inviter}`
+          : "https://io-mining-app.netlify.app?v=nexora2";
 
         const welcomeText = 
           "⚡ <b>Welcome to NEXORA Network ($NEX)!</b>\n\n" +
