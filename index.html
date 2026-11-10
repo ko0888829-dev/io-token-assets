@@ -3,18 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Infinite Orbit (IO) Mining App</title>
+  <title>NEXORA Network - Cloud Mining</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #070d18;
-      --card-bg: #0e1726;
-      --card-border: #1a273f;
-      --accent-blue: #0098ea;
-      --accent-cyan: #00d2ff;
+      --bg: #060b13;
+      --card-bg: #0c1524;
+      --card-border: #16253b;
+      --accent-cyan: #00e5ff;
+      --accent-purple: #7928ca;
       --accent-gold: #f59e0b;
+      --accent-green: #10b981;
       --text-main: #ffffff;
       --text-sub: #7e8fa6;
     }
@@ -25,59 +26,53 @@
     /* Header */
     .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
     .user-info { display: flex; align-items: center; gap: 10px; }
-    .avatar { width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--accent-cyan); }
-    .user-name { font-size: 15px; font-weight: 700; }
+    .avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent-cyan); background: #132238; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; color: var(--accent-cyan); }
+    .user-name { font-size: 15px; font-weight: 800; letter-spacing: 0.5px; }
     .user-tag { font-size: 12px; color: var(--text-sub); }
-
-    .lvl-badge { background: #132742; border: 1px solid var(--accent-gold); color: var(--accent-gold); font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
-
-    /* Verify Banner */
-    .verify-banner { background: #081d14; border: 1px solid #2ed573; border-radius: 16px; padding: 14px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
+    .prem-badge { background: linear-gradient(90deg, #7928ca, #ff0080); color: #fff; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 12px; text-transform: uppercase; }
 
     /* Cards */
-    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 18px; margin-bottom: 14px; position: relative; }
+    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 18px; margin-bottom: 14px; position: relative; }
     .card-title { font-size: 13px; color: var(--text-sub); display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-    .balance-val { font-size: 30px; font-weight: 800; }
-    .balance-val span { font-size: 16px; color: var(--accent-cyan); }
-
-    /* Level League Box */
-    .league-card { background: #0c182b; border: 1px solid #1e3557; border-radius: 14px; padding: 12px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-    .league-info { display: flex; align-items: center; gap: 10px; }
-    .league-icon { width: 38px; height: 38px; background: #f59e0b22; border: 1px solid var(--accent-gold); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--accent-gold); font-size: 12px; }
+    .balance-val { font-size: 32px; font-weight: 800; letter-spacing: -0.5px; }
+    .balance-val span { font-size: 18px; color: var(--accent-cyan); font-weight: 700; }
 
     /* Mining Progress */
     .mining-val { font-size: 26px; font-weight: 800; color: var(--accent-cyan); margin: 6px 0; }
-    .progress-bar-bg { width: 100%; height: 7px; background: #132238; border-radius: 10px; overflow: hidden; margin: 10px 0; }
-    .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan)); }
+    .progress-bar-bg { width: 100%; height: 8px; background: #08111e; border-radius: 10px; overflow: hidden; margin: 10px 0; }
+    .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan)); transition: width 0.3s; }
     .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: 14px 0; text-align: center; }
-    .stat-box { background: #08111e; border: 1px solid var(--card-border); border-radius: 12px; padding: 8px 4px; }
-    .stat-label { font-size: 10px; color: var(--text-sub); }
-    .stat-val { font-size: 13px; font-weight: 700; }
+    .stat-box { background: #08111e; border: 1px solid var(--card-border); border-radius: 12px; padding: 10px 4px; }
+    .stat-label { font-size: 10px; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-val { font-size: 13px; font-weight: 700; margin-top: 2px; }
 
     /* Buttons */
-    .btn-main { width: 100%; padding: 14px; border-radius: 12px; border: none; font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.2s; }
-    .btn-gold { background: linear-gradient(90deg, #f59e0b, #d97706); color: #000; font-weight: 800; }
-    .btn-mining { background: #10344d; color: var(--accent-cyan); }
+    .btn-main { width: 100%; padding: 14px; border-radius: 14px; border: none; font-size: 14px; font-weight: 800; cursor: pointer; transition: 0.2s; }
+    .btn-mining { background: #0f2238; color: var(--accent-cyan); }
+    .btn-claim { background: linear-gradient(90deg, #00c6ff, #0072ff); color: #fff; box-shadow: 0 4px 15px rgba(0, 198, 255, 0.3); }
+    .btn-gold { background: linear-gradient(90deg, #f59e0b, #d97706); color: #000; }
+    .btn-prem { background: linear-gradient(90deg, #7928ca, #ff0080); color: #fff; }
 
-    /* Withdraw View Elements */
-    .status-badge { font-size: 11px; padding: 3px 8px; border-radius: 6px; font-weight: 700; }
-    .status-processing { background: #3b2c0f; color: var(--accent-gold); border: 1px solid var(--accent-gold); }
-    .status-completed { background: #0a2d21; color: #2ed573; border: 1px solid #2ed573; }
-    .terms-box { background: #08111e; border: 1px solid var(--card-border); border-radius: 12px; padding: 14px; margin: 12px 0; font-size: 12px; }
-    .terms-item { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; color: var(--text-sub); }
-    .terms-item:last-child { margin-bottom: 0; }
-    .tx-input { width: 100%; background: #08111e; border: 1px solid var(--card-border); border-radius: 10px; padding: 12px; color: #fff; font-size: 14px; font-weight: 700; margin: 8px 0; outline: none; }
+    /* Tasks List */
+    .task-card { display: flex; justify-content: space-between; align-items: center; background: #08111e; border: 1px solid var(--card-border); border-radius: 14px; padding: 14px; margin-bottom: 10px; }
+    .task-title { font-size: 13px; font-weight: 700; }
+    .task-reward { font-size: 12px; color: var(--accent-cyan); font-weight: 700; margin-top: 2px; }
+    .btn-task { padding: 8px 16px; font-size: 12px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; background: #132742; color: var(--accent-cyan); }
+    .btn-task.done { background: #062b1b; color: var(--accent-green); cursor: default; }
 
-    /* Admin Panel Elements */
-    .admin-req-card { background: #0b1526; border: 1px solid var(--accent-gold); border-radius: 14px; padding: 14px; margin-bottom: 12px; }
-    .copy-pill { background: #132238; color: var(--accent-cyan); padding: 3px 8px; border-radius: 4px; font-size: 11px; cursor: pointer; border: 1px solid var(--card-border); font-weight: 700; }
+    /* Locked Withdraw Banner */
+    .locked-banner { background: linear-gradient(180deg, #181308, #0c1524); border: 1px solid var(--accent-gold); border-radius: 18px; padding: 22px 16px; text-align: center; margin-bottom: 14px; }
+    .countdown-timer { display: flex; justify-content: center; gap: 8px; margin: 14px 0; }
+    .count-box { background: #08111e; border: 1px solid var(--accent-gold); border-radius: 10px; padding: 8px 12px; min-width: 58px; }
+    .count-num { font-size: 18px; font-weight: 800; color: var(--accent-gold); }
+    .count-lbl { font-size: 9px; color: var(--text-sub); text-transform: uppercase; }
 
-    /* Tabs & Nav */
+    /* Navigation */
     .tab-content { display: none; }
     .tab-content.active { display: block; }
-    .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #09121f; border-top: 1px solid var(--card-border); display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; }
+    .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #080f1a; border-top: 1px solid var(--card-border); display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; }
     .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-sub); font-size: 11px; cursor: pointer; flex: 1; text-align: center; }
-    .nav-item.active { color: var(--accent-gold); font-weight: 700; }
+    .nav-item.active { color: var(--accent-cyan); font-weight: 700; }
     .nav-icon { font-size: 18px; }
   </style>
 </head>
@@ -87,227 +82,174 @@
   <!-- Header -->
   <div class="header">
     <div class="user-info">
-      <img src="1794127665882.jpg" class="avatar" alt="IO">
+      <div class="avatar">N</div>
       <div>
-        <div class="user-name">Infinite Orbit <span style="font-size: 10px; background: #0e304d; color: #00d2ff; padding: 2px 6px; border-radius: 6px;">CLOUD</span></div>
-        <div class="user-tag" id="user-display-name">@Dragonchou18</div>
+        <div class="user-name">NEXORA <span class="prem-badge">PREMIUM</span></div>
+        <div class="user-tag" id="user-display-name">@User</div>
       </div>
     </div>
-    <div style="display: flex; align-items: center; gap: 8px;">
-      <div class="lvl-badge">🏆 <span>Lvl 450</span></div>
-      <div id="ton-connect-btn"></div>
-    </div>
-  </div>
-
-  <!-- Anti-Bot Banner -->
-  <div class="verify-banner">
-    <div>
-      <div style="font-size: 13px; font-weight: 700; color: #2ed573;">🛡️ Account Verified ✓</div>
-      <div style="font-size: 11px; color: var(--text-sub); margin-top: 2px;">Anti-bot check passed. Full withdrawals unlocked.</div>
-    </div>
+    <div id="ton-connect-btn"></div>
   </div>
 
   <!-- TAB 1: MINING -->
-  <div id="tab-mining" class="tab-content">
+  <div id="tab-mining" class="tab-content active">
+    <!-- Balance Card -->
     <div class="card">
       <div class="card-title">
-        <span>💼 In-app balance</span>
-        <span style="color: #2ed573;">In-game</span>
+        <span>💼 Total NEX Balance</span>
+        <span style="color: var(--accent-green);">● Active Pool</span>
       </div>
-      <div class="balance-val"><span id="total-balance">113,546.57</span> <span>IO</span></div>
+      <div class="balance-val"><span id="total-balance">0.0000</span> <span>$NEX</span></div>
     </div>
 
+    <!-- Active Mining Card -->
     <div class="card">
       <div class="card-title">
-        <span style="color: var(--accent-cyan);">● Active Cloud Mining</span>
-        <span>Cycle: 4h</span>
+        <span style="color: var(--accent-cyan);">⚡ Cloud Node Mining</span>
+        <span>Cycle: 4 Hours</span>
       </div>
-      <div class="mining-val">+<span id="mined-balance">0.0000</span> <span>IO</span></div>
-      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill"></div></div>
+      <div class="mining-val">+<span id="mined-balance">0.0000</span> <span style="font-size: 16px; color: #fff;">NEX</span></div>
+
+      <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-sub);">
+        <span>Capacity Fill</span>
+        <span id="mining-timer">04:00:00</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progress-fill"></div>
+      </div>
+
       <div class="stats-grid">
-        <div class="stat-box"><div class="stat-label">Per hour</div><div class="stat-val">26674.50 IO</div></div>
-        <div class="stat-box"><div class="stat-label">Per day</div><div class="stat-val">~640,188 IO</div></div>
-        <div class="stat-box"><div class="stat-label">Boost</div><div class="stat-val" style="color: var(--accent-cyan);">x2371.10</div></div>
+        <div class="stat-box">
+          <div class="stat-label">Rate / Hour</div>
+          <div class="stat-val" id="speed-display">8.50 NEX</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Daily Yield</div>
+          <div class="stat-val" id="day-display">~204 NEX</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Booster</div>
+          <div class="stat-val" style="color: var(--accent-cyan);" id="boost-display">x1.00</div>
+        </div>
       </div>
-      <button class="btn-main btn-mining">⛏️ Mining Active...</button>
+
+      <button id="mining-btn" class="btn-main btn-mining">⛏️ Mining in Progress...</button>
+    </div>
+
+    <!-- Premium Pass Banner -->
+    <div class="card" style="background: linear-gradient(135deg, #180929, #0c1524); border-color: var(--accent-purple);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <span style="font-weight: 800; color: #fff; font-size: 14px;">💎 NEXORA VIP Node Pass</span>
+        <span class="prem-badge">EXCLUSIVE</span>
+      </div>
+      <div style="font-size: 12px; color: var(--text-sub); margin-bottom: 12px;">
+        Boost your mining capacity to <b>x2.0 Turbo Speed</b> and unlock priority January 1 withdrawals.
+      </div>
+      <button class="btn-main btn-prem" onclick="alert('VIP Node Pass will be available for TON/Telegram Stars soon!')">🚀 Upgrade to VIP</button>
     </div>
   </div>
 
-  <!-- TAB 2: SHOP -->
-  <div id="tab-shop" class="tab-content">
-    <div class="card">
-      <div class="card-title"><span style="font-weight: 700; color: #fff;">Shop & DEX Swap</span></div>
-      <div style="background: #08111e; border: 1px solid var(--card-border); border-radius: 12px; padding: 12px; margin-bottom: 14px;">
-        <div style="font-size: 11px; color: var(--text-sub);">STON.fi DEX Rate</div>
-        <div style="font-size: 17px; font-weight: 800; color: var(--accent-gold); margin-top: 4px;">1 GRAM ≈ 41.70 IO</div>
-      </div>
-      <button class="btn-main btn-gold" onclick="window.open('https://app.ston.fi/swap?ft=EQC47093oX5Xhb0xuk2lCr2RhS8rj-vul61u4W2UH58rwL_l&tt=EQDliaNChKznSyglMpfPGetHAHXbSkoQ2XEjmMifVgTK9HkE', '_blank')">🔄 Open STON.fi DEX</button>
-    </div>
-  </div>
-
-  <!-- TAB 3: REWARDS -->
+  <!-- TAB 2: TASKS (CHANNEL & BOT TASKS) -->
   <div id="tab-tasks" class="tab-content">
     <div class="card">
-      <div class="card-title"><span style="font-weight: 700; color: #fff;">Daily Streak</span></div>
-      <button class="btn-main btn-gold" onclick="alert('Claimed +50 IO!')">Claim Reward</button>
-    </div>
-  </div>
-
-  <!-- TAB 4: FRIENDS -->
-  <div id="tab-friends" class="tab-content">
-    <div class="card">
-      <h3 style="margin-bottom: 6px;">Qualified Referrals (1)</h3>
-      <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-top: 1px solid var(--card-border); margin-top: 8px;">
-        <div>
-          <b>@max_official_1_1</b> <span style="font-size: 10px; background: #0a2d21; color: #2ed573; padding: 2px 6px; border-radius: 4px;">Verified ✓</span>
-          <div style="font-size: 11px; color: var(--text-sub);">Hold: 1,014 IO</div>
-        </div>
-        <b style="color: #2ed573;">+10.00 IO</b>
-      </div>
-    </div>
-  </div>
-
-  <!-- TAB 5: WALLET & PAYOUTS -->
-  <div id="tab-wallet" class="tab-content active">
-    <div class="card">
       <div class="card-title">
-        <span style="font-weight: 700; color: #fff;">Wallet & Payouts</span>
-        <span style="font-size: 11px; color: var(--text-sub);">Official Web3</span>
-      </div>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0;">
-        <div style="background: #08111e; border: 1px solid var(--card-border); border-radius: 12px; padding: 12px;">
-          <div style="font-size: 11px; color: var(--text-sub);">App Balance</div>
-          <div style="font-size: 18px; font-weight: 800; color: #fff; margin-top: 4px;"><span id="wallet-tab-balance">113,546.57</span> <span style="font-size: 12px; color: var(--accent-cyan);">IO</span></div>
-        </div>
-        <div style="background: #08111e; border: 1px solid var(--card-border); border-radius: 12px; padding: 12px;">
-          <div style="font-size: 11px; color: var(--text-sub);">Wallet Hold Status</div>
-          <div style="font-size: 18px; font-weight: 800; color: var(--accent-gold); margin-top: 4px;">98,998,912 IO</div>
-        </div>
-      </div>
-      <div style="font-size: 11px; color: var(--text-sub); border-top: 1px solid var(--card-border); padding-top: 8px;">
-        ● Wallet: 0:ad15...13b8
-      </div>
-    </div>
-
-    <!-- Active Claim Card -->
-    <div class="card" id="active-claim-card" style="border-color: var(--accent-gold);">
-      <div class="card-title">
-        <span style="font-weight: 700; color: #fff;" id="active-claim-id">Active Claim #W-42255</span>
-        <span class="status-badge status-processing" id="active-claim-badge">Processing (1-24h)</span>
-      </div>
-      <div style="background: #08111e; border-radius: 10px; padding: 12px; margin: 10px 0; font-size: 12px;">
-        <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-          <span style="color: var(--text-sub);">Requested:</span>
-          <b>100,000 IO</b>
-        </div>
-        <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-          <span style="color: var(--text-sub);">Fee (5%):</span>
-          <span style="color: #ff4757;">-5,000 IO</span>
-        </div>
-        <div style="display: flex; justify-content: space-between;">
-          <span style="color: var(--text-sub);">To payout:</span>
-          <b style="color: #2ed573;">+95,000 IO</b>
-        </div>
-      </div>
-      <div style="font-size: 11px; color: var(--accent-gold);" id="active-claim-note">⏳ Withdrawal request is in review by Admin.</div>
-    </div>
-
-    <!-- Withdraw History -->
-    <div class="card">
-      <div class="card-title">
-        <span style="font-weight: 700; color: #fff;">Withdrawal History</span>
-        <span style="font-size: 11px; color: var(--text-sub);">(1)</span>
-      </div>
-      <div id="tx-history-container">
-        <div style="padding: 10px 0; border-bottom: 1px solid var(--card-border); font-size: 13px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-            <b id="hist-claim-id">#W-42255</b>
-            <span class="status-badge status-processing" id="hist-claim-badge">Processing</span>
-          </div>
-          <div style="display: flex; justify-content: space-between; color: var(--text-sub); font-size: 11px;">
-            <span>Today</span>
-            <b style="color: #fff; font-size: 13px;">100,000 IO</b>
-          </div>
-          <div style="text-align: right; font-size: 11px; color: var(--accent-gold);" id="hist-claim-net">
-            Net: +95,000 IO
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- TAB 6: IN-APP ADMIN PANEL (DIRECTLY EMBEDDED) -->
-  <div id="tab-admin" class="tab-content">
-    <div class="card" style="border-color: var(--accent-gold);">
-      <div class="card-title">
-        <span style="font-weight: 800; color: var(--accent-gold); font-size: 15px;">⚙️ Admin Payout Management</span>
-        <span style="background: #241a0b; color: var(--accent-gold); font-size: 10px; padding: 2px 6px; border-radius: 4px;">ACTIVE</span>
+        <span style="font-weight: 800; color: #fff; font-size: 14px;">🎯 Ecosystem Missions</span>
+        <span style="color: var(--accent-cyan); font-size: 11px;">Instant NEX</span>
       </div>
       <div style="font-size: 12px; color: var(--text-sub); margin-bottom: 14px;">
-        Copy the user's address, send IO tokens via Tonkeeper, and click <b>Complete & Send Receipt</b> to issue the official Tonviewer receipt!
+        Join community channels and partner bots to boost your balance before listing.
       </div>
 
-      <!-- Pending Request Card 1 -->
-      <div class="admin-req-card" id="admin-card-1">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-          <b style="color: var(--accent-gold); font-size: 15px;">#W-42255</b>
-          <span style="font-size: 11px; color: var(--text-sub);">Today</span>
+      <!-- Task 1 -->
+      <div class="task-card">
+        <div>
+          <div class="task-title">📢 Join NEXORA Official Channel</div>
+          <div class="task-reward">+150 NEX</div>
         </div>
-        <div style="font-size: 12px; margin-bottom: 4px;">User: <b>@Dragonchou18</b> (ID: <code>5330848428</code>)</div>
-        <div style="font-size: 12px; margin-bottom: 8px;">Net Payout: <b style="color: #2ed573; font-size: 15px;">95,000 IO</b></div>
-        
-        <div style="background: #060c16; padding: 10px; border-radius: 8px; font-size: 11px; margin-bottom: 10px; word-break: break-all; border: 1px solid var(--card-border);">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-            <span style="color: var(--text-sub);">Payout Address:</span>
-            <span class="copy-pill" onclick="copyAddress('0:ad15a5fb1933bf14f29642d07dfaa53340d3c3da7a4ee78adee981e76a4113b8')">📋 Copy</span>
-          </div>
-          <code>0:ad15a5fb1933bf14f29642d07dfaa53340d3c3da7a4ee78adee981e76a4113b8</code>
-        </div>
-
-        <div style="font-size: 11px; color: var(--text-sub); margin-bottom: 4px;">Tx Hash:</div>
-        <input type="text" id="tx-hash-1" class="tx-input" value="54d010e61441053f9778e27e62ad15dee209ba749444e765402cb4ba41889e5e">
-
-        <button class="btn-main btn-gold" style="margin-top: 6px;" onclick="executePayout('5330848428', 'W-42255', '95,000', 'tx-hash-1', 'admin-card-1')">
-          ✅ Complete & Send Receipt
-        </button>
+        <button id="task-btn-1" class="btn-task" onclick="handleTask('task1', 150, 'https://t.me/IO_Mining_bot', this)">Start</button>
       </div>
 
-      <!-- Pending Request Card 2 -->
-      <div class="admin-req-card" id="admin-card-2">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-          <b style="color: var(--accent-gold); font-size: 15px;">#W-86964</b>
-          <span style="font-size: 11px; color: var(--text-sub);">Today</span>
+      <!-- Task 2 -->
+      <div class="task-card">
+        <div>
+          <div class="task-title">💬 Join NEXORA Discussion Group</div>
+          <div class="task-reward">+100 NEX</div>
         </div>
-        <div style="font-size: 12px; margin-bottom: 4px;">User: <b>@Hvuvgugugu</b> (ID: <code>8621182145</code>)</div>
-        <div style="font-size: 12px; margin-bottom: 8px;">Net Payout: <b style="color: #2ed573; font-size: 15px;">9,832.5 IO</b></div>
-        
-        <div style="background: #060c16; padding: 10px; border-radius: 8px; font-size: 11px; margin-bottom: 10px; word-break: break-all; border: 1px solid var(--card-border);">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-            <span style="color: var(--text-sub);">Payout Address:</span>
-            <span class="copy-pill" onclick="copyAddress('0:d45163438fdd4a291e086b47b26b3871495b1d4449f8004c538aac7602b14e01')">📋 Copy</span>
-          </div>
-          <code>0:d45163438fdd4a291e086b47b26b3871495b1d4449f8004c538aac7602b14e01</code>
+        <button id="task-btn-2" class="btn-task" onclick="handleTask('task2', 100, 'https://t.me/IO_Mining_bot', this)">Start</button>
+      </div>
+
+      <!-- Task 3 (Partner Bot) -->
+      <div class="task-card">
+        <div>
+          <div class="task-title">🤖 Launch Partner TON Bot</div>
+          <div class="task-reward">+200 NEX</div>
         </div>
+        <button id="task-btn-3" class="btn-task" onclick="handleTask('task3', 200, 'https://t.me/IO_Mining_bot', this)">Start</button>
+      </div>
+    </div>
+  </div>
 
-        <div style="font-size: 11px; color: var(--text-sub); margin-bottom: 4px;">Tx Hash:</div>
-        <input type="text" id="tx-hash-2" class="tx-input" value="54d010e61441053f9778e27e62ad15dee209ba749444e765402cb4ba41889e5e">
+  <!-- TAB 3: FRIENDS (REFERRALS) -->
+  <div id="tab-friends" class="tab-content">
+    <div class="card">
+      <h3 style="margin-bottom: 6px;">Invite Partners</h3>
+      <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 14px;">
+        Receive <b>10%</b> of all NEX mined by your friends, plus <b>+50 NEX</b> welcome gift!
+      </p>
 
-        <button class="btn-main btn-gold" style="margin-top: 6px;" onclick="executePayout('8621182145', 'W-86964', '9,832.5', 'tx-hash-2', 'admin-card-2')">
-          ✅ Complete & Send Receipt
-        </button>
+      <div style="background: #08111e; border: 1px solid var(--card-border); border-radius: 12px; padding: 12px; margin-bottom: 12px;">
+        <div style="font-size: 11px; color: var(--text-sub); margin-bottom: 4px;">Your Invitation Link</div>
+        <div id="ref-link-display" style="font-size: 12px; color: var(--accent-cyan); word-break: break-all;">Generating...</div>
+      </div>
+
+      <button class="btn-main btn-claim" onclick="shareRefTelegram()">🚀 Invite Telegram Friends</button>
+      <button class="btn-main btn-mining" style="margin-top: 8px;" onclick="copyRefLink()">📋 Copy Link</button>
+    </div>
+  </div>
+
+  <!-- TAB 4: WITHDRAW (LOCKED TILL JAN 1) -->
+  <div id="tab-wallet" class="tab-content">
+    <!-- Countdown Box -->
+    <div class="locked-banner">
+      <div style="font-size: 26px;">🔒</div>
+      <div style="font-size: 16px; font-weight: 800; color: var(--accent-gold); margin-top: 6px;">
+        Withdrawals Open on January 1, 2027
+      </div>
+      <div style="font-size: 12px; color: var(--text-sub); margin-top: 4px;">
+        Liquidity pool locking & DEX listings are in progress. Keep mining to maximize your allocation!
+      </div>
+
+      <!-- Timer Elements -->
+      <div class="countdown-timer">
+        <div class="count-box"><div class="count-num" id="cd-days">--</div><div class="count-lbl">Days</div></div>
+        <div class="count-box"><div class="count-num" id="cd-hours">--</div><div class="count-lbl">Hours</div></div>
+        <div class="count-box"><div class="count-num" id="cd-mins">--</div><div class="count-lbl">Mins</div></div>
+        <div class="count-box"><div class="count-num" id="cd-secs">--</div><div class="count-lbl">Secs</div></div>
+      </div>
+    </div>
+
+    <!-- Info Card -->
+    <div class="card">
+      <div class="card-title">
+        <span style="font-weight: 700; color: #fff;">Listing Specifications</span>
+        <span style="color: var(--accent-green); font-size: 11px;">Verified</span>
+      </div>
+      <div style="font-size: 12px; color: var(--text-sub); line-height: 1.8;">
+        🪙 <b>Token:</b> NEXORA ($NEX)<br>
+        🌐 <b>Network:</b> The Open Network (TON Blockchain)<br>
+        📈 <b>Listing DEX:</b> STON.fi / DeDust<br>
+        🔓 <b>Withdrawal Fee:</b> 0% for Early Community Miners
       </div>
     </div>
   </div>
 </div>
 
-<!-- Nav Bar (Admin tab is directly visible) -->
+<!-- Navigation Bar -->
 <div class="nav-bar">
-  <div class="nav-item" onclick="switchTab('tab-mining', this)"><div class="nav-icon">⛏️</div><div>Mining</div></div>
-  <div class="nav-item" onclick="switchTab('tab-shop', this)"><div class="nav-icon">🛍️</div><div>Shop</div></div>
-  <div class="nav-item" onclick="switchTab('tab-tasks', this)"><div class="nav-icon">🎁</div><div>Rewards</div></div>
+  <div class="nav-item active" onclick="switchTab('tab-mining', this)"><div class="nav-icon">⚡</div><div>Mining</div></div>
+  <div class="nav-item" onclick="switchTab('tab-tasks', this)"><div class="nav-icon">🎯</div><div>Tasks</div></div>
   <div class="nav-item" onclick="switchTab('tab-friends', this)"><div class="nav-icon">👥</div><div>Friends</div></div>
-  <div class="nav-item active" onclick="switchTab('tab-wallet', this)"><div class="nav-icon">👛</div><div>Wallet</div></div>
-  <div class="nav-item" style="color: var(--accent-gold); font-weight: 700;" onclick="switchTab('tab-admin', this)"><div class="nav-icon">⚙️</div><div>Admin</div></div>
+  <div class="nav-item" onclick="switchTab('tab-wallet', this)"><div class="nav-icon">🔒</div><div>Withdraw</div></div>
 </div>
 
 <script>
@@ -315,67 +257,140 @@
   tg.ready();
   tg.expand();
 
-  const BOT_TOKEN = "9126577611:AAEZDAju0zpZNOi6pUkE6m-2BbG3M6PargY";
-
-  function copyAddress(addr) {
-    navigator.clipboard.writeText(addr).then(() => alert("Address copied: " + addr.slice(0, 10) + "..."));
+  let telegramUserId = "5330848428";
+  let telegramUsername = "Miner";
+  if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+    telegramUserId = String(tg.initDataUnsafe.user.id);
+    telegramUsername = tg.initDataUnsafe.user.username || tg.initDataUnsafe.user.first_name;
+    document.getElementById('user-display-name').innerText = '@' + telegramUsername;
   }
 
-  // Payout Execution & Receipt Trigger
-  async function executePayout(userId, claimId, amount, hashInputId, cardId) {
-    const txHash = document.getElementById(hashInputId).value.trim();
+  // 1. Mining Config (Adjusted to 8.50 NEX/h)
+  const MINING_SPEED = 8.50; // Rate per hour
+  const CYCLE_SECONDS = 4 * 3600; // 4 Hours cycle
 
-    // Tonviewer Link ပါဝင်သော LootVault ပြေစာ
-    const receiptHtml = 
-      `✅ <b>Вывод средств успешно выполнен!</b>\n` +
-      `━━━━━━━━━━━━━━━━━━━━\n` +
-      `🆔 <b>Заявка:</b> #${claimId}\n` +
-      `💰 <b>Выплачено на кошелёк:</b> <b>${amount} IO</b>\n` +
-      `🔗 <b>Хеш транзакции:</b>\n<code>${txHash}</code>\n\n` +
-      `🔍 <a href="https://tonviewer.com/transaction/${txHash}">Посмотреть в Tonviewer</a>`;
+  let totalBalance = parseFloat(localStorage.getItem('nex_total_balance')) || 150.0;
+  let miningStart = parseInt(localStorage.getItem('nex_mining_start')) || Date.now();
+  localStorage.setItem('nex_mining_start', miningStart);
 
-    // Bot API မှတစ်ဆင့် User ဆီသို့ ပြေစာ ချက်ချင်းပို့ခြင်း
-    try {
-      await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          chat_id: userId,
-          text: receiptHtml,
-          parse_mode: "HTML"
-        })
-      });
-    } catch(e) {
-      console.log(e);
+  function updateMining() {
+    const ratePerSec = MINING_SPEED / 3600;
+    const now = Date.now();
+    let elapsedSec = Math.floor((now - miningStart) / 1000);
+
+    if (elapsedSec >= CYCLE_SECONDS) {
+      elapsedSec = CYCLE_SECONDS;
+      const finalClaim = elapsedSec * ratePerSec;
+      document.getElementById('mined-balance').innerText = finalClaim.toFixed(4);
+      document.getElementById('mining-timer').innerText = "00:00:00 (Ready)";
+      document.getElementById('progress-fill').style.width = "100%";
+      const mBtn = document.getElementById('mining-btn');
+      mBtn.className = "btn-main btn-claim";
+      mBtn.innerText = "Claim " + finalClaim.toFixed(2) + " NEX";
+      mBtn.onclick = claimTokens;
+    } else {
+      const mined = elapsedSec * ratePerSec;
+      document.getElementById('mined-balance').innerText = mined.toFixed(4);
+      const remainSec = CYCLE_SECONDS - elapsedSec;
+      const h = String(Math.floor(remainSec / 3600)).padStart(2, '0');
+      const m = String(Math.floor((remainSec % 3600) / 60)).padStart(2, '0');
+      const s = String(remainSec % 60).padStart(2, '0');
+      document.getElementById('mining-timer').innerText = `${h}:${m}:${s}`;
+      document.getElementById('progress-fill').style.width = ((elapsedSec / CYCLE_SECONDS) * 100) + "%";
+      const mBtn = document.getElementById('mining-btn');
+      mBtn.className = "btn-main btn-mining";
+      mBtn.innerText = "⛏️ Mining in Progress...";
+      mBtn.onclick = null;
     }
-
-    // User WebApp ထဲက Processing status ကို Completed သို့ ပြောင်းပေးခြင်း
-    if (claimId === "W-42255") {
-      document.getElementById('active-claim-badge').className = "status-badge status-completed";
-      document.getElementById('active-claim-badge').innerText = "Completed";
-      document.getElementById('active-claim-note').innerText = "✅ Payout completed on-chain via Tonviewer.";
-      document.getElementById('active-claim-note').style.color = "#2ed573";
-      document.getElementById('hist-claim-badge').className = "status-badge status-completed";
-      document.getElementById('hist-claim-badge').innerText = "Completed";
-      document.getElementById('hist-claim-net').style.color = "#2ed573";
-    }
-
-    // Admin Panel ရှိ Request Card ကို Complete လုပ်ခြင်း
-    document.getElementById(cardId).innerHTML = `
-      <div style="color: #2ed573; font-weight: 700; text-align: center; padding: 12px;">
-        ✅ #${claimId} Payout Completed!<br>
-        <span style="font-size: 11px; color: var(--text-sub);">Receipt sent to User (ID: ${userId})</span>
-      </div>
-    `;
-
-    alert(`Success! Receipt sent to user for claim #${claimId}.`);
+    document.getElementById('total-balance').innerText = totalBalance.toFixed(4);
   }
 
+  function claimTokens() {
+    const ratePerSec = MINING_SPEED / 3600;
+    totalBalance += (CYCLE_SECONDS * ratePerSec);
+    miningStart = Date.now();
+    localStorage.setItem('nex_total_balance', totalBalance);
+    localStorage.setItem('nex_mining_start', miningStart);
+    updateMining();
+  }
+  setInterval(updateMining, 1000);
+  updateMining();
+
+  // 2. January 1 Countdown Logic
+  const targetDate = new Date("January 1, 2027 00:00:00 UTC").getTime();
+  function updateCountdown() {
+    const now = Date.now();
+    const distance = targetDate - now;
+
+    if (distance > 0) {
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const mins = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const secs = Math.floor((distance % (1000 * 60)) / 1000);
+
+      document.getElementById('cd-days').innerText = String(days).padStart(2, '0');
+      document.getElementById('cd-hours').innerText = String(hours).padStart(2, '0');
+      document.getElementById('cd-mins').innerText = String(mins).padStart(2, '0');
+      document.getElementById('cd-secs').innerText = String(secs).padStart(2, '0');
+    }
+  }
+  setInterval(updateCountdown, 1000);
+  updateCountdown();
+
+  // 3. Tasks Verification & Rewards Logic
+  function handleTask(taskId, reward, link, btn) {
+    if (localStorage.getItem('nex_done_' + taskId)) return;
+
+    window.open(link, '_blank');
+    btn.innerText = "Verifying...";
+
+    setTimeout(() => {
+      totalBalance += reward;
+      localStorage.setItem('nex_total_balance', totalBalance);
+      localStorage.setItem('nex_done_' + taskId, 'true');
+      btn.className = "btn-task done";
+      btn.innerText = "Claimed ✓";
+      updateMining();
+      alert(`+${reward} $NEX added to your balance!`);
+    }, 3000);
+  }
+
+  // Restore task states
+  ['task1', 'task2', 'task3'].forEach((t, i) => {
+    if (localStorage.getItem('nex_done_' + t)) {
+      const b = document.getElementById('task-btn-' + (i + 1));
+      if (b) {
+        b.className = "btn-task done";
+        b.innerText = "Claimed ✓";
+      }
+    }
+  });
+
+  // 4. Referral System
+  const refLink = `https://t.me/IO_Mining_bot?start=nex_${telegramUserId}`;
+  document.getElementById('ref-link-display').innerText = refLink;
+
+  function shareRefTelegram() {
+    const text = encodeURIComponent("⚡ Mine NEXORA ($NEX) tokens 24/7 on TON! Launching January 1, 2027. Start here:");
+    window.open(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${text}`);
+  }
+
+  function copyRefLink() {
+    navigator.clipboard.writeText(refLink).then(() => alert("Referral link copied!"));
+  }
+
+  // 5. TON Connect
+  const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+    manifestUrl: 'https://io-mining-app.netlify.app/tonconnect-manifest.json',
+    buttonRootId: 'ton-connect-btn'
+  });
+
+  // Tab Navigation
   function switchTab(tabId, el) {
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     document.getElementById(tabId).classList.add('active');
-    if (el) el.classList.add('active');
+    el.classList.add('active');
   }
 </script>
 </body>
