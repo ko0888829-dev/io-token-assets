@@ -102,7 +102,7 @@
       <div class="balance-val"><span id="total-balance">0.0000</span> <span>$NEX</span></div>
     </div>
 
-    <!-- Active Mining Card -->
+    <!-- Active Mining Card (Rate လျှော့ထားသည့် 8.50 NEX/h) -->
     <div class="card">
       <div class="card-title">
         <span style="color: var(--accent-cyan);">⚡ Cloud Node Mining</span>
@@ -149,7 +149,7 @@
     </div>
   </div>
 
-  <!-- TAB 2: TASKS (CHANNEL & BOT TASKS) -->
+  <!-- TAB 2: TASKS (CHANNEL & BOT JOIN MISSIONS) -->
   <div id="tab-tasks" class="tab-content">
     <div class="card">
       <div class="card-title">
@@ -163,22 +163,22 @@
       <!-- Task 1 -->
       <div class="task-card">
         <div>
-          <div class="task-title">📢 Join NEXORA Official Channel</div>
+          <div class="task-title">📢 Join A-TOOLS X Channel</div>
           <div class="task-reward">+150 NEX</div>
         </div>
-        <button id="task-btn-1" class="btn-task" onclick="handleTask('task1', 150, 'https://t.me/IO_Mining_bot', this)">Start</button>
+        <button id="task-btn-1" class="btn-task" onclick="handleTask('task1', 150, 'https://t.me/A_TOOLSx2', this)">Start</button>
       </div>
 
       <!-- Task 2 -->
       <div class="task-card">
         <div>
-          <div class="task-title">💬 Join NEXORA Discussion Group</div>
+          <div class="task-title">💬 Join NEXORA Community</div>
           <div class="task-reward">+100 NEX</div>
         </div>
-        <button id="task-btn-2" class="btn-task" onclick="handleTask('task2', 100, 'https://t.me/IO_Mining_bot', this)">Start</button>
+        <button id="task-btn-2" class="btn-task" onclick="handleTask('task2', 100, 'https://t.me/A_TOOLSx2', this)">Start</button>
       </div>
 
-      <!-- Task 3 (Partner Bot) -->
+      <!-- Task 3 -->
       <div class="task-card">
         <div>
           <div class="task-title">🤖 Launch Partner TON Bot</div>
@@ -189,7 +189,7 @@
     </div>
   </div>
 
-  <!-- TAB 3: FRIENDS (REFERRALS) -->
+  <!-- TAB 3: FRIENDS -->
   <div id="tab-friends" class="tab-content">
     <div class="card">
       <h3 style="margin-bottom: 6px;">Invite Partners</h3>
@@ -207,9 +207,8 @@
     </div>
   </div>
 
-  <!-- TAB 4: WITHDRAW (LOCKED TILL JAN 1) -->
+  <!-- TAB 4: WITHDRAW (JANUARY 1 COUNTDOWN) -->
   <div id="tab-wallet" class="tab-content">
-    <!-- Countdown Box -->
     <div class="locked-banner">
       <div style="font-size: 26px;">🔒</div>
       <div style="font-size: 16px; font-weight: 800; color: var(--accent-gold); margin-top: 6px;">
@@ -219,7 +218,7 @@
         Liquidity pool locking & DEX listings are in progress. Keep mining to maximize your allocation!
       </div>
 
-      <!-- Timer Elements -->
+      <!-- Countdown -->
       <div class="countdown-timer">
         <div class="count-box"><div class="count-num" id="cd-days">--</div><div class="count-lbl">Days</div></div>
         <div class="count-box"><div class="count-num" id="cd-hours">--</div><div class="count-lbl">Hours</div></div>
@@ -228,7 +227,6 @@
       </div>
     </div>
 
-    <!-- Info Card -->
     <div class="card">
       <div class="card-title">
         <span style="font-weight: 700; color: #fff;">Listing Specifications</span>
@@ -244,7 +242,7 @@
   </div>
 </div>
 
-<!-- Navigation Bar -->
+<!-- Nav Bar -->
 <div class="nav-bar">
   <div class="nav-item active" onclick="switchTab('tab-mining', this)"><div class="nav-icon">⚡</div><div>Mining</div></div>
   <div class="nav-item" onclick="switchTab('tab-tasks', this)"><div class="nav-icon">🎯</div><div>Tasks</div></div>
@@ -265,11 +263,11 @@
     document.getElementById('user-display-name').innerText = '@' + telegramUsername;
   }
 
-  // 1. Mining Config (Adjusted to 8.50 NEX/h)
-  const MINING_SPEED = 8.50; // Rate per hour
-  const CYCLE_SECONDS = 4 * 3600; // 4 Hours cycle
+  // 1. Mining Config (8.50 NEX/h)
+  const MINING_SPEED = 8.50;
+  const CYCLE_SECONDS = 4 * 3600;
 
-  let totalBalance = parseFloat(localStorage.getItem('nex_total_balance')) || 150.0;
+  let totalBalance = parseFloat(localStorage.getItem('nex_total_balance')) || 50.0;
   let miningStart = parseInt(localStorage.getItem('nex_mining_start')) || Date.now();
   localStorage.setItem('nex_mining_start', miningStart);
 
@@ -316,7 +314,7 @@
   setInterval(updateMining, 1000);
   updateMining();
 
-  // 2. January 1 Countdown Logic
+  // 2. January 1 Countdown
   const targetDate = new Date("January 1, 2027 00:00:00 UTC").getTime();
   function updateCountdown() {
     const now = Date.now();
@@ -337,7 +335,7 @@
   setInterval(updateCountdown, 1000);
   updateCountdown();
 
-  // 3. Tasks Verification & Rewards Logic
+  // 3. Tasks Verification & Rewards
   function handleTask(taskId, reward, link, btn) {
     if (localStorage.getItem('nex_done_' + taskId)) return;
 
@@ -355,7 +353,6 @@
     }, 3000);
   }
 
-  // Restore task states
   ['task1', 'task2', 'task3'].forEach((t, i) => {
     if (localStorage.getItem('nex_done_' + t)) {
       const b = document.getElementById('task-btn-' + (i + 1));
@@ -385,7 +382,6 @@
     buttonRootId: 'ton-connect-btn'
   });
 
-  // Tab Navigation
   function switchTab(tabId, el) {
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
